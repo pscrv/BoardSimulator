@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="BoardSimulator.Resources.Label_Value_Pair"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BoardSimulator.Resources"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"             
+             x:Name="ThisControl">
+    
+    <Grid DataContext="{Binding ElementName=ThisControl}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock
+            Grid.Column="0"
+            Text="{Binding Label}"
+            Width="{Binding LabelWidth}"/>
+        <TextBlock
+            Grid.Column="1"
+            Text="{Binding Value}" 
+            Width="{Binding ValueWidth}"/>
+    </Grid>
+</UserControl>

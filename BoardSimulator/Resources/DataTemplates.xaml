@@ -1,0 +1,342 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:BoardSimulator"
+                    xmlns:usercontrols="clr-namespace:BoardSimulator.Resources">
+
+
+    <DataTemplate DataType="{x:Type local:BoardWorkReport_VM}">
+        <StackPanel Width="450" Margin="10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Hour" />
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Hour}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Day" />
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Day}"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="Week" />
+                <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Week}"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="OP scheduled for day" />
+                <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding OPScheduledForDay}"/>
+            </Grid>
+            <DataGrid
+                AutoGenerateColumns="False"
+                ColumnHeaderStyle="{StaticResource DGColumnHeaderVerticalStyle}"
+                ColumnWidth="40"
+                Width="410"
+                Margin="10"
+                HorizontalAlignment="Left"
+                ItemsSource="{Binding ChairReportListVM}">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding SummonsWork, Mode=OneWay}"
+                        Header="Summons Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding SummonsOut, Mode=OneWay}"
+                        Header="Summons Out" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding DecisionWork, Mode=OneWay}"
+                        Header="Decision Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding DecisionOut, Mode=OneWay}"
+                        Header="Decision Out" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding OPWork, Mode=OneWay}"
+                        Header="OP Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding OtherWork, Mode=OneWay}"
+                        Header="Other Work" />
+                    <DataGridTextColumn
+                        Binding="{Binding SummonsQueueSize, Mode=OneWay}"
+                        Header="Summons Queue Size" />
+                    <DataGridTextColumn
+                        Binding="{Binding SummonsQueueAge, Mode=OneWay}"
+                        Header="Summons Queue Age" />
+                    <DataGridTextColumn
+                        Binding="{Binding DecisionQueueSize, Mode=OneWay}"
+                        Header="Decision Queue Size" />
+                    <DataGridTextColumn
+                        Binding="{Binding DecisionQueueAge, Mode=OneWay}"
+                        Header="Decision Queue Age" />
+                </DataGrid.Columns>
+            </DataGrid>
+            
+            
+          <DataGrid ItemsSource="{Binding MemberReportsVM}" 
+                    AutoGenerateColumns="False" 
+                    ColumnHeaderStyle="{StaticResource DGColumnHeaderVerticalStyle}"
+                    Width="200"
+                    Margin="10"
+                    HorizontalAlignment="Left">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding SummonsWork, Mode=OneWay}"
+                        Header="Summons Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding SummonsOut, Mode=OneWay}"
+                        Header="Summons Out" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding DecisionWork, Mode=OneWay}"
+                        Header="Decision Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding DecisionOut, Mode=OneWay}"
+                        Header="Decision Out" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding OPWork, Mode=OneWay}"
+                        Header="OP Work" />
+                    <DataGridCheckBoxColumn
+                        Binding="{Binding OPOut, Mode=OneWay}"
+                        Header="Other Work" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+        </StackPanel>
+    </DataTemplate>
+
+
+
+    <DataTemplate DataType="{x:Type local:ReportLogList_VM}">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal" Background="AliceBlue"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate >
+                        <ContentControl Content="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>        
+        </ScrollViewer>
+    </DataTemplate>
+
+
+
+    <DataTemplate DataType="{x:Type local:ActivityTimeLines_VM}">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <local:BoardBlockChart
+            BlockChartDataSource="{Binding ActivityData}"
+            DayData="{Binding DayData}"
+            BlockSize="15"
+            BlockProportion="0.8"
+            RuleSpacing="8" />
+        </ScrollViewer>
+    </DataTemplate>
+    
+
+
+    <DataTemplate DataType="{x:Type local:BoardParameters_VM}">
+        <StackPanel >
+            <StackPanel Margin="10">
+                <TextBlock Text="Chair" FontWeight="Bold" Margin="10"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / summons"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding ChairSummonsHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / Decision"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding ChairDecisionHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / OP preparation"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding ChairOPPreparationHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Margin="10">
+                <TextBlock Text="Technical members" FontWeight="Bold"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / summons"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding MemberSummonsHours, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / Decision"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding MemberDecisionHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / OP preparation"
+                    Maximum="100"
+                    Minimum="1"
+                    Value="{Binding MemberOPPreparationHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Margin="10">
+                <TextBlock Text="General" FontWeight="Bold"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Number of Members"
+                    Maximum="8"
+                    Minimum="1"
+                    Value="{Binding NumberOfMembers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Hours / OP"
+                    Maximum="40"
+                    Minimum="1"
+                    Value="{Binding OPDuration, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Int_Pair
+                    Label="Days between OPs"
+                    Maximum="40"
+                    Minimum="1"
+                    Value="{Binding DaysBetweenOPs, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type local:BoardOutput_VM}">
+        <StackPanel >
+                <TextBlock 
+                    Padding="20"
+                    Text="{Binding SimulationText}" />
+            
+            <StackPanel Margin="10">
+                <TextBlock Text="Summonses" FontWeight="Bold" />
+                <usercontrols:Label_Value_Pair
+                    Label="Year 1"
+                    Value="{Binding SummonsOut_Year1, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 2"
+                    Value="{Binding SummonsOut_Year2, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 3"
+                    Value="{Binding SummonsOut_Year3, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 4"
+                    Value="{Binding SummonsOut_Year4, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            
+            <StackPanel Margin="10">
+                <TextBlock Text="Decisions" FontWeight="Bold" />
+                <usercontrols:Label_Value_Pair
+                    Label="Year 1"
+                    Value="{Binding DecisionsOut_Year1, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 2"
+                    Value="{Binding DecisionsOut_Year2, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 3"
+                    Value="{Binding DecisionsOut_Year3, UpdateSourceTrigger=PropertyChanged}"/>
+                <usercontrols:Label_Value_Pair
+                    Label="Year 4"
+                    Value="{Binding DecisionsOut_Year4, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type local:BoardOutputGraphs_VM}">
+        <StackPanel>
+            <StackPanel Margin="20">
+                <TextBlock Text="Summons output per year" />
+                <local:IntHistogram
+                    ChartData="{Binding SummonsOut_Yearly_ChartData, UpdateSourceTrigger=PropertyChanged}"
+                    Padding="20"
+                    Width="700"
+                    Height="100" 
+                    HorizontalAlignment="Left"
+                    />
+            </StackPanel>
+            <StackPanel Margin="20">
+                <TextBlock Text="Decision output per year" />
+                <local:IntHistogram 
+                    ChartData="{Binding DecisionOut_Yearly_ChartData, UpdateSourceTrigger=PropertyChanged}" 
+                    Padding="20"
+                    Width="700"
+                    Height="100" 
+                    HorizontalAlignment="Left"
+                    />
+            </StackPanel>
+            <StackPanel Margin="20">
+                <TextBlock Text="Yearly maxima of the summons queue" />
+                <local:IntLineChart 
+                    ChartData="{Binding SummonsQueueSize_Yearly_ChartData, UpdateSourceTrigger=PropertyChanged}" 
+                    Padding="20"
+                    Width="700"
+                    Height="100" 
+                    HorizontalAlignment="Left"/>
+            </StackPanel>
+            <StackPanel Margin="20">
+                <TextBlock Text="Yearly maxima of hours a summons waits in the queue" />
+                <local:IntLineChart 
+                    ChartData="{Binding SummonsQueueAge_Yearly_ChartData, UpdateSourceTrigger=PropertyChanged}" 
+                    Padding="20"
+                    Width="700"
+                    Height="100" 
+                    HorizontalAlignment="Left"/>
+            </StackPanel>
+            
+        </StackPanel>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type local:Board_VM}">
+        <StackPanel>
+            <Grid >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="900"/>
+                    <ColumnDefinition Width="400" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel 
+                    Grid.Column="0"
+                    Margin="10">
+                    
+                    <ContentControl 
+                        Content="{Binding Parameters_VM}" />
+                    <Button 
+                        Content="Run Simulation" 
+                        Command="{Binding Run_Command}" 
+                        HorizontalAlignment="Center"
+                        Width="200"
+                        Margin="10"/>
+                    <Button 
+                        Content="Show Activities" Command="{Binding ShowActivities_Command}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom" 
+                        Width="200"
+                        Margin="10"/>  
+
+                </StackPanel>
+                
+                
+                <StackPanel Grid.Column="1" >
+                    <ContentControl Content="{Binding BoardOutputGraphs_VM, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <ContentControl Content="{Binding Information_VM}" />
+                </StackPanel>
+
+            </Grid>
+
+        </StackPanel>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type local:Information_VM}">
+        <TextBlock 
+            Text="{Binding Info}" 
+            TextAlignment="Left"
+            TextWrapping="Wrap"
+            Padding="20"
+            HorizontalAlignment="Left"/>
+    </DataTemplate>
+
+
+</ResourceDictionary>
