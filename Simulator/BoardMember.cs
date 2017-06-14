@@ -6,7 +6,23 @@ using System.Threading.Tasks;
 
 namespace Simulator
 {
-    public abstract class BoardMember { }
+    public abstract class BoardMember
+    {
+        private MemberWorkParameters _workParameters;
+
+        private WorkQueue _workQueue;
+        private Case _currentCase;
+
+
+        internal MemberState DoOneHourOfWork(WorkQueue outputQueue)
+        {
+            if (_currentCase == null)
+                _currentCase = _workQueue.NextWorkItem;
+            _currentCase.DoWork();
+            if (_currentCase.StageFinshed(_workParameters))
+                outputQueue.AddWorkItem(_currentCase);
+        }
+    }
 
 
 

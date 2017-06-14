@@ -6,15 +6,33 @@ using System.Threading.Tasks;
 
 namespace Simulator
 {
-    public class Case
+    internal class Case
     {
-        public SimulationTime ArrivalTime { get; private set; }
-        public SimulationTime StartTime { get; private set; }
-        public SimulationTime SummonsOutTime { get; private set; }
-        public SimulationTime OPStartTime { get; private set; }
-        public SimulationTime OPEndTime { get; private set; }
-        public SimulationTime DecisionOutTime { get; private set; }
+        private enum WorkStage { Summons, Decision }
 
-        public CaseState State { get; }
+        private WorkStage _workStage;
+        private int SummonsCounter { get; set; }
+        private int DecisionCounter { get; set; }
+
+
+        internal CaseLog Log { get; private set; }
+        internal CaseState State { get; }
+
+        internal void DoWork()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal bool StageFinshed(MemberWorkParameters workParameters)
+        {
+            switch (_workStage)
+            {
+                case WorkStage.Summons:
+                    return SummonsCounter >= workParameters.HoursPerSummons;
+                case WorkStage.Decision:
+                    return DecisionCounter >= workParameters.HoursPerDecision;
+            }
+            throw new InvalidOperationException("Invalide state for Case: _workStage not set to Summons or Decision.");
+        }
     }
 }
