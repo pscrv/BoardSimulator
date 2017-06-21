@@ -6,27 +6,45 @@ using System.Threading.Tasks;
 
 namespace Simulator
 {
-    public class Engine
-    {
-        private Timeline _timeline;
-        private Board _board;
+    //class Engine
+    //{
+    //    #region private fields
+    //    private SimulationParameters _parameters;
+    //    private Timeline _timeline;
+    //    private Board _board;
+    //    #endregion
 
-        public Engine (int timelinelength)
-        {
-            _timeline = new Timeline(timelinelength);
-            _board = new Board();
-        }
+    //    #region constructors
+    //    internal Engine(SimulationParameters parameters)
+    //    {
+    //        //_parameters = parameters;
+    //        //_timeline = new Timeline(new Timespan(_parameters.SimulationLengthInHours));
+    //        //_board = new Board();
+    //    }
+    //    #endregion
+
+    //    #region internal methods
+    //    internal Timeline Run()
+    //    {
+    //        foreach (Hour hour in _timeline.Span)
+    //        {
+    //            // TODO:
+    //            // stock -> work queues
+    //            // board -> process hour
+    //            // workdone -> timeline
 
 
-        public void Run()
-        {
-            BoardState boardState = new NullboardState();
 
-            foreach (Hour hour in _timeline)
-            {
-                boardState = _board.DoOneHourOfWork(boardState);
-                _timeline.AddBoardState(hour, boardState);
-            }
-        }
-    }
+    //            //_board.ProcessHour(hour);
+
+    //            HourlyWorkLog dummyLog = new UnfilledLog();  // TODO: replace this temporary measure
+    //            _timeline.Add(hour, dummyLog);
+    //        }
+
+    //        return _timeline;
+    //    }
+    //    #endregion
+
+    //}
+
 }

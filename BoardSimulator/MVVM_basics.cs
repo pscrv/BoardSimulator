@@ -34,6 +34,7 @@ namespace BoardSimulator
     public class DelegateCommand : ICommand
     {
         private readonly Action _action;
+        public event EventHandler CanExecuteChanged;
 
         public DelegateCommand(Action action)
         {
@@ -50,6 +51,5 @@ namespace BoardSimulator
             return true;
         }
         
-        public event EventHandler CanExecuteChanged;
     }
 }

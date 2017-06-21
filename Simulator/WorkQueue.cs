@@ -1,46 +1,51 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal class WorkQueue
+
+
+
+
+    internal abstract class WorkQueue<T> where T: Work
     {
-        private Queue<Case> _summonsQueue;
-        private Queue<Case> _decisionQueue;
-        private Queue<Case> _opQueue;
+        private Queue<T> _workQueue;
+        private Dictionary<T, Hour> _hourEnqueued;
 
-        public Case NextWorkItem
+        internal WorkQueue()
         {
-            get
-            {
-                if (_opWorkDue())
-                    return _opQueue.Dequeue();
-                if (_decisionWorkDue())
-                    return _decisionQueue.Dequeue();
-                if (_summonsWorkDue())
-                    return _summonsQueue.Dequeue();
-                return null;
-            }
+            _workQueue = new Queue<T>();
+            _hourEnqueued = new Dictionary<T, Hour>();        
         }
 
-        private bool _opWorkDue()
-        {
-            return _opQueue.Count > 0;
-        }
+        internal bool IsNotEmpty { get { return _workQueue.Count > 0; } }
 
-        private bool _decisionWorkDue()
+        internal void Enqueue(T t, Hour h)
         {
-            return _decisionQueue.Count > 0;
-        }
-
-        private bool _summonsWorkDue()
-        {
-            return _summonsQueue.Count > 0;
+            _workQueue.Enqueue(t);
+            _hourEnqueued[t] = h;
         }
         
+        internal T Dequeue()
+        {
+            T item = _workQueue.Dequeue();
+            _hourEnqueued.Remove(item);
+            return item;
+        }
 
+        internal Hour AgeOfOldest()
+        {
+            return _hourEnqueued[_workQueue.Peek()];
+        }
 
     }
 
-    internal class InitialWorkQueue : WorkQueue { }
+    internal class SummonsQueue : WorkQueue<SummonsWork> { }
+
+    internal class DecisionQueue : WorkQueue<DecisionWork> { }
+
+
+
+
 }

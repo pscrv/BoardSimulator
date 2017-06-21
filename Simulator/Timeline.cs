@@ -1,42 +1,31 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Simulator
 {
-    internal class Timeline : IEnumerable<Hour>
+    internal class Timeline
     {
-        private int _length;
-        private Dictionary<Hour, BoardState> _timeline;
+        internal Timespan Span { get; private set; }
+        private Dictionary<Hour, HourlyWorkLog> _hourlyLog;
 
-        public Timeline (int length)
+        internal Timeline(Timespan span)
         {
-            _length = length;
-            _timeline = new Dictionary<Hour, BoardState>(length);
-        }
-
-        internal void AddBoardState(Hour hour, BoardState boardState)
-        {
-            _timeline.Add(hour, boardState);
-        }
-
-        #region IEnumerable
-        public IEnumerator<Hour> GetEnumerator()
-        {
-            for (int i = 0; i < _length; i++)
+            Span = span;
+            _hourlyLog = new Dictionary<Hour, HourlyWorkLog>(span.Length);
+            foreach (Hour hour in Span)
             {
-                yield return new Hour(i);
+                _hourlyLog[hour] = new UnfilledLog();
             }
         }
-                
-        IEnumerator IEnumerable.GetEnumerator()
+
+        internal void Add(Hour hour, HourlyWorkLog log)
         {
-            return this.GetEnumerator();
+            if (_hourlyLog[hour].CanLog)
+                _hourlyLog[hour] = log;
+            else
+                throw new InvalidOperationException("Attempt to overwrite a logged hour.");
         }
-        #endregion
+        
+
     }
 }

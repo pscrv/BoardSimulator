@@ -42,18 +42,18 @@
   <ItemGroup>
     <Compile Include="Board.cs" />
     <Compile Include="BoardMember.cs" />
-    <Compile Include="BoardState.cs" />
-    <Compile Include="Case.cs" />
-    <Compile Include="CaseLog.cs" />
-    <Compile Include="CaseState.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Hour.cs" />
-    <Compile Include="MemberState.cs" />
-    <Compile Include="MemberWorkParameters.cs" />
-    <Compile Include="SimulationTime.cs" />
+    <Compile Include="HourlyMemberLog.cs" />
+    <Compile Include="HourlyWorkLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OPSchedule.cs" />
+    <Compile Include="SimulationParameters.cs" />
     <Compile Include="Timeline.cs" />
+    <Compile Include="Timespan.cs" />
     <Compile Include="Work.cs" />
+    <Compile Include="WorkCoordinator.cs" />
+    <Compile Include="WorkParameters.cs" />
     <Compile Include="WorkQueue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
