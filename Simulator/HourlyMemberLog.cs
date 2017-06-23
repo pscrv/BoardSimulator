@@ -2,11 +2,11 @@
 {
     internal class HourlyMemberLog
     {
-        internal readonly BoardMember Member;
+        internal readonly ChairWorker Member;
         internal readonly Hour Hour;
         internal readonly Work WorkDone;
 
-        internal HourlyMemberLog(BoardMember bm, Hour h, Work work)
+        internal HourlyMemberLog(ChairWorker bm, Hour h, Work work)
         {
             Member = bm;
             Hour = h;
@@ -17,7 +17,7 @@
 
     internal class OPLog : HourlyMemberLog
     {
-        public OPLog(BoardMember bm, Hour h, OPWork work) 
+        public OPLog(ChairWorker bm, Hour h, OPWork work) 
             : base(bm, h, work) { }
     }
 }

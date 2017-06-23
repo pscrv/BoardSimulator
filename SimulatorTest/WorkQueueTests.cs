@@ -48,7 +48,7 @@ namespace Simulator.Tests
             {
                 try
                 {
-                    sq.Enqueue(new SummonsWork(), h);
+                    sq.Enqueue(new SummonsWork(new SummonsCase(), 1), h);
                 }
                 catch (Exception e)
                 {
@@ -57,7 +57,7 @@ namespace Simulator.Tests
 
                 try
                 {
-                    dq.Enqueue(new DecisionWork(), h);
+                    dq.Enqueue(new DecisionWork(new DecisionCase(), 1), h);
                 }
                 catch (Exception e)
                 {
@@ -80,8 +80,8 @@ namespace Simulator.Tests
             DecisionWork dw;
             foreach (Hour h in span)
             {
-                sw = new SummonsWork();
-                dw = new DecisionWork();
+                sw = new SummonsWork(new SummonsCase(), 1);
+                dw = new DecisionWork(new DecisionCase(), 1);
                 summonsWork.Add(sw);
                 decisionWork.Add(dw);
 
@@ -107,7 +107,7 @@ namespace Simulator.Tests
             SummonsQueue sq = new SummonsQueue();
             foreach (Hour h in hours)
             {
-                sq.Enqueue(new SummonsWork(), h);
+                sq.Enqueue(new SummonsWork(new SummonsCase(), 1), h);
                 Assert.AreEqual(hours[0], sq.AgeOfOldest());
             }
 
