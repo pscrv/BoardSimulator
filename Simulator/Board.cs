@@ -1,20 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulator
 {
     internal class Board
     {
+        internal enum ChairType { Technical, Legal }
+
         #region private fields
-        private Chair _chair;
-        private List<TechnicalMember> _technicalMembers;
-        private List<LegalMember> _legalMembers;
+        private BoardWorker _chair;
+        private ChairType _chairType;
+        private List<BoardWorker> _technicalMembers;
+        private List<BoardWorker> _legalMembers;
+        #endregion
+
+
+        #region properties
+        internal int TotalEnqueuedCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (BoardWorker worker in Members())
+                {
+                    count += worker.TotalWorkCount;
+                }
+                return count;
+            }
+        }
         #endregion
 
         #region constructors
-        internal Board (Chair ch, List<TechnicalMember> tech, List<LegalMember> legal)
+        internal Board (BoardWorker ch, ChairType chtype, List<BoardWorker> tech, List<BoardWorker> legal)
         {
             _chair = ch;
+            _chairType = chtype;
             _technicalMembers = tech;
             _legalMembers = legal;
         }
@@ -22,31 +43,71 @@ namespace Simulator
 
 
         #region private methods
-        private IEnumerable<ChairWorker> Members()
+        private IEnumerable<BoardWorker> Members()
         {
             yield return _chair;
-            foreach (ChairWorker bm in _technicalMembers)
+            foreach (BoardWorker bm in _technicalMembers)
                 yield return bm;
-            foreach (ChairWorker bm in _legalMembers)
+            foreach (BoardWorker bm in _legalMembers)
                 yield return bm;
         }
         #endregion
 
 
         #region internal methods
-        internal void DoWork(Hour hour)
+
+        internal void EnqueueCase(Case c, Hour h)
         {
-            _chair.DoWork(hour);
-            foreach (TechnicalMember tm in _technicalMembers)
-                tm.DoWork(hour);
-            foreach (LegalMember lm in _legalMembers)
-                lm.DoWork(hour);
+            // TODO: deal properly with c, when it is more than an empty object
+
+            AllocatedCase allocated = _allocate(c);
+            allocated.Rapporteur.EnqueueRapporteurWork(new SummonsCase(), h);
         }
 
-        internal void DM(Hour hour)
+        internal HourlyBoardLog DoWork()
         {
-            foreach (ChairWorker member in Members())
-                member.DoWork(hour);
+            HourlyBoardLog boardLog = new HourlyBoardLog();
+            HourlyworkerLog log;
+            foreach (BoardWorker member in Members())
+            {
+                log = member.DoWork();
+                boardLog.Add(member, log);
+            }
+            return boardLog;
+        }
+        #endregion
+
+        #region private methods
+        private AllocatedCase _allocate(Case c)
+        {
+            //  TODO: make a proper allocation routine
+            
+            switch (_chairType)
+            {
+                case ChairType.Technical:
+                    return new AllocatedCase(
+                        c, 
+                        _chair, 
+                        _leastBusyMember(_technicalMembers), 
+                        _leastBusyMember(_legalMembers)
+                        );
+                case ChairType.Legal:
+                    return new AllocatedCase(
+                        c, 
+                        _chair, 
+                        _leastBusyMember(_technicalMembers), 
+                        _leastBusyMember(_technicalMembers)
+                        );                    
+            }
+            
+            throw new Exception("ChairType invalid.");
+        }
+
+        private BoardWorker _leastBusyMember(List<BoardWorker> workers)
+        {
+            // TODO:  make this efficient  -> extension method
+            int minvalue = workers.Min(x => x.TotalWorkCount);
+            return workers.Where(x => x.TotalWorkCount == minvalue).First();
         }
         #endregion
     }

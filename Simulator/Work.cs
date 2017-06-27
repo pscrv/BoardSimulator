@@ -6,10 +6,12 @@ namespace Simulator
     internal abstract class Work
     {
         #region protected fields
+        protected Case _case;
         protected int _counter;
         #endregion
 
         #region internal properties
+        internal Case Case { get { return _case; } }
         internal int Counter { get { return _counter; } }
         internal bool IsFinished { get { return Counter <= 0; } }
         #endregion
@@ -19,12 +21,13 @@ namespace Simulator
 
         internal Work(Case c, int hoursneeded)
         {
+            _case = c;
             _counter = hoursneeded;
         }
         #endregion
 
         #region internal methods
-        internal void DoWork(Hour hour)
+        internal void DoWork()
         {
             _counter--;
         }

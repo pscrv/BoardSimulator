@@ -40,12 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllocatedCase.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="BoardMember.cs" />
     <Compile Include="Case.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Hour.cs" />
-    <Compile Include="HourlyMemberLog.cs" />
+    <Compile Include="HourlyBoardLog.cs" />
+    <Compile Include="HourlyWorkerLog.cs" />
     <Compile Include="HourlyWorkLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OPSchedule.cs" />

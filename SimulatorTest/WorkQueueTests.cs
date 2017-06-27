@@ -108,11 +108,11 @@ namespace Simulator.Tests
             foreach (Hour h in hours)
             {
                 sq.Enqueue(new SummonsWork(new SummonsCase(), 1), h);
-                Assert.AreEqual(hours[0], sq.AgeOfOldest());
+                Assert.AreEqual(hours[0], sq.AgeOfOldest);
             }
 
             sq.Dequeue();
-            Assert.AreEqual(hours[1], sq.AgeOfOldest());
+            Assert.AreEqual(hours[1], sq.AgeOfOldest);
             
 
 

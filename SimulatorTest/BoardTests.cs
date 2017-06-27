@@ -15,11 +15,24 @@ namespace Simulator.Tests
         WorkParameters techParameters;
         WorkParameters legalParameters;
 
-        Chair chair;
-        List<TechnicalMember> technicals;
-        List<LegalMember> legals;
+        BoardWorker chair;
+        List<BoardWorker> technicals;
+        List<BoardWorker> legals;
 
         Board board;
+
+        Hour h1;
+        Hour h2;
+
+        SummonsCase chSummonsCase;
+        DecisionCase chDecisionCase;
+
+        SummonsCase lgSummonsCase;
+        DecisionCase lgDecisionCase;
+
+        SummonsCase tchSummonsCase;
+        DecisionCase tchDecisionCase;
+
 
         [TestInitialize]
         public void Initialize()
@@ -29,23 +42,32 @@ namespace Simulator.Tests
             legalParameters = new WorkParameters(4, 6, 6);
 
 
-            chair = new Chair(chParameters);
-            technicals = new List<TechnicalMember>
+            chair = new BoardWorker(chParameters, techParameters, legalParameters);
+            technicals = new List<BoardWorker>
             {
-                new TechnicalMember(chParameters, techParameters),
-                new TechnicalMember(chParameters, techParameters),
-                new TechnicalMember(chParameters, techParameters),
-                new TechnicalMember(chParameters, techParameters),
+                new BoardWorker(chParameters, techParameters, legalParameters),
+                new BoardWorker(chParameters, techParameters, legalParameters),
             };
 
-            legals = new List<LegalMember>
+            legals = new List<BoardWorker>
             {
-                new LegalMember(chParameters, legalParameters),
-                new LegalMember(chParameters, legalParameters),
-                new LegalMember(chParameters, legalParameters),
+                new BoardWorker(chParameters, techParameters, legalParameters),
+                new BoardWorker(chParameters, techParameters, legalParameters),
             };
-            
-            board = new Board(chair, technicals, legals);
+
+            board = new Board(chair, Board.ChairType.Technical, technicals, legals);
+
+            h1 = new Hour(0);
+            h2 = new Hour(10);
+
+            chSummonsCase = new SummonsCase();
+            chDecisionCase = new DecisionCase();
+
+            lgSummonsCase = new SummonsCase();
+            lgDecisionCase = new DecisionCase();
+
+            tchSummonsCase = new SummonsCase();
+            tchDecisionCase = new DecisionCase();
         }
 
 
@@ -54,7 +76,7 @@ namespace Simulator.Tests
         {
             try
             {
-                Board board = new Board(chair, technicals, legals);
+                Board board = new Board(chair, Board.ChairType.Technical, technicals, legals);
             }
             catch (Exception e)
             {
@@ -63,12 +85,25 @@ namespace Simulator.Tests
         }
 
         [TestMethod()]
-        public void DoWork()
+        public void DoWork_EmptyQueues()
         {
-            Hour hour = new Hour(1);
+            HourlyBoardLog log = board.DoWork();
 
-            board.DoWork(hour);
-            board.DM(hour);
+            foreach (BoardWorker worker in log.Log.Keys)
+            {
+                HourlyworkerLog workerlog = log.Log[worker];
+                Assert.AreEqual(WorkType.NoWork, workerlog.WorkDone);
+            }
+        }
+
+        [TestMethod]
+        public void EnqueueCase()
+        {
+            Case c = new Case();
+            board.EnqueueCase(c, new Hour(0));
+            board.EnqueueCase(c, new Hour(1));
+            board.EnqueueCase(c, new Hour(2));
+            Assert.AreEqual(3, board.TotalEnqueuedCount);
         }
     }
 }

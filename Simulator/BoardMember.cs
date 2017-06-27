@@ -2,156 +2,159 @@
 
 namespace Simulator
 {
-    internal abstract class BoardWorker { }
-
-
-    internal abstract class ChairWorker : BoardWorker
+    internal class BoardWorker
     {
-        protected WorkParameters _chairWorkParameters;
-        protected SummonsQueue _chairSummonsQueue;
-        protected DecisionQueue _chairDecisionQueue;
-        protected Work _currentWork;
+        #region private fields
+        private WorkParameters _chairParameters;
+        private WorkParameters _rapporteurParameters;
+        private WorkParameters _otherParameters;
 
-        protected abstract Work _getNonChairWork();
+        private Work _currentWork;
+        private WorkType _currentWorkType;
+        private SummonsQueue _chairSummonsQueue;
+        private SummonsQueue _rapporteurSummonsQueue;
+        private SummonsQueue _otherSummonsQueue;
+        private DecisionQueue _chairDecisionQueue;
+        private DecisionQueue _rapporteurDecisionQueue;
+        private DecisionQueue _otherDecisionQueue;
+        #endregion
 
-        protected ChairWorker(WorkParameters parameters)
+        internal int TotalWorkCount
         {
-            _chairWorkParameters = parameters;
-            _chairSummonsQueue = new SummonsQueue();
-            _chairDecisionQueue = new DecisionQueue();
+            get
+            {
+                return
+                    _chairDecisionQueue.Count +
+                    _chairSummonsQueue.Count +
+                    _rapporteurDecisionQueue.Count +
+                    _rapporteurSummonsQueue.Count +
+                    _otherDecisionQueue.Count +
+                    _otherSummonsQueue.Count;                
+            }
+        }
+
+
+        #region constructors
+        internal BoardWorker(WorkParameters chairparameters, WorkParameters rapporteurparameters, WorkParameters otherparameters)
+        {
+            _chairParameters = chairparameters;
+            _rapporteurParameters = rapporteurparameters;
+            _otherParameters = otherparameters;
+
             _currentWork = new NullWork();
+            _currentWorkType = WorkType.NoWork;
+            _chairDecisionQueue = new DecisionQueue();
+            _chairSummonsQueue = new SummonsQueue();
+            _rapporteurDecisionQueue = new DecisionQueue();
+            _rapporteurSummonsQueue = new SummonsQueue();
+            _otherDecisionQueue = new DecisionQueue();
+            _otherSummonsQueue = new SummonsQueue();
+        }
+        #endregion
+
+
+        #region internal methods
+        internal void EnqueueChairWork(DecisionCase dc, Hour h)
+        {
+            _enqueueDecisionWork(dc, _chairParameters, _chairDecisionQueue, h);
         }
 
-        internal void EnqueueChairWork(SummonsCase sc, Hour hour)
+        internal void EnqueueChairWork(SummonsCase sc, Hour h)
         {
-            SummonsWork work = new SummonsWork(sc, _chairWorkParameters.HoursForsummons);
-            _chairSummonsQueue.Enqueue(work, hour);
+            _enqueueSummonsWork(sc, _chairParameters, _chairSummonsQueue, h);
         }
 
-        internal void EnqueueChairWork(DecisionCase dc, Hour hour)
+        
+        internal void EnqueueRapporteurWork(DecisionCase dc, Hour h)
         {
-            DecisionWork work = new DecisionWork(dc, _chairWorkParameters.HoursForDecision);
-            _chairDecisionQueue.Enqueue(work, hour);
+            _enqueueDecisionWork(dc, _rapporteurParameters, _rapporteurDecisionQueue, h);
         }
 
-        internal HourlyMemberLog DoWork(Hour hour)
+        internal void EnqueueRapporteurWork(SummonsCase sc, Hour h)
         {
-            if (_hasOP(hour))
-                return new OPLog(this, hour, new OPWork());
+            _enqueueSummonsWork(sc, _rapporteurParameters, _rapporteurSummonsQueue, h);
+        }
 
+        internal void EnqueueOtherWork(DecisionCase dc, Hour h)
+        {
+            _enqueueDecisionWork(dc, _otherParameters, _otherDecisionQueue, h);
+        }
+
+        internal void EnqueueOtherWork(SummonsCase sc, Hour h)
+        {
+            _enqueueSummonsWork(sc, _otherParameters, _otherSummonsQueue, h);
+        }
+
+
+
+        internal HourlyworkerLog DoWork()
+        {
             if (_currentWork.IsFinished)
-                _currentWork = _getFromQueue();
-            _currentWork.DoWork(hour);
-            
+                _setCurrentWorkFromQueue();
+            _currentWork.DoWork();
 
-            return new HourlyMemberLog(this, hour, _currentWork);
-
+            return new HourlyworkerLog(_currentWorkType, _currentWork.Case);
         }
+        #endregion
 
-        private Work _getFromQueue()
-        {
+        #region private methods
+        private void _setCurrentWorkFromQueue()
+         {
             if (_chairDecisionQueue.IsNotEmpty)
-                return _chairDecisionQueue.Dequeue();
+            {
+                _currentWork = _chairDecisionQueue.Dequeue();
+                _currentWorkType = WorkType.DecisionWork;
+                return;
+            }
             if (_chairSummonsQueue.IsNotEmpty)
-                return _chairSummonsQueue.Dequeue();
-            return _getNonChairWork();
+            {
+                _currentWork = _chairSummonsQueue.Dequeue();
+                _currentWorkType = WorkType.SummonsWork;
+                return;
+            }
+            if (_otherDecisionQueue.IsNotEmpty)
+            {
+                _currentWork = _otherDecisionQueue.Dequeue();
+                _currentWorkType = WorkType.DecisionWork;
+                return;
+            }
+            if (_otherSummonsQueue.IsNotEmpty)
+            {
+                _currentWork = _otherSummonsQueue.Dequeue();
+                _currentWorkType = WorkType.SummonsWork;
+                return;
+            }
+            if (_rapporteurDecisionQueue.IsNotEmpty)
+            {
+                _currentWork = _rapporteurDecisionQueue.Dequeue();
+                _currentWorkType = WorkType.DecisionWork;
+                return;
+            }
+            if (_rapporteurSummonsQueue.IsNotEmpty)
+            {
+                _currentWork = _rapporteurSummonsQueue.Dequeue();
+                _currentWorkType = WorkType.SummonsWork;
+                return;
+            }
+
+            _currentWork = new NullWork();
+            _currentWorkType = WorkType.NoWork;
         }
 
-        protected bool _hasOP(Hour hour)
+
+        private void _enqueueDecisionWork(DecisionCase dc, WorkParameters parameters, DecisionQueue queue, Hour h)
         {
-            return false;
+            DecisionWork work = new DecisionWork(dc, parameters.HoursForDecision);
+            queue.Enqueue(work, h);
         }
-    }
 
-
-    internal abstract class NonChairWorker : ChairWorker
-    {
-        private WorkParameters _nonChairParameters;
-        private SummonsQueue _nonChairsummonsQueue;
-        private DecisionQueue _nonChairDecisionQueue;
-
-        internal NonChairWorker(WorkParameters chairparameters, WorkParameters nonchairparameters) 
-            : base(chairparameters)
+        private void _enqueueSummonsWork(SummonsCase sc, WorkParameters parameters, SummonsQueue queue, Hour h)
         {
-            _nonChairParameters = nonchairparameters;
-            _nonChairsummonsQueue = new SummonsQueue();
-            _nonChairDecisionQueue = new DecisionQueue();
+            SummonsWork work = new SummonsWork(sc, parameters.HoursForsummons);
+            queue.Enqueue(work, h);
         }
 
 
-        protected void _enqueueNonChairWork(SummonsCase sc, Hour hour)
-        {
-            SummonsWork work = new SummonsWork(sc, _nonChairParameters.HoursForsummons);
-            _nonChairsummonsQueue.Enqueue(work, hour);
-        }
-
-        protected void _enqueueNonChairWork(DecisionCase dc, Hour hour)
-        {
-            DecisionWork work = new DecisionWork(dc, _nonChairParameters.HoursForDecision);
-            _nonChairDecisionQueue.Enqueue(work, hour);
-        }
-
-
-        protected override Work _getNonChairWork()
-        {
-            if (_nonChairDecisionQueue.IsNotEmpty)
-                return _nonChairDecisionQueue.Dequeue();
-            if (_nonChairsummonsQueue.IsNotEmpty)
-                return _nonChairsummonsQueue.Dequeue();
-            return new NullWork();
-        }
-    }
-
-
-
-
-
-    internal class Chair : ChairWorker
-    {
-        public Chair(WorkParameters parameters) 
-            : base(parameters) { }
-
-        protected override Work _getNonChairWork()
-        {
-            return new NullWork();
-        }
-    }
-
-
-    internal class TechnicalMember : NonChairWorker
-    {
-
-        internal TechnicalMember(WorkParameters chairparameters, WorkParameters rapporteurparameters)
-            : base(chairparameters, rapporteurparameters) { }
-
-
-        internal void EnqueueRapporteurWork(SummonsCase sc, Hour hour)
-        {
-            base._enqueueNonChairWork(sc, hour);
-        }
-
-        internal void EnqueueRapporteurWork(DecisionCase dc, Hour hour)
-        {
-            base._enqueueNonChairWork(dc, hour);
-        }
-    }
-
-
-    internal class LegalMember : NonChairWorker
-    {
-        internal LegalMember(WorkParameters chairparameters, WorkParameters legalparameters) 
-            : base(chairparameters, legalparameters) { }
-
-
-        internal void EnqueueLegalWork(SummonsCase sc, Hour hour)
-        {
-            base._enqueueNonChairWork(sc, hour);
-        }
-
-        internal void EnqueueLegalWork(DecisionCase dc, Hour hour)
-        {
-            base._enqueueNonChairWork(dc, hour);
-        }
-    }
-    
+        #endregion
+    } 
 }

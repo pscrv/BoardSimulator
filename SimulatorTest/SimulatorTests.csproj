@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="BoardMemberTests.cs" />
     <Compile Include="BoardTests.cs" />
+    <Compile Include="BWorkerTests.cs" />
     <Compile Include="OPScheduleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TimelineTests.cs" />
