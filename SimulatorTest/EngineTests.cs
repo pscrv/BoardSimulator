@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Simulator.Tests
 {
     [TestClass()]
-    public class BoardTests
+    public class EngineTests
     {
         Member chair;
         List<Member> technical;
@@ -18,7 +18,7 @@ namespace Simulator.Tests
         Board board;
         List<AppealCase> initialCases;
         int hours;
-
+    
 
         [TestInitialize]
         public void Initialize()
@@ -33,32 +33,27 @@ namespace Simulator.Tests
         }
 
 
+
         [TestMethod()]
         public void Constructor()
         {
             try
             {
-                board = new Board(chair, technical, legal);
+                Engine engine = new Engine(board, initialCases, 0);
             }
             catch (Exception e)
             {
-                Assert.Fail("Constructor threw an exception: " + e.Message);
+                Assert.Fail("Constructor threw an exception. " + e.Message);
             }
         }
 
-        [TestMethod]
-        public void EnqueueNew()
+        [TestMethod()]
+        public void Run()
         {
-            int howmany = 4;
-
-            for (int i = 0; i < howmany; i++)
-            {
-                board.EnqueueNewCase(new AppealCase());
-            }
-
-            Assert.AreEqual(howmany, board.IncomingCaseCount);
-
+            AppealCase testCase = new AppealCase();
+            initialCases.Add(testCase);
+            Engine engine = new Engine(board, initialCases, 1);
+            engine.Run();
         }
-
     }
 }

@@ -2,17 +2,23 @@
 {
     internal class AllocatedCase
     {
-        internal readonly Case Case;
-        internal readonly BoardWorker Chair;
-        internal readonly BoardWorker Rapporteur;
-        internal readonly BoardWorker OtherMember;
+        private AppealCase _appealCase;
+        private WorkerQueue _allocatedBoard;
 
-        public AllocatedCase(Case c, BoardWorker chair, BoardWorker rapporteur, BoardWorker other)
+
+        internal AppealCase AppealCase { get { return _appealCase; } }
+
+
+        internal AllocatedCase(AppealCase appealCase, Member chair, Member rapporteur, Member other)
         {
-            Case = c;
-            Chair = chair;
-            Rapporteur = rapporteur;
-            OtherMember = other;
+            _appealCase = appealCase;
+            _allocatedBoard = new WorkerQueue(chair, rapporteur, other);
+        }
+
+
+        internal Member NextSummonsWorker()
+        {
+            return _allocatedBoard.DequeueSummonsWorker();
         }
     }
 }

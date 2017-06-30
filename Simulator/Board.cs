@@ -1,113 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Simulator
 {
     internal class Board
     {
-        internal enum ChairType { Technical, Legal }
-
         #region private fields
-        private BoardWorker _chair;
-        private ChairType _chairType;
-        private List<BoardWorker> _technicalMembers;
-        private List<BoardWorker> _legalMembers;
+        private Member _chair;
+        private List<Member> _technical;
+        private List<Member> _legal;
+
+        private CaseQueue _incomingCases;
+        private CaseQueue _activeCases;
         #endregion
 
 
-        #region properties
-        internal int TotalEnqueuedCount
-        {
-            get
-            {
-                int count = 0;
-                foreach (BoardWorker worker in Members())
-                {
-                    count += worker.TotalWorkCount;
-                }
-                return count;
-            }
-        }
+        #region internal properties
+        internal HourlyBoardLog Log { get; private set; }
+        internal int IncomingCaseCount { get { return _incomingCases.Count; } }
         #endregion
+
 
         #region constructors
-        internal Board (BoardWorker ch, ChairType chtype, List<BoardWorker> tech, List<BoardWorker> legal)
+        internal Board(Member chair, List<Member> technical, List<Member> legal)
         {
-            _chair = ch;
-            _chairType = chtype;
-            _technicalMembers = tech;
-            _legalMembers = legal;
+            _chair = chair;
+            _technical = technical;
+            _legal = legal;
+
+            _incomingCases = new CaseQueue();
+            _activeCases = new CaseQueue();
+
+            Log = null;
+        }
+
+        internal void EnqueueNewCase(AppealCase appealCase)
+        {
+            _incomingCases.Enqueue(appealCase);
+        }
+
+        internal void DoWork()
+        {
+            // do we need two queues?
+            // can we tell from the sort of work
+            // all we need to know?
+
+            _processCases(_activeCases);
+            _processCases(_incomingCases);
+            Log = new HourlyBoardLog();
+
+            _chair.DoWork();
+            foreach (Member tm in _technical)
+            {
+                tm.DoWork();
+            }
+            foreach (Member lm in _legal)
+            {
+                lm.DoWork();
+            }
+
+
+            throw new NotImplementedException("DoWork not fully implemented.");
         }
         #endregion
+
 
 
         #region private methods
-        private IEnumerable<BoardWorker> Members()
+        private void _processCases(CaseQueue cases)
         {
-            yield return _chair;
-            foreach (BoardWorker bm in _technicalMembers)
-                yield return bm;
-            foreach (BoardWorker bm in _legalMembers)
-                yield return bm;
-        }
-        #endregion
-
-
-        #region internal methods
-
-        internal void EnqueueCase(Case c, Hour h)
-        {
-            // TODO: deal properly with c, when it is more than an empty object
-
-            AllocatedCase allocated = _allocate(c);
-            allocated.Rapporteur.EnqueueRapporteurWork(new SummonsCase(), h);
-        }
-
-        internal HourlyBoardLog DoWork()
-        {
-            HourlyBoardLog boardLog = new HourlyBoardLog();
-            HourlyworkerLog log;
-            foreach (BoardWorker member in Members())
+            while (cases.Count > 0)
             {
-                log = member.DoWork();
-                boardLog.Add(member, log);
+                AllocatedCase allocated = _allocate(cases.Dequeue());
+                Member firstWorker = allocated.NextSummonsWorker();
+                firstWorker.EnqueueRapporteurWork(allocated.AppealCase);
             }
-            return boardLog;
-        }
-        #endregion
-
-        #region private methods
-        private AllocatedCase _allocate(Case c)
-        {
-            //  TODO: make a proper allocation routine
-            
-            switch (_chairType)
-            {
-                case ChairType.Technical:
-                    return new AllocatedCase(
-                        c, 
-                        _chair, 
-                        _leastBusyMember(_technicalMembers), 
-                        _leastBusyMember(_legalMembers)
-                        );
-                case ChairType.Legal:
-                    return new AllocatedCase(
-                        c, 
-                        _chair, 
-                        _leastBusyMember(_technicalMembers), 
-                        _leastBusyMember(_technicalMembers)
-                        );                    
-            }
-            
-            throw new Exception("ChairType invalid.");
         }
 
-        private BoardWorker _leastBusyMember(List<BoardWorker> workers)
+        private AllocatedCase _allocate(AppealCase appealCase)
         {
-            // TODO:  make this efficient  -> extension method
-            int minvalue = workers.Min(x => x.TotalWorkCount);
-            return workers.Where(x => x.TotalWorkCount == minvalue).First();
+            // TODO: make a proper allocation
+            return new AllocatedCase(appealCase, _chair, _technical[0], _legal[0]);
         }
         #endregion
     }
