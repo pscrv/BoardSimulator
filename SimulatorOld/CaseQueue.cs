@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Simulator
+namespace SimulatorOld
 {
-    internal class CaseQueue
+    internal class CaseQueue<T>
     {
         #region private fields
-        private Queue<AppealCase> _queue;
-        private Dictionary<AppealCase, Hour> _timeOfEnqueuing;
+        private Queue<T> _queue;
+        private Dictionary<T, Hour> _timeOfEnqueuing;
         #endregion
 
         #region internal properties
@@ -17,38 +17,41 @@ namespace Simulator
         #region consctructors
         internal CaseQueue() 
         {
-            _queue = new Queue<AppealCase>();
-            _timeOfEnqueuing = new Dictionary<AppealCase, Hour>();
+            _queue = new Queue<T>();
+            _timeOfEnqueuing = new Dictionary<T, Hour>();
         }
         #endregion
 
 
         #region internal methods
-        internal void Enqueue(AppealCase ac)
+        internal void Enqueue(T t)
         {
-            _queue.Enqueue(ac);
-            _timeOfEnqueuing[ac] = SimulationTime.Current;
+            _queue.Enqueue(t);
+            _timeOfEnqueuing[t] = SimulationTime.Current;
         }
 
-        internal AppealCase Dequeue()
+        internal T Dequeue()
         {
             if (Count == 0)
-                return null;
+                return default(T);
 
-            AppealCase ac = _queue.Dequeue();
-            _timeOfEnqueuing.Remove(ac);
-            return ac;
+            T t = _queue.Dequeue();
+            _timeOfEnqueuing.Remove(t);
+            return t;
         }
         #endregion
     }
+
+
+    internal class AppealCaseQueue : CaseQueue<AppealCase> { }
 
 
 
     internal class CaseQueuePair
     {
         #region private fields
-        private CaseQueue _summonsQueue;
-        private CaseQueue _decisionQueue;
+        private AppealCaseQueue _summonsQueue;
+        private AppealCaseQueue _decisionQueue;
         #endregion
 
 
@@ -60,8 +63,8 @@ namespace Simulator
         #region constructors
         internal CaseQueuePair()
         {
-            _summonsQueue = new CaseQueue();
-            _decisionQueue = new CaseQueue();
+            _summonsQueue = new AppealCaseQueue();
+            _decisionQueue = new AppealCaseQueue();
         }
         #endregion
 

@@ -1,40 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Simulator
+namespace OldSim
 {
     internal class Engine
     {
         #region private fields
         private Board _board;
-        private BoardWorkLog _log;
+        private SimulationLog _log;
         private int _hoursToSimulate;
         #endregion
+
+
+        #region internal properties
+        internal SimulationLog Log { get { return _log; } }
+        #endregion
+
 
         #region constructors
         internal Engine(Board board, IEnumerable<AppealCase> initialCases, int hours)
         {
             _board = board;
-            _log = new BoardWorkLog();
+            _hoursToSimulate = hours;
+            _log = new SimulationLog();
 
             foreach (AppealCase appealCase in initialCases)
             {
                 _board.EnqueueNewCase(appealCase);
             }
 
-            _hoursToSimulate = hours;
         }
         #endregion
+
 
         #region internal methods
         internal void Run()
         {
-            _initialise();
+            _initialiseRun();
 
             while (SimulationTime.Current.Value < _hoursToSimulate)
             {
-                _board.DoWork();
-                _log.Add(_board.Log);
+                _board.DoAndLogWork(_log);
+                SimulationTime.Increment();
             }
         }
         #endregion
@@ -42,9 +49,10 @@ namespace Simulator
 
 
         #region private methods
-        private void _initialise()
+        private void _initialiseRun()
         {
             SimulationTime.Reset();
+            _log = new SimulationLog();
         }
         #endregion
     }

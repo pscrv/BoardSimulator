@@ -52,15 +52,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AppealCaseTests.cs" />
-    <Compile Include="BoardTests.cs" />
-    <Compile Include="EngineTests.cs" />
-    <Compile Include="MemberTests.cs" />
+    <Compile Include="Cases\AllocatedCaseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Simulator\Simulator.csproj">
-      <Project>{6faccd0c-e87b-49b7-960b-93c145c841c9}</Project>
+      <Project>{72d5ecbe-1c46-4ad8-89b7-3c55c5f1493d}</Project>
       <Name>Simulator</Name>
     </ProjectReference>
   </ItemGroup>

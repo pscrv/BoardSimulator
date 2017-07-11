@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{72D5ECBE-1C46-4AD8-89B7-3C55C5F1493D}</ProjectGuid>
+    <ProjectGuid>{6FACCD0C-E87B-49B7-960B-93C145C841C9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Simulator</RootNamespace>
@@ -40,41 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board\MemberCaseQueue.cs" />
-    <Compile Include="Board\CaseWorker.cs" />
-    <Compile Include="Cases\MemberActionRecord.cs" />
-    <Compile Include="Enums\Enums.cs" />
-    <Compile Include="Queues\CaseQueue.cs" />
-    <Compile Include="Board\Member.cs" />
-    <Compile Include="Cases\AllocatedCase.cs" />
-    <Compile Include="Cases\AppealCase.cs" />
-    <Compile Include="Board\CaseBoard.cs" />
-    <Compile Include="Cases\CaseRecord.cs" />
-    <Compile Include="Queues\CaseQueuePair.cs" />
-    <Compile Include="Queues\MemberWorkQueue.cs" />
-    <Compile Include="__Old\CaseBoard.cs" />
-    <Compile Include="__Old\AppealCase.cs" />
-    <Compile Include="__Old\AppealCaseState.cs" />
-    <Compile Include="__Old\Board.cs" />
-    <Compile Include="__Old\AllocatedCase.cs" />
-    <Compile Include="__Old\CaseWork.cs" />
-    <Compile Include="__Old\SimulationLog.cs" />
-    <Compile Include="__Old\SimulationTime.cs" />
-    <Compile Include="__Old\WorkState.cs" />
-    <Compile Include="__Old\DummyAllocator.cs" />
-    <Compile Include="Logging\SimulationLog.cs" />
-    <Compile Include="__Old\Engine.cs" />
-    <Compile Include="__Old\Member.cs" />
+    <Compile Include="Allocation.cs" />
+    <Compile Include="AppealCase.cs" />
+    <Compile Include="AppealCaseState.cs" />
+    <Compile Include="Board.cs" />
+    <Compile Include="BoardHourlyLog.cs" />
+    <Compile Include="BoardWorkLog.cs" />
+    <Compile Include="CaseQueue.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="SimulationTime.cs" />
+    <Compile Include="Member.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Time\SimulationTime.cs" />
-    <Compile Include="__Old\CaseQueue.cs" />
-    <Compile Include="__Old\CyclicQueue.cs" />
-    <Compile Include="Work\Work.cs" />
-    <Compile Include="Work\WorkReport.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dummies\" />
-    <Folder Include="Engine\" />
+    <Compile Include="TimeSpanList.cs" />
+    <Compile Include="WorkerQueue.cs" />
+    <Compile Include="WorkReport.cs" />
+    <Compile Include="Work.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

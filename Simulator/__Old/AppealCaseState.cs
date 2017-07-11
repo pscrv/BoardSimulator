@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Simulator
+namespace OldSim
 {
     internal class AppealCaseState
     {

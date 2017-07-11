@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace Simulator
+namespace SimulatorOld
 {
-    internal class WorkerQueue
+    internal class WorkerQueue : IEnumerable<Member>
     {
         #region private fields
         private Queue<Member> _summonsQueue;
@@ -22,22 +23,21 @@ namespace Simulator
         {
             _summonsQueue = new Queue<Member>();
             _decisionQueue = new Queue<Member>();
-            _enqueueMembers(_summonsQueue, chair, rapporteur, other);
-            _enqueueMembers(_decisionQueue, chair, rapporteur, other);
+
+            _summonsQueue.Enqueue(rapporteur);
+            _summonsQueue.Enqueue(other);
+            _summonsQueue.Enqueue(chair);
         }
 
         #endregion
 
 
         #region internal methods
-        //internal void Enqueue(Member member)
-        //{
-        //    _summonsQueue.Enqueue(member);
-        //}
-
         internal Member DequeueSummonsWorker()
         {
-            return _summonsQueue.Dequeue();
+            Member member = _summonsQueue.Dequeue();
+            _decisionQueue.Enqueue(member);
+            return member;
         }
 
         internal Member DequeueDecisionWorker()
@@ -53,6 +53,20 @@ namespace Simulator
             queue.Enqueue(rapporteur);
             queue.Enqueue(other);
             queue.Enqueue(chair);
+        }
+        #endregion
+
+
+        #region IEnumerable
+        public IEnumerator<Member> GetEnumerator()
+        {
+            foreach (Member m in _decisionQueue) yield return m;
+            foreach (Member m in _summonsQueue) yield return m;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
         #endregion
     }

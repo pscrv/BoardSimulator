@@ -1,4 +1,5 @@
-﻿namespace Simulator
+﻿
+namespace OldSim
 {
     internal class AppealCase
     {
@@ -33,47 +34,6 @@
         {
             _state.Advance();
         }
-
-
-        //internal void SetSummonsEnqueued()
-        //{
-        //    _state.SetSummonsEnqueued();
-        //}
-
-        //internal void SetSummonsStarted()
-        //{
-        //    _state.SetSummonsStarted();
-        //}
-
-        //internal void SetSummonsFinisheded()
-        //{
-        //    _state.SetSummonsFinisheded();
-        //}
-
-        //internal void SetOPStarted()
-        //{
-        //    _state.SetOPStarted();
-        //}
-
-        //internal void SetOPFinisheded()
-        //{
-        //    _state.SetOPFinisheded();
-        //}
-
-        //internal void SetDecisionEnqueued()
-        //{
-        //    _state.SetDecisionEnqueued();
-        //}
-
-        //internal void SetDecisionStarted()
-        //{
-        //    _state.SetDecisionStarted();
-        //}
-
-        //internal void SetDecisionFinished()
-        //{
-        //    _state.SetDecisionFinished();
-        //}
         #endregion
 
 
