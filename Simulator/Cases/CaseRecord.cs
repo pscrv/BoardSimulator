@@ -66,5 +66,45 @@ namespace Simulator
         {
             _summonsRecords[role].SetEnqueue();
         }
+
+        internal void SetSummonsStart(WorkerRole role)
+        {
+            _summonsRecords[role].SetStart();
+        }
+
+        internal void SetSummonsFinish(WorkerRole role)
+        {
+            _summonsRecords[role].SetFinish();
+        }
+
+        internal void SetOPEnqueue()
+        {
+            OP.SetEnqueue();
+        }
+
+        internal void SetOPStart()
+        {
+            OP.SetStart();
+        }
+
+        internal void SetOPFinished()
+        {
+            OP.SetFinish();
+        }
+
+        internal void SetDecisionEnqueue(WorkerRole role)
+        {
+            _decisionRecords[role].SetEnqueue();
+        }
+
+        internal void SetDecisionStart(WorkerRole role)
+        {
+            _decisionRecords[role].SetStart();
+        }
+
+        internal void SetDecisionFinish(WorkerRole role)
+        {
+            _decisionRecords[role].SetFinish();
+        }
     }
 }

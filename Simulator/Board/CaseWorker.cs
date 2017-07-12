@@ -18,7 +18,7 @@ namespace Simulator
 
         internal void Enqueue(AllocatedCase allocatedCase)
         {
-            Member.CaseQueue.Enqueue(allocatedCase, Role);
+            WorkQueues.EnqueueForMember(Member, Role, allocatedCase);
         }
 
 

@@ -7,14 +7,13 @@ namespace Simulator
         #region temporary static
         private static int _HOURS_SUMMONS = 2;
         private static int _HOURS_OP_PREP = 1;
-        private static int _HOURS_DECISION = 3;
+        private static int _HOURS_DECISION = 2;
         #endregion
 
 
         #region fields and properties
         private int _workCounter = 0;
-        private AllocatedCase CurrentCase { get { return CaseQueue.Peek(); } }
-
+        private AllocatedCase _currentCase { get { return WorkQueues.PeekForMember(this); } }
         internal readonly int HoursForSummons;
         internal readonly int HoursOPPrepration;
         internal readonly int HoursForDecision;
@@ -27,12 +26,14 @@ namespace Simulator
             HoursForSummons = _HOURS_SUMMONS;
             HoursOPPrepration = _HOURS_OP_PREP;
             HoursForDecision = _HOURS_DECISION;
+
+            WorkQueues.RegisterMember(this);
         }
 
 
         internal void Work()
         {
-            if (CurrentCase == null)
+            if (_currentCase == null)
             {
                 _logWork(); // no work
                 return;
@@ -40,7 +41,9 @@ namespace Simulator
 
             if (_workCounter == 0)
             {
-                CurrentCase.RecordStartOfWork(CurrentCase.Board.GetMemberAsCaseWorker(this));
+                CaseWorker meAsCaseWorker = _currentCase.Board.GetMemberAsCaseWorker(this);
+                
+                _currentCase.RecordStartOfWork(meAsCaseWorker);
                 _setWorkCounter();
             }
 
@@ -55,7 +58,7 @@ namespace Simulator
 
         private void _setWorkCounter()
         {
-            switch (CurrentCase.WorkType)
+            switch (_currentCase.WorkType)
             {
                 case WorkType.Summons:
                     _workCounter = HoursForSummons;
@@ -70,8 +73,17 @@ namespace Simulator
 
         private void _finishCase()
         {
-            CurrentCase.RecordFinishedWork(CurrentCase.Board.GetMemberAsCaseWorker(this));
-            CaseQueue.Dequeue();
+            _currentCase.RecordFinishedWork(_currentCase.Board.GetMemberAsCaseWorker(this));
+
+            WorkQueues.EnqueueForCirculation(_currentCase);
+            //_currentCase.EnqueueForWork();
+
+            // the above line needs to put CurrentCase in a queue for the caseboard,
+            // it should be enqueued for the next member on the next tick.
+            // If we enqueue for the next member now, they may treat it this tick,
+            // but the case has already taken up the whole tick.
+
+            WorkQueues.DequeueForMember(this);
         }
 
         private void _logWork()

@@ -38,6 +38,7 @@ namespace Simulator
             _queues = new Dictionary<WorkType, Queue<CaseWorker>>();
             _queues[WorkType.Summons] = _makeQueue();
             _queues[WorkType.Decision] = _makeQueue();
+            
         }
 
 
@@ -91,8 +92,8 @@ namespace Simulator
 
 
             // TODO : decide which of the following two lines is better
-            //nextWorker.Enqueue(allocatedCase);
-            nextWorker.Member.CaseQueue.Enqueue(allocatedCase, nextWorker.Role);
+            nextWorker.Enqueue(allocatedCase);
+            //nextWorker.Member.CaseQueue.Enqueue(allocatedCase, nextWorker.Role);
             return nextWorker.Role;
         }
         

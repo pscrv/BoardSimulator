@@ -68,10 +68,10 @@ namespace Simulator
             switch (WorkType)
             {
                 case WorkType.Summons:
-                    Record.RapporteurSummons.SetStart();
+                    Record.SetSummonsStart(role);
                     break;
                 case WorkType.Decision:
-                    Record.RapporteurDecision.SetStart();
+                    Record.SetDecisionStart(role);
                     break;
                 case WorkType.None:
                     throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
@@ -87,29 +87,11 @@ namespace Simulator
             switch (WorkType)
             {
                 case WorkType.Summons:
-
-                    switch (role)
-                    {
-                        case WorkerRole.Rapporteur:
-
-                            if (true /* WorkIsFinsihed */)
-                            {
-                                Record.RapporteurSummons.SetFinish();
-                                Board.EnqueueForOP();
-                            }
-
-                            break;
-                        case WorkerRole.Chair:
-                            break;
-                        case WorkerRole.OtherMember:
-                            break;
-                        case WorkerRole.None:
-                            throw new InvalidOperationException("AllocatedCase.RecordWork: caseWorker has no role for this case.");
-                    }
-
+                    Record.SetSummonsFinish(role);
 
                     break;
                 case WorkType.Decision:
+                    Record.SetDecisionFinish(role);
                     break;
 
                 case WorkType.None:
@@ -123,14 +105,32 @@ namespace Simulator
 
         internal void EnqueueForWork()
         {
-            WorkerRole role = Board.EnqueueForNextWorker(this);
-            Record.SetSummonsEnqueue(role);            
+            if (_isReadyForOP(this))
+            {
+                WorkQueues.EnqueueForOP(this);
+                Record.SetOPEnqueue();
+            }
+            else
+            {
+                WorkerRole role = Board.EnqueueForNextWorker(this);
+                switch (Stage)
+                {
+                    case CaseStage.Summons:
+                        Record.SetSummonsEnqueue(role);
+                        break;
+                    case CaseStage.Decision:
+                        Record.SetDecisionEnqueue(role);
+                        break;
+                    case CaseStage.OP:
+                    case CaseStage.Finished:
+                        throw new InvalidOperationException("AllocatedCase.EnqueueForWork: Case is not in Summons or Decision stage.");
+                }
+            }
         }
 
-        
-               
-
-
-
+        private bool _isReadyForOP(AllocatedCase allocatedCase)
+        {
+            return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null;
+        }
     }
 }

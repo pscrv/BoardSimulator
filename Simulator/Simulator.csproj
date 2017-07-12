@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
+    <Compile Include="Queues\WorkQueues.cs" />
     <Compile Include="Cases\MemberActionRecord.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Queues\CaseQueue.cs" />
