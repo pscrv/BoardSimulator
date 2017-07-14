@@ -5,6 +5,9 @@ namespace Simulator
 {
     internal class AllocatedCase
     {
+        #region fields and properties
+        private OPQueue _opQueue = WorkQueues.OP;
+
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
         internal readonly CaseRecord Record;
@@ -49,7 +52,10 @@ namespace Simulator
                 return WorkType.None;
             }
         }
+        #endregion
 
+
+        #region construction
         internal AllocatedCase(AppealCase ac, CaseBoard bd)
         {
             Case = ac;
@@ -58,13 +64,12 @@ namespace Simulator
             Record = new CaseRecord(ac);
             Record.SetAllocation();            
         }
-
+        #endregion
 
 
         internal void RecordStartOfWork(CaseWorker caseWorker)
         {
             WorkerRole role = caseWorker.Role;
-
             switch (WorkType)
             {
                 case WorkType.Summons:
@@ -73,9 +78,9 @@ namespace Simulator
                 case WorkType.Decision:
                     Record.SetDecisionStart(role);
                     break;
+
                 case WorkType.None:
                     throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
-                    
             }
         }
 
@@ -83,12 +88,10 @@ namespace Simulator
         internal void RecordFinishedWork(CaseWorker caseWorker)
         {
             WorkerRole role = caseWorker.Role;
-
             switch (WorkType)
             {
                 case WorkType.Summons:
                     Record.SetSummonsFinish(role);
-
                     break;
                 case WorkType.Decision:
                     Record.SetDecisionFinish(role);
@@ -97,40 +100,36 @@ namespace Simulator
                 case WorkType.None:
                     throw new InvalidOperationException("AllocatedCase.Recordwork: there is no work to do.");
             }
-
-
         }
 
 
 
         internal void EnqueueForWork()
         {
-            if (_isReadyForOP(this))
+            if (_isReadyForOP)
             {
-                WorkQueues.EnqueueForOP(this);
+                _opQueue.Enqueue(this);
                 Record.SetOPEnqueue();
+                return;
             }
-            else
+
+
+            WorkerRole role = Board.EnqueueForNextWorker(this);
+            switch (WorkType)
             {
-                WorkerRole role = Board.EnqueueForNextWorker(this);
-                switch (Stage)
-                {
-                    case CaseStage.Summons:
-                        Record.SetSummonsEnqueue(role);
-                        break;
-                    case CaseStage.Decision:
-                        Record.SetDecisionEnqueue(role);
-                        break;
-                    case CaseStage.OP:
-                    case CaseStage.Finished:
-                        throw new InvalidOperationException("AllocatedCase.EnqueueForWork: Case is not in Summons or Decision stage.");
-                }
+                case WorkType.Summons:
+                    Record.SetSummonsEnqueue(role);
+                    break;
+                case WorkType.Decision:
+                    Record.SetDecisionEnqueue(role);
+                    break;
+                case WorkType.None:
+                    throw new InvalidOperationException("AllocatedCase.EnqueueForWork: Case is not in Summons or Decision stage.");
+            
             }
         }
 
-        private bool _isReadyForOP(AllocatedCase allocatedCase)
-        {
-            return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null;
-        }
+        private bool _isReadyForOP
+        { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }
     }
 }

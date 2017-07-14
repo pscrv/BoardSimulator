@@ -4,6 +4,8 @@ namespace Simulator
 {
     internal class CaseWorker
     {
+        private BoardQueues _boardQueues = WorkQueues.Members;
+
         internal readonly Member Member;
         internal readonly WorkerRole Role;
 
@@ -15,13 +17,9 @@ namespace Simulator
         }
 
 
-
         internal void Enqueue(AllocatedCase allocatedCase)
         {
-            WorkQueues.EnqueueForMember(Member, Role, allocatedCase);
-        }
-
-
-        
+            _boardQueues.EnqueueForMember(Member, Role, allocatedCase);
+        }        
     }
 }

@@ -3,7 +3,7 @@ namespace Simulator
 {
     // Members
     internal enum WorkerRole { Rapporteur, Chair, OtherMember, None }
-
+    internal enum ChairType { Technical, Legal }
 
     // Cases
     internal enum CaseStage { Summons, OP, Decision, Finished }
@@ -11,5 +11,7 @@ namespace Simulator
     
     // Work
     internal enum WorkType { Summons, Decision, None }
+
+
     
 }

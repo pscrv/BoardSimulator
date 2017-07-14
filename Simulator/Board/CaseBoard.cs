@@ -90,17 +90,8 @@ namespace Simulator
             if (nextWorker == null)
                 return WorkerRole.None;
 
-
-            // TODO : decide which of the following two lines is better
             nextWorker.Enqueue(allocatedCase);
-            //nextWorker.Member.CaseQueue.Enqueue(allocatedCase, nextWorker.Role);
             return nextWorker.Role;
-        }
-        
-
-        internal void EnqueueForOP()
-        {
-            // TODO: do something here.
         }
     }
 }

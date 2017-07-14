@@ -1,34 +1,33 @@
-﻿using System; 
+﻿using System;
+using System.Collections.Generic;
 
 namespace Simulator
 {
     internal class Member
     {
-        #region temporary static
-        private static int _HOURS_SUMMONS = 2;
-        private static int _HOURS_OP_PREP = 1;
-        private static int _HOURS_DECISION = 2;
-        #endregion
-
-
         #region fields and properties
         private int _workCounter = 0;
-        private AllocatedCase _currentCase { get { return WorkQueues.PeekForMember(this); } }
-        internal readonly int HoursForSummons;
-        internal readonly int HoursOPPrepration;
-        internal readonly int HoursForDecision;
-        
-        internal MemberWorkQueue CaseQueue = new MemberWorkQueue();
+        private BoardQueues _boardQueues = WorkQueues.Members;
+        private CirculationQueue _circulationQueue = WorkQueues.Circulation;
+        private Dictionary<WorkerRole, MemberParameters> _parameters;
+
+        private AllocatedCase _currentCase { get { return _boardQueues.Peek(this); } }
+        private WorkerRole _currentRole { get { return _currentCase.Board.GetRole(this); } }
+        private CaseWorker _thisAsCaseWorker { get { return _currentCase.Board.GetMemberAsCaseWorker(this); } }
         #endregion
 
+
+        #region construction
         internal Member()
         {
-            HoursForSummons = _HOURS_SUMMONS;
-            HoursOPPrepration = _HOURS_OP_PREP;
-            HoursForDecision = _HOURS_DECISION;
+            _parameters = new Dictionary<WorkerRole, MemberParameters>();
+            _parameters[WorkerRole.Chair] = new MemberParameters();
+            _parameters[WorkerRole.Rapporteur] = new MemberParameters();
+            _parameters[WorkerRole.OtherMember] = new MemberParameters();
 
-            WorkQueues.RegisterMember(this);
+            _boardQueues.Register(this);
         }
+        #endregion
 
 
         internal void Work()
@@ -41,9 +40,7 @@ namespace Simulator
 
             if (_workCounter == 0)
             {
-                CaseWorker meAsCaseWorker = _currentCase.Board.GetMemberAsCaseWorker(this);
-                
-                _currentCase.RecordStartOfWork(meAsCaseWorker);
+                _currentCase.RecordStartOfWork(_thisAsCaseWorker);
                 _setWorkCounter();
             }
 
@@ -58,13 +55,16 @@ namespace Simulator
 
         private void _setWorkCounter()
         {
+            if (_currentCase == null)
+                return;
+
             switch (_currentCase.WorkType)
             {
                 case WorkType.Summons:
-                    _workCounter = HoursForSummons;
+                    _workCounter = _parameters[_currentRole].HoursForSummons;
                     break;
                 case WorkType.Decision:
-                    _workCounter = HoursForDecision;
+                    _workCounter = _parameters[_currentRole].HoursForDecision;
                     break;
                 case WorkType.None:
                     throw new InvalidOperationException("member.Work: no work to do on this case.");
@@ -73,17 +73,9 @@ namespace Simulator
 
         private void _finishCase()
         {
-            _currentCase.RecordFinishedWork(_currentCase.Board.GetMemberAsCaseWorker(this));
-
-            WorkQueues.EnqueueForCirculation(_currentCase);
-            //_currentCase.EnqueueForWork();
-
-            // the above line needs to put CurrentCase in a queue for the caseboard,
-            // it should be enqueued for the next member on the next tick.
-            // If we enqueue for the next member now, they may treat it this tick,
-            // but the case has already taken up the whole tick.
-
-            WorkQueues.DequeueForMember(this);
+            _currentCase.RecordFinishedWork(_thisAsCaseWorker);
+            _circulationQueue.Enqueue(_currentCase);
+            _boardQueues.Dequeue(this);
         }
 
         private void _logWork()
