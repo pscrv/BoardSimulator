@@ -45,8 +45,7 @@
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="Board\MemberParameters.cs" />
     <Compile Include="Queues\BoardQueue.cs" />
-    <Compile Include="Queues\CirculationQueue.cs" />
-    <Compile Include="Queues\OPQueue.cs" />
+    <Compile Include="Queues\CaseBuffer.cs" />
     <Compile Include="Queues\WorkQueues.cs" />
     <Compile Include="Cases\MemberActionRecord.cs" />
     <Compile Include="Enums\Enums.cs" />

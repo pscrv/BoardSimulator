@@ -27,12 +27,13 @@ namespace Simulator
 
         internal void DoWork()
         {
+            WorkQueues.Incoming.PassCasesToMembers();
+
             foreach (Member member in _members)
             {
                 member.Work();
             }
         }
-
 
 
 

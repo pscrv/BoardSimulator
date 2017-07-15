@@ -62,7 +62,7 @@ namespace Simulator.Tests
             Assert.AreEqual(hour0, allocatedCase.Record.RapporteurSummons.Start);
             Assert.AreEqual(hour1, allocatedCase.Record.RapporteurSummons.Finish);
             Assert.AreEqual(0, WorkQueues.Members.Count(rapporteur));
-            Assert.AreEqual(1, WorkQueues.Circulation.CirculatingCases.Count());
+            Assert.AreEqual(1, WorkQueues.Circulation.Count);
         }
 
         [TestMethod()]
@@ -80,7 +80,7 @@ namespace Simulator.Tests
             Assert.AreEqual(hour2, allocatedCase.Record.OtherMemberSummons.Start, "Start");
             Assert.AreEqual(hour3, allocatedCase.Record.OtherMemberSummons.Finish, "Finish");
             Assert.AreEqual(0, WorkQueues.Members.Count(other));
-            Assert.AreEqual(1, WorkQueues.Circulation.CirculatingCases.Count());
+            Assert.AreEqual(1, WorkQueues.Circulation.Count);
         }
 
         [TestMethod()]
@@ -99,7 +99,7 @@ namespace Simulator.Tests
             Assert.AreEqual(hour4, allocatedCase.Record.ChairSummons.Start, "Start");
             Assert.AreEqual(hour5, allocatedCase.Record.ChairSummons.Finish, "Finish");
             Assert.AreEqual(0, WorkQueues.Members.Count(chair));
-            Assert.AreEqual(1, WorkQueues.Circulation.CirculatingCaseCount);
+            Assert.AreEqual(1, WorkQueues.Circulation.Count);
         }
 
         [TestMethod()]
@@ -115,8 +115,8 @@ namespace Simulator.Tests
 
             Hour hour6 = new Hour(6);
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
-            Assert.AreEqual(0, WorkQueues.Circulation.CirculatingCaseCount);
-            Assert.AreEqual(1, WorkQueues.OP.OPCaseCount);
+            Assert.AreEqual(0, WorkQueues.Circulation.Count);
+            Assert.AreEqual(1, WorkQueues.OP.Count);
         }
 
 
@@ -211,7 +211,7 @@ namespace Simulator.Tests
         private static void _incrementTimeAndSkipOP()
         {
             SimulationTime.Increment();
-            foreach (AllocatedCase ac in WorkQueues.OP.OPCases)
+            foreach (AllocatedCase ac in WorkQueues.OP.Enumeration)
             {
                 ac.Record.SetOPStart();
                 ac.Record.SetOPFinished();
@@ -222,7 +222,7 @@ namespace Simulator.Tests
         private static void _incrementTimeAndCirculateCases()
         {
             SimulationTime.Increment();
-            WorkQueues.Circulation.Enqueue();
+            WorkQueues.Circulation.PassCasesToMembers();
         }
 
 

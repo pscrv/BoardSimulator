@@ -47,7 +47,7 @@ namespace Simulator.Tests
             allocatedCase.EnqueueForWork();
             for (int i = 0; i < 7; i++)
             {
-                WorkQueues.Circulation.Enqueue();
+                WorkQueues.Circulation.PassCasesToMembers();
                 board.DoWork();
                 SimulationTime.Increment();
             }
