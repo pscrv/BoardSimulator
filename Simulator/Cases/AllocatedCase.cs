@@ -12,7 +12,6 @@ namespace Simulator
         internal readonly CaseBoard Board;
         internal readonly CaseRecord Record;
 
-
         internal CaseStage Stage
         {
             get
@@ -106,6 +105,12 @@ namespace Simulator
 
         internal void EnqueueForWork()
         {
+            if (_isFinished)
+            {
+                //TODO: decide what to do with finished cases. Possible nothing;
+                return;
+            }
+
             if (_isReadyForOP)
             {
                 _opQueue.Enqueue(this);
@@ -131,5 +136,8 @@ namespace Simulator
 
         private bool _isReadyForOP
         { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }
+
+        private bool _isFinished
+        { get { return Record.ChairDecision.Finish != null; } }
     }
 }

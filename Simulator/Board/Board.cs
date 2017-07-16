@@ -9,6 +9,20 @@ namespace Simulator
         private ChairType _chairType;
         private List<Member> _technicals;
         private List<Member> _legals;
+
+
+        private IEnumerable<Member> _members
+        {
+            get
+            {
+                yield return _chair;
+                foreach (Member tm in _technicals)
+                    yield return tm;
+                foreach (Member lm in _legals)
+                    yield return lm;                
+                
+            }
+        }
         #endregion
 
 
@@ -28,6 +42,7 @@ namespace Simulator
         internal void DoWork()
         {
             WorkQueues.Incoming.PassCasesToMembers();
+            WorkQueues.Circulation.PassCasesToMembers();
 
             foreach (Member member in _members)
             {
@@ -35,19 +50,5 @@ namespace Simulator
             }
         }
 
-
-
-        private IEnumerable<Member> _members
-        {
-            get
-            {
-                yield return _chair;
-                foreach (Member tm in _technicals)
-                    yield return tm;
-                foreach (Member lm in _legals)
-                    yield return lm;                
-                
-            }
-        }
     }
 }
