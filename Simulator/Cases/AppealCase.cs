@@ -18,7 +18,7 @@
         internal AppealCase()
         {
             ID = __instanceCounter;
-            CreationHour = SimulationTime.Current;
+            CreationHour = SimulationTime.CurrentHour;
 
             __instanceCounter++;
         }

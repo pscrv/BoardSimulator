@@ -6,7 +6,8 @@ namespace Simulator
     internal class AllocatedCase
     {
         #region fields and properties
-        private OPQueue _opQueue = WorkQueues.OP;
+        //private OPQueue _opQueue = WorkQueues.OP;
+        private OPSchedule _opSchedule = WorkQueues.OPSchedule;
 
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
@@ -102,6 +103,12 @@ namespace Simulator
         }
 
 
+        internal Member GetMemberByRole(WorkerRole role)
+        {
+            return Board.GetMemberByRole(role);
+        }
+
+
 
         internal void EnqueueForWork()
         {
@@ -113,7 +120,8 @@ namespace Simulator
 
             if (_isReadyForOP)
             {
-                _opQueue.Enqueue(this);
+                //_opQueue.Enqueue(this);
+                _opSchedule.Schedule(this);
                 Record.SetOPEnqueue();
                 return;
             }

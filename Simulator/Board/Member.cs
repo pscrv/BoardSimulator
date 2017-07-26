@@ -5,6 +5,22 @@ namespace Simulator
 {
     internal class Member
     {
+        #region static
+        internal static Member DefaultMember()
+        {
+            MemberParameters chair = new MemberParameters(16, 4, 8);
+            MemberParameters rapporteur = new MemberParameters(40, 8, 24);
+            MemberParameters other = new MemberParameters(8, 4, 8);
+
+            MemberParameterCollection parameters =
+                new MemberParameterCollection(chair, rapporteur, other);
+
+            return new Member(parameters);
+        }
+        #endregion
+
+
+
         #region fields and properties
         private int _workCounter = 0;
         private BoardQueues _boardQueues = WorkQueues.Members;
@@ -18,20 +34,26 @@ namespace Simulator
 
 
         #region construction
-        internal Member()
+        internal Member(MemberParameterCollection parameters)
         {
             _parameters = new Dictionary<WorkerRole, MemberParameters>();
-            _parameters[WorkerRole.Chair] = new MemberParameters();
-            _parameters[WorkerRole.Rapporteur] = new MemberParameters();
-            _parameters[WorkerRole.OtherMember] = new MemberParameters();
+            _parameters[WorkerRole.Chair] = parameters.ChairWorkParameters;
+            _parameters[WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters;
+            _parameters[WorkerRole.OtherMember] = parameters.OtherWorkParameters;
 
             _boardQueues.Register(this);
         }
         #endregion
 
 
+        internal MemberParameters GetParameters(WorkerRole role)
+        {
+            return _parameters[role];
+        }
+
         internal void Work()
         {
+
             if (_currentCase == null)
             {
                 _logWork(); // no work
@@ -52,6 +74,8 @@ namespace Simulator
                 _finishCase();
             }
         }
+
+
 
         private void _setWorkCounter()
         {
@@ -82,5 +106,11 @@ namespace Simulator
         {
             // TODO: log work
         }
+
+
+
     }
+
+
+
 }

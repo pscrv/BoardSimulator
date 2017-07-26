@@ -34,7 +34,7 @@ namespace Simulator
             return _queue.Dequeue();
         }
 
-        internal void PassCasesToMembers()
+        internal void EnqueueForNextStage()
         {
             foreach (AllocatedCase ac in Enumeration)
             {

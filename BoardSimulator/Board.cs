@@ -143,6 +143,8 @@ namespace BoardSimulator
         internal List<BoardWorkReport> ReportLogList { get { return _reportLog; } }
         #endregion
 
+
+
         #region constructors
         public Board()
         {
@@ -204,6 +206,7 @@ namespace BoardSimulator
             _memberDecisionHours = m.DecisionHours;
         }
         #endregion
+
 
         #region Work methods
         public void RunSimulation()

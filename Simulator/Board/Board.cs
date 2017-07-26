@@ -41,8 +41,8 @@ namespace Simulator
 
         internal void DoWork()
         {
-            WorkQueues.Incoming.PassCasesToMembers();
-            WorkQueues.Circulation.PassCasesToMembers();
+            WorkQueues.Incoming.EnqueueForNextStage();
+            WorkQueues.Circulation.EnqueueForNextStage();
 
             foreach (Member member in _members)
             {

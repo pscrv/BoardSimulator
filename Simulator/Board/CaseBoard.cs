@@ -54,7 +54,28 @@ namespace Simulator
 
 
 
+        internal Member GetMemberByRole(WorkerRole role)
+        {
+            switch (role)
+            {
+                case WorkerRole.Rapporteur:
+                    return Rapporteur.Member;
+                case WorkerRole.Chair:
+                    return Chair.Member;
+                case WorkerRole.OtherMember:
+                    return OtherMember.Member;
+                default:
+                    throw new InvalidOperationException("CaseBoard.GetMemberByRole: something very odd happened.");
+            }
+        }
 
+        internal bool IsInCaseBoard(Member member)
+        {
+            return
+                member == Chair.Member
+                || member == Rapporteur.Member
+                || member == OtherMember.Member;
+        }
 
         internal CaseWorker GetMemberAsCaseWorker(Member member)
         {
@@ -93,5 +114,24 @@ namespace Simulator
             nextWorker.Enqueue(allocatedCase);
             return nextWorker.Role;
         }
+
+        internal int GetLongestOPPreparationHours()
+        {
+            return Math.Max(
+                Chair.HoursOPPreparation,
+                Math.Max(
+                    Rapporteur.HoursOPPreparation,
+                    OtherMember.HoursOPPreparation));
+        }
+
+        internal int GetShortestOPPreparationHours()
+        {
+            return Math.Min(
+                Chair.HoursOPPreparation,
+                Math.Min(
+                    Rapporteur.HoursOPPreparation,
+                    OtherMember.HoursOPPreparation));
+        }
+
     }
 }

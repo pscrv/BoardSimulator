@@ -53,7 +53,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Board\BoardTests.cs" />
-    <Compile Include="Cases\AllocatedCaseTests.cs" />
+    <Compile Include="Cases\CaseLogging.cs" />
+    <Compile Include="OP\OPScheduleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

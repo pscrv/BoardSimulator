@@ -44,6 +44,9 @@
     <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="Board\MemberParameters.cs" />
+    <Compile Include="OP\OPSchedule.cs" />
+    <Compile Include="Board\BoardParameters.cs" />
+    <Compile Include="Simulation\Simulation.cs" />
     <Compile Include="Queues\BoardQueue.cs" />
     <Compile Include="Queues\CaseBuffer.cs" />
     <Compile Include="Queues\WorkQueues.cs" />
@@ -57,6 +60,8 @@
     <Compile Include="Cases\CaseRecord.cs" />
     <Compile Include="Queues\CaseQueuePair.cs" />
     <Compile Include="Queues\MemberWorkQueue.cs" />
+    <Compile Include="Time\Hour.cs" />
+    <Compile Include="Time\TimeParameters.cs" />
     <Compile Include="__Old\CaseBoard.cs" />
     <Compile Include="__Old\AppealCase.cs" />
     <Compile Include="__Old\AppealCaseState.cs" />
@@ -78,7 +83,6 @@
     <Compile Include="Work\WorkReport.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Dummies\" />
     <Folder Include="Engine\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

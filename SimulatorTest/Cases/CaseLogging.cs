@@ -14,6 +14,8 @@ namespace Simulator.Tests
         Member chair ;
         Member rapporteur;
         Member other;
+        MemberParameters parameters;
+        MemberParameterCollection parameterCollection;
         AppealCase appealCase;
         AllocatedCase allocatedCase;
         CaseBoard caseBoard; 
@@ -26,9 +28,11 @@ namespace Simulator.Tests
             SimulationTime.Reset();
             WorkQueues.ClearAllQueues();
 
-            chair = new Member();
-            rapporteur = new Member();
-            other = new Member();
+            parameters = new MemberParameters(2, 1, 2);
+            parameterCollection = new MemberParameterCollection(parameters, parameters, parameters);
+            chair =  new Member(parameterCollection);
+            rapporteur = new Member(parameterCollection);
+            other = new Member(parameterCollection);
             appealCase = new AppealCase();
 
             caseBoard = new CaseBoard(chair, rapporteur, other);
@@ -116,7 +120,8 @@ namespace Simulator.Tests
             Hour hour6 = new Hour(6);
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
             Assert.AreEqual(0, WorkQueues.Circulation.Count);
-            Assert.AreEqual(1, WorkQueues.OP.Count);
+            //Assert.AreEqual(1, WorkQueues.OP.Count);
+            Assert.AreEqual(3, WorkQueues.OPSchedule.Count);
         }
 
 
@@ -211,7 +216,8 @@ namespace Simulator.Tests
         private static void _incrementTimeAndSkipOP()
         {
             SimulationTime.Increment();
-            foreach (AllocatedCase ac in WorkQueues.OP.Enumeration)
+            //foreach (AllocatedCase ac in WorkQueues.OP.Enumeration)
+            foreach(AllocatedCase ac in WorkQueues.OPSchedule.ScheduledCases)
             {
                 ac.Record.SetOPStart();
                 ac.Record.SetOPFinished();
@@ -222,7 +228,7 @@ namespace Simulator.Tests
         private static void _incrementTimeAndCirculateCases()
         {
             SimulationTime.Increment();
-            WorkQueues.Circulation.PassCasesToMembers();
+            WorkQueues.Circulation.EnqueueForNextStage();
         }
 
 

@@ -23,7 +23,7 @@ namespace Simulator
             if (Enqueue != null)
                 throw new InvalidOperationException("Enqueue time can only be set once.");
         
-            Enqueue = SimulationTime.Current;
+            Enqueue = SimulationTime.CurrentHour;
         }
 
         internal void SetStart()
@@ -34,7 +34,7 @@ namespace Simulator
             if (Start != null)
                 throw new InvalidOperationException("Start can only be set once.");
             
-            Start = SimulationTime.Current;
+            Start = SimulationTime.CurrentHour;
         }
 
         internal void SetFinish()
@@ -46,7 +46,7 @@ namespace Simulator
             if (Finish != null)
                 throw new InvalidOperationException("Finish can only be set once.");
             
-            Finish = SimulationTime.Current;        
+            Finish = SimulationTime.CurrentHour;        
         }
     }
 }

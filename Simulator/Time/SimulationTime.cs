@@ -1,49 +1,94 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Simulator
 {
     internal static class SimulationTime
     {
-        internal static Hour Current { get; private set; }
+        #region fields and properties
+        internal static Hour CurrentHour { get; private set; }
+        internal static int CurrentDay { get { return CurrentHour.Value / TimeParameters.HoursPerDay; } }
+        internal static int CurrentWeek { get { return CurrentDay / TimeParameters.DaysPerWeek; } }
+        internal static int CurrentYear { get { return CurrentWeek / TimeParameters.WeeksPerYear; } }
+        #endregion
 
-        static SimulationTime() { Current = new Hour(0); }
+
+        #region construction
+        static SimulationTime() { CurrentHour = new Hour(0); }
+        #endregion
 
 
-        internal static void Increment() { Current = Current.Next(); }
 
-        internal static void Reset() { Current = new Hour(0); }
+
+
+
+
+        internal static void Increment() { CurrentHour = CurrentHour.Next(); }
+
+        internal static void Reset() { CurrentHour = new Hour(0); }
 
         internal static Hour Future(int increment)
         {
-            return Current.Add(increment);
+            return CurrentHour.AddHours(increment);
         }
+
     }
 
 
-    internal class SimulationTimeSpan
+    internal class SimulationTimeSpan : IEnumerable<Hour>
     {
-        #region private fields
-        private Hour _start;
-        private Hour _end;
+        #region fields and properties
+        internal readonly Hour Start;
+        internal readonly Hour End;
+        
+        internal bool ConatainsCurrent { get { return Contains (SimulationTime.CurrentHour); } }
+
+        internal int DurationHours
+        {
+            get
+            {
+                if (End == null)
+                    return int.MaxValue;
+                return End.Value - Start.Value;
+            }
+        }
         #endregion
 
 
         #region constructors
         internal SimulationTimeSpan(Hour start, Hour end)
         {
-            _start = start;
-            _end = end;
+            if (start == null)
+                throw new InvalidOperationException("Cannot consctruct SimulationTimeSpan with start time == null.");
+
+            Start = start;
+            End = end;
         }
         #endregion
 
 
-        #region internal properties
-        internal bool ConatainsCurrent
+
+        internal bool Contains(Hour h)
         {
-            get
+            return h >= Start && h <= End;
+        }
+
+
+        #region IEnumerable
+        public IEnumerator<Hour> GetEnumerator()
+        {
+            Hour current = Start;
+            while (current <= End)
             {
-                return _start.Value <= SimulationTime.Current.Value && SimulationTime.Current.Value <= _end.Value;
+                yield return current;
+                current = current.Next();
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
         #endregion
 
@@ -51,67 +96,10 @@ namespace Simulator
         #region overrides
         public override string ToString()
         {
-            return string.Format("{0} --- {1}", _start, _end);
+            return string.Format("{0} --- {1}", Start, End);
         }
         #endregion
+
     }
-
-
-    internal class Hour : IEquatable<Hour>
-    {
-        internal readonly int Value;
-
-        internal Hour(int h)
-        {
-            Value = h;
-        }
-
-        internal Hour Next()
-        {
-            return new Hour(Value + 1);
-        }
-
-
-        internal Hour Add(int offset)
-        {
-            return new Hour(Value + offset);
-        }
-
-
-        internal Hour Subtract(int offset)
-        {
-            return new Hour(Value - offset);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Hour <{0}>", Value);
-        }
-
-
-        #region IEquatable
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj == null)
-                return false;
-            return this.Equals(obj as Hour);
-            
-        }
-
-
-        public bool Equals(Hour other)
-        {
-            if (other == null)
-                return false;
-            return this.Value == other.Value;
-        }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
-        #endregion
-    }
+    
 }

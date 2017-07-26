@@ -58,7 +58,7 @@ namespace Simulator
             if (Allocation != null)
                 throw new InvalidOperationException("Allocation can only be set once.");
             
-            Allocation = SimulationTime.Current;
+            Allocation = SimulationTime.CurrentHour;
         }
        
 
