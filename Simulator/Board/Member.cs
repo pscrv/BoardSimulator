@@ -6,6 +6,8 @@ namespace Simulator
     internal class Member
     {
         #region static
+        private static int __instanceCounter = 0;
+
         internal static Member DefaultMember()
         {
             MemberParameters chair = new MemberParameters(16, 4, 8);
@@ -21,21 +23,26 @@ namespace Simulator
 
 
 
-        #region fields and properties
+        #region fields and properties        
         private int _workCounter = 0;
-        private BoardQueues _boardQueues = WorkQueues.Members;
+        private BoardQueue _boardQueues = WorkQueues.Members;
         private CirculationQueue _circulationQueue = WorkQueues.Circulation;
         private Dictionary<WorkerRole, MemberParameters> _parameters;
 
         private AllocatedCase _currentCase { get { return _boardQueues.Peek(this); } }
         private WorkerRole _currentRole { get { return _currentCase.Board.GetRole(this); } }
         private CaseWorker _thisAsCaseWorker { get { return _currentCase.Board.GetMemberAsCaseWorker(this); } }
+
+        internal readonly int ID;
         #endregion
 
 
         #region construction
         internal Member(MemberParameterCollection parameters)
         {
+            ID = __instanceCounter;
+            __instanceCounter++;
+
             _parameters = new Dictionary<WorkerRole, MemberParameters>();
             _parameters[WorkerRole.Chair] = parameters.ChairWorkParameters;
             _parameters[WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters;
@@ -51,7 +58,8 @@ namespace Simulator
             return _parameters[role];
         }
 
-        internal void Work()
+
+        internal void Work(Hour currentHour)
         {
 
             if (_currentCase == null)
@@ -62,7 +70,7 @@ namespace Simulator
 
             if (_workCounter == 0)
             {
-                _currentCase.RecordStartOfWork(_thisAsCaseWorker);
+                _currentCase.RecordStartOfWork(_thisAsCaseWorker, currentHour);
                 _setWorkCounter();
             }
 
@@ -71,7 +79,7 @@ namespace Simulator
 
             if (_workCounter == 0)
             {
-                _finishCase();
+                _finishCase(currentHour);
             }
         }
 
@@ -95,10 +103,13 @@ namespace Simulator
             }
         }
 
-        private void _finishCase()
+        private void _finishCase(Hour currentHour)
         {
-            _currentCase.RecordFinishedWork(_thisAsCaseWorker);
-            _circulationQueue.Enqueue(_currentCase);
+            _currentCase.RecordFinishedWork(_thisAsCaseWorker, currentHour);
+            if (_currentCase.Stage != CaseStage.Finished)
+            {
+                _circulationQueue.Enqueue(_currentCase);
+            }
             _boardQueues.Dequeue(this);
         }
 
@@ -108,6 +119,15 @@ namespace Simulator
         }
 
 
+
+
+
+        #region overrides
+        public override string ToString()
+        {
+            return string.Format("Member <{0}>", ID);
+        }
+        #endregion
 
     }
 

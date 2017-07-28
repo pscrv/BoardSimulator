@@ -13,7 +13,7 @@ namespace Simulator
 
 
         #region construction
-        internal Simulation(int lengthInHours, BoardParameters boardParameters)
+        internal Simulation(int lengthInHours, BoardParameters boardParameters, IEnumerable<AppealCase> initialCases)
         {
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours));
             _log = new SimulationLog();
@@ -33,25 +33,21 @@ namespace Simulator
             }
 
             _board = new Board(chair, boardParameters.ChairType, technicals, legals);
+            foreach (AppealCase ac in initialCases)
+            {
+                _board.ProcessNewCase(ac, _timeSpan.Start);
+            }
         }
         #endregion
 
 
         internal void Run()
         {
-            _setup();
-
             foreach (Hour hour in _timeSpan)
             {
-                _board.DoWork();
+                _board.DoWork(hour);
             }
         }
-
-
-
-        private void _setup()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

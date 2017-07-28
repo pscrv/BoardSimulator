@@ -103,25 +103,46 @@ namespace Simulator
         }
 
 
-        internal void EnqueueFinishedCasesForDecision()
+        internal void EnqueueFinishedCasesForDecision(Hour currentHour)
         {
+            HashSet<AllocatedCase> startedCases = new HashSet<AllocatedCase>();
             HashSet<AllocatedCase> finishedCases = new HashSet<AllocatedCase>();
+            List<Tuple<Member, Hour>> toRemove = new List<Tuple<Member, Hour>>();
 
             foreach (Member member in _schedule.Keys)
             {
                 foreach (Hour hour in _schedule[member].Keys)
                 {
-                    if (hour.AddHours(TimeParameters.OPDurationInHours) >= SimulationTime.CurrentHour)
+                    if (hour == currentHour)
+                    {
+                        startedCases.Add(_schedule[member][hour]);
+                    }
+
+                    if (hour.AddHours(TimeParameters.OPDurationInHours) < currentHour)
                     {
                         finishedCases.Add(_schedule[member][hour]);
+                        toRemove.Add(new Tuple<Member, Hour>( member, hour ));
                     }
                 }
+
             }
 
-            foreach (AllocatedCase finishedCase in finishedCases)
+            foreach (AllocatedCase ac in startedCases)
             {
-                finishedCase.EnqueueForWork();
+                ac.Record.SetOPStart(currentHour);
             }
+
+            foreach (AllocatedCase ac in finishedCases)
+            {
+                ac.Record.SetOPFinished(currentHour);
+                ac.EnqueueForWork(currentHour);
+            }
+
+            foreach (Tuple<Member, Hour> item in toRemove)
+            {
+                _schedule[item.Item1].Remove(item.Item2);
+            }
+
         }
 
 

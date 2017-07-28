@@ -5,10 +5,9 @@ namespace Simulator
 {
     internal static class WorkQueues
     {
-        internal static BoardQueues Members = new BoardQueues();
+        internal static BoardQueue Members = new BoardQueue();
         internal static IncomingCaseQueue Incoming = new IncomingCaseQueue();
         internal static CirculationQueue Circulation = new CirculationQueue();
-        //internal static OPQueue OP = new OPQueue();
  
         internal static OPSchedule OPSchedule = new OPSchedule();
 
@@ -17,7 +16,6 @@ namespace Simulator
         {
             Members.ClearAll();
             Circulation.Clear();
-            //OP.Clear();
             OPSchedule = new OPSchedule();
         }
     }

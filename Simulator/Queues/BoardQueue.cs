@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal class BoardQueues
+    internal class BoardQueue
     {
         private Dictionary<Member, MemberWorkQueue> _memberQueues = new Dictionary<Member, MemberWorkQueue>();
 

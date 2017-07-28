@@ -53,58 +53,58 @@ namespace Simulator
         #endregion
 
 
-        internal void SetAllocation()
+        internal void SetAllocation(Hour currentHour)
         {
             if (Allocation != null)
                 throw new InvalidOperationException("Allocation can only be set once.");
             
-            Allocation = SimulationTime.CurrentHour;
+            Allocation = currentHour;
         }
        
 
-        internal void SetSummonsEnqueue(WorkerRole role)
+        internal void SetSummonsEnqueue(WorkerRole role, Hour currentHour)
         {
-            _summonsRecords[role].SetEnqueue();
+            _summonsRecords[role].SetEnqueue(currentHour);
         }
 
-        internal void SetSummonsStart(WorkerRole role)
+        internal void SetSummonsStart(WorkerRole role, Hour currentHour)
         {
-            _summonsRecords[role].SetStart();
+            _summonsRecords[role].SetStart(currentHour);
         }
 
-        internal void SetSummonsFinish(WorkerRole role)
+        internal void SetSummonsFinish(WorkerRole role, Hour currentHour)
         {
-            _summonsRecords[role].SetFinish();
+            _summonsRecords[role].SetFinish(currentHour);
         }
 
-        internal void SetOPEnqueue()
+        internal void SetOPEnqueue(Hour currentHour)
         {
-            OP.SetEnqueue();
+            OP.SetEnqueue(currentHour);
         }
 
-        internal void SetOPStart()
+        internal void SetOPStart(Hour currentHour)
         {
-            OP.SetStart();
+            OP.SetStart(currentHour);
         }
 
-        internal void SetOPFinished()
+        internal void SetOPFinished(Hour currentHour)
         {
-            OP.SetFinish();
+            OP.SetFinish(currentHour);
         }
 
-        internal void SetDecisionEnqueue(WorkerRole role)
+        internal void SetDecisionEnqueue(WorkerRole role, Hour currentHour)
         {
-            _decisionRecords[role].SetEnqueue();
+            _decisionRecords[role].SetEnqueue(currentHour);
         }
 
-        internal void SetDecisionStart(WorkerRole role)
+        internal void SetDecisionStart(WorkerRole role, Hour currentHour)
         {
-            _decisionRecords[role].SetStart();
+            _decisionRecords[role].SetStart(currentHour);
         }
 
-        internal void SetDecisionFinish(WorkerRole role)
+        internal void SetDecisionFinish(WorkerRole role, Hour currentHour)
         {
-            _decisionRecords[role].SetFinish();
+            _decisionRecords[role].SetFinish(currentHour);
         }
     }
 }

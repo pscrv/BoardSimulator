@@ -44,8 +44,8 @@ namespace Simulator.Tests
             board = new Board(chair, ChairType.Technical, technicals, legals);
             caseBoard1 = new CaseBoard(chair, technicals[0], legals[0]);
             caseBoard2 = new CaseBoard(chair, technicals[0], legals[0]);
-            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1);
-            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2);
+            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, SimulationTime.CurrentHour);
+            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, SimulationTime.CurrentHour);
         }
 
 
@@ -58,12 +58,13 @@ namespace Simulator.Tests
             {
                 if (allocatedCase1.Stage == CaseStage.OP && allocatedCase1.Record.OP.Enqueue != null)
                 {
-                    allocatedCase1.Record.SetOPStart();
-                    allocatedCase1.Record.SetOPFinished();
+                    allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
+                    allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
                     WorkQueues.Circulation.Enqueue(allocatedCase1);
                 }
 
-                board.DoWork();
+                //board.DoWork();
+                board.DoWork(SimulationTime.CurrentHour);
                 SimulationTime.Increment();
             }
 
@@ -82,19 +83,20 @@ namespace Simulator.Tests
             {
                 if (allocatedCase1.Stage == CaseStage.OP && allocatedCase1.Record.OP.Enqueue != null)
                 {
-                    allocatedCase1.Record.SetOPStart();
-                    allocatedCase1.Record.SetOPFinished();
+                    allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
+                    allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
                     WorkQueues.Circulation.Enqueue(allocatedCase1);
                 }
 
                 if (allocatedCase2.Stage == CaseStage.OP && allocatedCase2.Record.OP.Enqueue != null)
                 {
-                    allocatedCase2.Record.SetOPStart();
-                    allocatedCase2.Record.SetOPFinished();
+                    allocatedCase2.Record.SetOPStart(SimulationTime.CurrentHour);
+                    allocatedCase2.Record.SetOPFinished(SimulationTime.CurrentHour);
                     WorkQueues.Circulation.Enqueue(allocatedCase2);
                 }
 
-                board.DoWork();
+                //board.DoWork();
+                board.DoWork(SimulationTime.CurrentHour);
                 SimulationTime.Increment();
             }
 

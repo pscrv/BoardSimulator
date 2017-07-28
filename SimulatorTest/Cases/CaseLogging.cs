@@ -36,7 +36,7 @@ namespace Simulator.Tests
             appealCase = new AppealCase();
 
             caseBoard = new CaseBoard(chair, rapporteur, other);
-            allocatedCase = new AllocatedCase(appealCase, caseBoard);
+            allocatedCase = new AllocatedCase(appealCase, caseBoard, SimulationTime.CurrentHour);
         }
 
 
@@ -44,7 +44,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void EnqueueSummons()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
 
             Hour hour = new Hour(0);
             Assert.AreEqual(hour, allocatedCase.Record.Creation);
@@ -57,7 +57,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void RapporteurWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
 
             Hour hour0 = new Hour(0);
@@ -72,7 +72,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void OtherMemberWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -90,7 +90,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void ChairWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -109,7 +109,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void EnequeueOP()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -129,7 +129,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void EnequeueDecision()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -146,7 +146,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void RapporteurDecisionWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -166,7 +166,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void OtherMemberDecisionWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -189,7 +189,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void ChairDecisionWork()
         {
-            allocatedCase.EnqueueForWork();
+            allocatedCase.EnqueueForWork(SimulationTime.CurrentHour);
             _doRapporteurWork();
             _incrementTimeAndCirculateCases();
             _doOtherMemberWork();
@@ -219,38 +219,38 @@ namespace Simulator.Tests
             //foreach (AllocatedCase ac in WorkQueues.OP.Enumeration)
             foreach(AllocatedCase ac in WorkQueues.OPSchedule.ScheduledCases)
             {
-                ac.Record.SetOPStart();
-                ac.Record.SetOPFinished();
-                ac.EnqueueForWork();
+                ac.Record.SetOPStart(SimulationTime.CurrentHour);
+                ac.Record.SetOPFinished(SimulationTime.CurrentHour);
+                ac.EnqueueForWork(SimulationTime.CurrentHour);
             }
         }
 
         private static void _incrementTimeAndCirculateCases()
         {
             SimulationTime.Increment();
-            WorkQueues.Circulation.EnqueueForNextStage();
+            WorkQueues.Circulation.EnqueueForNextStage(SimulationTime.CurrentHour);
         }
 
 
         private void _doRapporteurWork()
         {
-            allocatedCase.Board.Rapporteur.Member.Work();
+            allocatedCase.Board.Rapporteur.Member.Work(SimulationTime.CurrentHour);
             SimulationTime.Increment();
-            allocatedCase.Board.Rapporteur.Member.Work();
+            allocatedCase.Board.Rapporteur.Member.Work(SimulationTime.CurrentHour);
         }
 
         private void _doOtherMemberWork()
         {
-            allocatedCase.Board.OtherMember.Member.Work();
+            allocatedCase.Board.OtherMember.Member.Work(SimulationTime.CurrentHour);
             SimulationTime.Increment();
-            allocatedCase.Board.OtherMember.Member.Work();
+            allocatedCase.Board.OtherMember.Member.Work(SimulationTime.CurrentHour);
         }
 
         private void _doChairWork()
         {
-            allocatedCase.Board.Chair.Member.Work();
+            allocatedCase.Board.Chair.Member.Work(SimulationTime.CurrentHour);
             SimulationTime.Increment();
-            allocatedCase.Board.Chair.Member.Work();
+            allocatedCase.Board.Chair.Member.Work(SimulationTime.CurrentHour);
         }
     }
 }

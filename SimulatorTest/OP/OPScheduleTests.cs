@@ -31,7 +31,7 @@ namespace Simulator.Tests
             board = new Board(chair, ChairType.Technical, new List<Member> { rapporteur }, new List<Member> { other });
             caseboard = new CaseBoard(chair, rapporteur, other);
             appealCase = new AppealCase();
-            allocatedCase = new AllocatedCase(appealCase, caseboard);
+            allocatedCase = new AllocatedCase(appealCase, caseboard, SimulationTime.CurrentHour);
             startHour = new Hour(100);
             schedule = new OPSchedule();
 
@@ -109,7 +109,7 @@ namespace Simulator.Tests
         {
             Member rapporteur2 = Member.DefaultMember();
             CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other);
-            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2);
+            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, SimulationTime.CurrentHour);
 
 
             schedule.Schedule(allocatedCase);

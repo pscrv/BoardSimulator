@@ -33,12 +33,12 @@ namespace Simulator
         {
             return _queue.Dequeue();
         }
-
-        internal void EnqueueForNextStage()
+        
+        internal void EnqueueForNextStage(Hour hour)
         {
             foreach (AllocatedCase ac in Enumeration)
             {
-                ac.EnqueueForWork();
+                ac.EnqueueForWork(hour);
             }
         }
 

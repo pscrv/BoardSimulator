@@ -6,7 +6,6 @@ namespace Simulator
     internal class AllocatedCase
     {
         #region fields and properties
-        //private OPQueue _opQueue = WorkQueues.OP;
         private OPSchedule _opSchedule = WorkQueues.OPSchedule;
 
         internal readonly AppealCase Case;
@@ -56,27 +55,27 @@ namespace Simulator
 
 
         #region construction
-        internal AllocatedCase(AppealCase ac, CaseBoard bd)
+        internal AllocatedCase(AppealCase ac, CaseBoard bd, Hour currentHour)
         {
             Case = ac;
             Board = bd;
 
             Record = new CaseRecord(ac);
-            Record.SetAllocation();            
+            Record.SetAllocation(currentHour);            
         }
         #endregion
 
 
-        internal void RecordStartOfWork(CaseWorker caseWorker)
+        internal void RecordStartOfWork(CaseWorker caseWorker, Hour currentHour)
         {
             WorkerRole role = caseWorker.Role;
             switch (WorkType)
             {
                 case WorkType.Summons:
-                    Record.SetSummonsStart(role);
+                    Record.SetSummonsStart(role, currentHour);
                     break;
                 case WorkType.Decision:
-                    Record.SetDecisionStart(role);
+                    Record.SetDecisionStart(role, currentHour);
                     break;
 
                 case WorkType.None:
@@ -85,16 +84,16 @@ namespace Simulator
         }
 
 
-        internal void RecordFinishedWork(CaseWorker caseWorker)
+        internal void RecordFinishedWork(CaseWorker caseWorker, Hour currentHour)
         {
             WorkerRole role = caseWorker.Role;
             switch (WorkType)
             {
                 case WorkType.Summons:
-                    Record.SetSummonsFinish(role);
+                    Record.SetSummonsFinish(role, currentHour);
                     break;
                 case WorkType.Decision:
-                    Record.SetDecisionFinish(role);
+                    Record.SetDecisionFinish(role, currentHour);
                     break;
 
                 case WorkType.None:
@@ -110,7 +109,7 @@ namespace Simulator
 
 
 
-        internal void EnqueueForWork()
+        internal void EnqueueForWork(Hour currentHour)
         {
             if (_isFinished)
             {
@@ -120,9 +119,8 @@ namespace Simulator
 
             if (_isReadyForOP)
             {
-                //_opQueue.Enqueue(this);
                 _opSchedule.Schedule(this);
-                Record.SetOPEnqueue();
+                Record.SetOPEnqueue(currentHour);
                 return;
             }
 
@@ -131,10 +129,10 @@ namespace Simulator
             switch (WorkType)
             {
                 case WorkType.Summons:
-                    Record.SetSummonsEnqueue(role);
+                    Record.SetSummonsEnqueue(role, currentHour);
                     break;
                 case WorkType.Decision:
-                    Record.SetDecisionEnqueue(role);
+                    Record.SetDecisionEnqueue(role, currentHour);
                     break;
                 case WorkType.None:
                     throw new InvalidOperationException("AllocatedCase.EnqueueForWork: Case is not in Summons or Decision stage.");

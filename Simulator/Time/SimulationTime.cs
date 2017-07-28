@@ -17,11 +17,7 @@ namespace Simulator
         #region construction
         static SimulationTime() { CurrentHour = new Hour(0); }
         #endregion
-
-
-
-
-
+        
 
 
         internal static void Increment() { CurrentHour = CurrentHour.Next(); }
@@ -42,8 +38,6 @@ namespace Simulator
         internal readonly Hour Start;
         internal readonly Hour End;
         
-        internal bool ConatainsCurrent { get { return Contains (SimulationTime.CurrentHour); } }
-
         internal int DurationHours
         {
             get

@@ -91,7 +91,7 @@ namespace Simulator
         {
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj == null)
+            if (ReferenceEquals(obj, null))
                 return false;
             return this.Equals(obj as Hour);
 
@@ -99,7 +99,7 @@ namespace Simulator
 
         public bool Equals(Hour other)
         {
-            if (other == null)
+            if (ReferenceEquals(other, null))
                 return false;
             return this.Value == other.Value;
         }
@@ -141,6 +141,18 @@ namespace Simulator
         public static bool operator >= (Hour a, Hour b)
         {
             return a.Value >= b.Value;
+        }
+
+        public static bool operator == (Hour a, Hour b)
+        {
+            if (ReferenceEquals(a, null))
+                return ReferenceEquals(b, null);
+            return a.Equals(b);             
+        }
+
+        public static bool operator != (Hour a, Hour b)
+        {
+            return ! (a == b);
         }
 
         #endregion
