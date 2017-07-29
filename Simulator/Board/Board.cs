@@ -82,7 +82,7 @@ namespace Simulator
         internal void ProcessNewCase(AppealCase appealCase, Hour currentHour)
         {
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            _incoming.Enqueue(allocatedCase);
+            _incoming.Enqueue(currentHour, allocatedCase);
         }
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)

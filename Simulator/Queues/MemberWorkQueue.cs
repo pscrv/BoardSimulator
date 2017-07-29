@@ -29,9 +29,9 @@ namespace Simulator
         }
 
 
-        internal void Enqueue(AllocatedCase ac, WorkerRole role)
+        internal void Enqueue(Hour currentHour, AllocatedCase ac, WorkerRole role)
         {
-            _queues[role].Enqueue(ac);
+            _queues[role].Enqueue(currentHour, ac);
         }
 
 

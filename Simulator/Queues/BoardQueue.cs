@@ -19,10 +19,10 @@ namespace Simulator
 
 
 
-        internal void EnqueueForMember(Member member, WorkerRole role, AllocatedCase allocatedCase)
+        internal void EnqueueForMember(Hour currentHour, Member member, WorkerRole role, AllocatedCase allocatedCase)
         {
             _checkMemberIsRegistered(member);
-            _memberQueues[member].Enqueue(allocatedCase, role);
+            _memberQueues[member].Enqueue(currentHour, allocatedCase, role);
         }
 
         internal AllocatedCase Dequeue(Member member)

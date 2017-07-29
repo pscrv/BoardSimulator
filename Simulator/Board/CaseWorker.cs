@@ -27,9 +27,9 @@ namespace Simulator
         #endregion
 
 
-        internal void Enqueue(AllocatedCase allocatedCase)
+        internal void Enqueue(Hour currentHour, AllocatedCase allocatedCase)
         {
-            _boardQueues.EnqueueForMember(Member, Role, allocatedCase);
+            _boardQueues.EnqueueForMember(currentHour, Member, Role, allocatedCase);
         }        
     }
 }

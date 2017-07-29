@@ -37,8 +37,6 @@ namespace Simulator.Tests
         [TestInitialize]
         public void Initialise()
         {
-            SimulationTime.Reset();
-
             boardQueues = new BoardQueue();
             incoming = new IncomingCaseQueue();
             circulation = new CirculationQueue();
@@ -53,8 +51,8 @@ namespace Simulator.Tests
             board = new Board(chair, ChairType.Technical, technicals, legals, boardQueues, incoming, circulation, opSchedule);
             caseBoard1 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
             caseBoard2 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
-            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, SimulationTime.CurrentHour, opSchedule);
-            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, SimulationTime.CurrentHour, opSchedule);
+            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, new Hour(0), opSchedule);
+            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, new Hour(0), opSchedule);
         }
 
 
@@ -62,19 +60,20 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Work_oneCase()
         {
-            incoming.Enqueue(allocatedCase1);
-            while (allocatedCase1.Record.ChairDecision.Finish == null)
+            incoming.Enqueue(new Hour(0), allocatedCase1);
+            
+            foreach (Hour hour in new SimulationTimeSpan(new Hour(0), new Hour(1000)))
             {
                 if (allocatedCase1.Stage == CaseStage.OP && allocatedCase1.Record.OP.Enqueue != null)
                 {
-                    allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
-                    allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    circulation.Enqueue(allocatedCase1);
+                    allocatedCase1.Record.SetOPStart(hour);
+                    allocatedCase1.Record.SetOPFinished(hour);
+                    circulation.Enqueue(hour, allocatedCase1);
                 }
-
-                //board.DoWork();
-                board.DoWork(SimulationTime.CurrentHour);
-                SimulationTime.Increment();
+                
+                board.DoWork(hour);
+                if (allocatedCase1.Stage == CaseStage.Finished)
+                    break;
             }
 
             _case1Assertions();
@@ -85,28 +84,29 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Work_twoCases()
         {
-            incoming.Enqueue(allocatedCase1);
-            incoming.Enqueue(allocatedCase2);
+            Hour zeroHour = new Hour(0);
+            incoming.Enqueue(zeroHour, allocatedCase1);
+            incoming.Enqueue(zeroHour, allocatedCase2);
 
-            while (allocatedCase2.Record.ChairDecision.Finish == null)
+            foreach(Hour hour in new SimulationTimeSpan(new Hour(0), new Hour(1000)))
             {
                 if (allocatedCase1.Stage == CaseStage.OP && allocatedCase1.Record.OP.Enqueue != null)
                 {
-                    allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
-                    allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    circulation.Enqueue(allocatedCase1);
+                    allocatedCase1.Record.SetOPStart(hour);
+                    allocatedCase1.Record.SetOPFinished(hour);
+                    circulation.Enqueue(hour, allocatedCase1);
                 }
 
                 if (allocatedCase2.Stage == CaseStage.OP && allocatedCase2.Record.OP.Enqueue != null)
                 {
-                    allocatedCase2.Record.SetOPStart(SimulationTime.CurrentHour);
-                    allocatedCase2.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    circulation.Enqueue(allocatedCase2);
+                    allocatedCase2.Record.SetOPStart(hour);
+                    allocatedCase2.Record.SetOPFinished(hour);
+                    circulation.Enqueue(hour, allocatedCase2);
                 }
 
-                //board.DoWork();
-                board.DoWork(SimulationTime.CurrentHour);
-                SimulationTime.Increment();
+                board.DoWork(hour);
+                if (allocatedCase2.Stage == CaseStage.Finished)
+                    break;
             }
 
             _case1Assertions();

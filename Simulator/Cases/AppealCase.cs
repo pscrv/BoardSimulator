@@ -15,13 +15,18 @@
 
 
         #region constructors
-        internal AppealCase()
+        internal AppealCase(Hour creation)
         {
             ID = __instanceCounter;
-            CreationHour = SimulationTime.CurrentHour;
+            CreationHour = creation;
 
             __instanceCounter++;
         }
+
+        internal AppealCase()
+            : this(new Hour(0))
+        { }
+
         #endregion
 
         

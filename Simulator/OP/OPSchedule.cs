@@ -81,19 +81,19 @@ namespace Simulator
         }
 
 
-        internal bool HasOPWork(CaseWorker worker)
+        internal bool HasOPWork(Hour hour, CaseWorker worker)
         {
-            return _hasOPWorkAtHour(SimulationTime.CurrentHour, worker);
+            return _hasOPWorkAtHour(hour, worker);
         }
         
 
-        internal void Schedule(AllocatedCase allocateCase)
+        internal void Schedule(Hour currentHour, AllocatedCase allocateCase)
         {
             _setupForMemberIfNeeded(allocateCase.Board);
 
 
             Hour earliestPossibleHour =
-                SimulationTime.CurrentHour.AddMonths(TimeParameters.OPMinimumMonthNotice);
+                currentHour.AddMonths(TimeParameters.OPMinimumMonthNotice);
             Hour iterationHour = earliestPossibleHour;
 
             while (true)
@@ -142,7 +142,7 @@ namespace Simulator
             foreach (AllocatedCase ac in finishedCases)
             {
                 ac.Record.SetOPFinished(currentHour);
-                _circulation.Enqueue(ac);
+                _circulation.Enqueue(currentHour, ac);
             }
 
             foreach (Tuple<Member, Hour> item in toRemove)

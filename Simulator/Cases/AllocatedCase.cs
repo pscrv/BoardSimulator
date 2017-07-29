@@ -121,13 +121,13 @@ namespace Simulator
 
             if (_isReadyForOP)
             {
-                _opSchedule.Schedule(this);
+                _opSchedule.Schedule(currentHour, this);
                 Record.SetOPEnqueue(currentHour);
                 return;
             }
 
 
-            WorkerRole role = Board.EnqueueForNextWorker(this);
+            WorkerRole role = Board.EnqueueForNextWorker(currentHour, this);
             switch (WorkType)
             {
                 case WorkType.Summons:

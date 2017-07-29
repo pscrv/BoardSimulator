@@ -99,7 +99,7 @@ namespace Simulator
             return WorkerRole.None;
         }
 
-        internal WorkerRole EnqueueForNextWorker(AllocatedCase allocatedCase)
+        internal WorkerRole EnqueueForNextWorker(Hour currentHour, AllocatedCase allocatedCase)
         {
             CaseWorker nextWorker = null;
 
@@ -111,7 +111,7 @@ namespace Simulator
             if (nextWorker == null)
                 return WorkerRole.None;
 
-            nextWorker.Enqueue(allocatedCase);
+            nextWorker.Enqueue(currentHour, allocatedCase);
             return nextWorker.Role;
         }
 

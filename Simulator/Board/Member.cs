@@ -111,7 +111,7 @@ namespace Simulator
             _currentCase.RecordFinishedWork(_thisAsCaseWorker, currentHour);
             if (_currentCase.Stage != CaseStage.Finished)
             {
-                _circulationQueue.Enqueue(_currentCase);
+                _circulationQueue.Enqueue(currentHour, _currentCase);
             }
             _boardQueues.Dequeue(this);
         }

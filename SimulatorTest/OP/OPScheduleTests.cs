@@ -19,12 +19,11 @@ namespace Simulator.Tests
         private CaseBoard caseboard;
         private AppealCase appealCase;
         private AllocatedCase allocatedCase;
-
-        private Hour startHour;
+        
         private CirculationQueue circulation;
         private OPSchedule schedule;
         private BoardQueue boardQueues;
-
+        
 
         [TestInitialize]
         public void Initialise()
@@ -48,28 +47,8 @@ namespace Simulator.Tests
 
             caseboard = new CaseBoard(chair, rapporteur, other, boardQueues);
             appealCase = new AppealCase();
-            allocatedCase = new AllocatedCase(appealCase, caseboard, SimulationTime.CurrentHour, schedule);
-
-            startHour = new Hour(100);
-
-            SimulationTime.Reset();
-        }
-
-
-        [TestMethod()]
-        public void AddTest()
-        {
-            schedule.Add(startHour, allocatedCase);
-
-            try
-            {
-                schedule.Add(startHour, allocatedCase);
-                Assert.Fail("Adding a second OP for the same hour failed to throw an exception.");
-            }
-            catch (Exception)
-            { }
-
-            Assert.AreEqual(3, schedule.Count);
+            allocatedCase = new AllocatedCase(appealCase, caseboard, new Hour(0), schedule);
+            
         }
 
 
@@ -77,36 +56,41 @@ namespace Simulator.Tests
         [TestMethod()]
         public void HasOPWorkTest()
         {
-            schedule.Add(startHour, allocatedCase);
-            Assert.IsFalse(schedule.HasOPWork(allocatedCase.Board.Chair));
+            Hour hour;
+            Hour scheduleHour = new Hour(100);
+            schedule.Add(scheduleHour, allocatedCase);
 
-            for (int i = 0; i < 95; i++)  // default chair has 4 hours of preparation
+            for (int i = 0; i < 96; i++)  // default chair has 4 hours of preparation
             {
-                SimulationTime.Increment();
+                hour = new Hour(i);
                 Assert.IsFalse(
-                    schedule.HasOPWork(allocatedCase.Board.Chair),  
-                    "Failed at " + SimulationTime.CurrentHour);
+                    schedule.HasOPWork(hour, allocatedCase.Board.Chair),  
+                    "Failed at " + hour);
             }
 
-            
-            for (int i = 0; i < 4 + TimeParameters.OPDurationInHours; i++)  // four hours of preparation, 
+            int preparationHours = allocatedCase.Board.Chair.HoursOPPreparation;
+            for (int i = scheduleHour.Value - preparationHours; 
+                i < scheduleHour.Value + TimeParameters.OPDurationInHours; 
+                i++)  
             {
-                SimulationTime.Increment();
-                Assert.IsTrue(schedule.HasOPWork(allocatedCase.Board.Chair),
-                    "Failed at " + SimulationTime.CurrentHour);
+                hour = new Hour(i);
+                Assert.IsTrue(schedule.HasOPWork(hour, allocatedCase.Board.Chair),
+                    "Failed at " + hour);
             }
 
-            SimulationTime.Increment();
-            Assert.IsFalse(schedule.HasOPWork(allocatedCase.Board.Chair),
-                    "Failed at " + SimulationTime.CurrentHour);
+            hour = new Hour(scheduleHour.Value + TimeParameters.OPDurationInHours);
+            Assert.IsFalse(schedule.HasOPWork(hour, allocatedCase.Board.Chair),
+                    "Failed at " + hour);
         }
 
         [TestMethod()]
         public void Schedule1()
         {
-            schedule.Schedule(allocatedCase);
-            schedule.Schedule(allocatedCase);
-            schedule.Schedule(allocatedCase);
+            Hour hour = new Hour(0);
+
+            schedule.Schedule(hour, allocatedCase);
+            schedule.Schedule(hour, allocatedCase);
+            schedule.Schedule(hour, allocatedCase);
             List<Hour> startHours = schedule.StartHours;
 
             Hour hour1 = new Hour(712);
@@ -126,13 +110,14 @@ namespace Simulator.Tests
         {
             Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
             CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other, boardQueues);
-            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, SimulationTime.CurrentHour, schedule);
+            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, new Hour(0), schedule);
 
+            Hour hour = new Hour(0);
 
-            schedule.Schedule(allocatedCase);
-            schedule.Schedule(ac2);
-            schedule.Schedule(allocatedCase);
-            schedule.Schedule(ac2);
+            schedule.Schedule(hour, allocatedCase);
+            schedule.Schedule(hour, ac2);
+            schedule.Schedule(hour, allocatedCase);
+            schedule.Schedule(hour, ac2);
             List<Hour> startHours = schedule.StartHours;
 
             Hour hour1 = new Hour(712);

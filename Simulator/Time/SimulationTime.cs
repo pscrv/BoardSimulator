@@ -4,34 +4,6 @@ using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal static class SimulationTime
-    {
-        #region fields and properties
-        internal static Hour CurrentHour { get; private set; }
-        internal static int CurrentDay { get { return CurrentHour.Value / TimeParameters.HoursPerDay; } }
-        internal static int CurrentWeek { get { return CurrentDay / TimeParameters.DaysPerWeek; } }
-        internal static int CurrentYear { get { return CurrentWeek / TimeParameters.WeeksPerYear; } }
-        #endregion
-
-
-        #region construction
-        static SimulationTime() { CurrentHour = new Hour(0); }
-        #endregion
-        
-
-
-        internal static void Increment() { CurrentHour = CurrentHour.Next(); }
-
-        internal static void Reset() { CurrentHour = new Hour(0); }
-
-        internal static Hour Future(int increment)
-        {
-            return CurrentHour.AddHours(increment);
-        }
-
-    }
-
-
     internal class SimulationTimeSpan : IEnumerable<Hour>
     {
         #region fields and properties

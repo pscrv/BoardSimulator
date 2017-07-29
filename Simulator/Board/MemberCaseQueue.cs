@@ -12,7 +12,6 @@ namespace Simulator
 
         #region internal properties
         internal int Count { get { return _decisionQueue.Count + _summonsQueue.Count; } }
-        internal int Age { get { return Math.Max(_decisionQueue.Age, _summonsQueue.Age); } }
         #endregion
 
 
@@ -26,15 +25,15 @@ namespace Simulator
 
 
         #region internal methods
-        internal void Enqueue(AllocatedCase ac)
+        internal void Enqueue(Hour currentHour, AllocatedCase ac)
         {
             switch (ac.Stage)
             {
                 case CaseStage.Summons:
-                    _summonsQueue.Enqueue(ac);
+                    _summonsQueue.Enqueue(currentHour, ac);
                     break;
                 case CaseStage.Decision:
-                    _decisionQueue.Enqueue(ac);
+                    _decisionQueue.Enqueue(currentHour, ac);
                     break;
                 case CaseStage.OP:
                 case CaseStage.Finished:

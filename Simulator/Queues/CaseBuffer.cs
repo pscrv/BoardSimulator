@@ -23,9 +23,9 @@ namespace Simulator
 
 
 
-        internal void Enqueue(AllocatedCase allocatedCase)
+        internal void Enqueue(Hour currentHour, AllocatedCase allocatedCase)
         {
-            _queue.Enqueue(allocatedCase);
+            _queue.Enqueue(currentHour, allocatedCase);
         }
         
 

@@ -12,7 +12,6 @@ namespace Simulator
 
         #region internal properties
         internal int Count { get { return _queue.Count; } }
-        internal int Age { get { return SimulationTime.CurrentHour.Value - _timeOfEnqueuing[_queue.Peek()].Value; } }
         #endregion
 
         #region consctructors
@@ -25,10 +24,10 @@ namespace Simulator
 
 
         #region internal methods
-        internal void Enqueue(AllocatedCase t)
+        internal void Enqueue(Hour hour, AllocatedCase t)
         {
             _queue.Enqueue(t);
-            _timeOfEnqueuing[t] = SimulationTime.CurrentHour;
+            _timeOfEnqueuing[t] = hour;
         }
 
         internal AllocatedCase Dequeue()
