@@ -5,7 +5,7 @@ namespace Simulator
     internal class CaseWorker
     {
         #region fields and properties
-        private BoardQueue _boardQueues = WorkQueues.Members;
+        private BoardQueue _boardQueues;
 
         internal readonly Member Member;
         internal readonly WorkerRole Role;
@@ -18,10 +18,11 @@ namespace Simulator
 
 
         #region construction
-        internal CaseWorker(Member member, WorkerRole role)
+        internal CaseWorker(Member member, WorkerRole role, BoardQueue boardQueues)
         {
             Member = member;
             Role = role;
+            _boardQueues = boardQueues;
         }
         #endregion
 

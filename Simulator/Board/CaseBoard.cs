@@ -6,14 +6,14 @@ namespace Simulator
     internal class CaseBoard
     {
         #region fields and properties
-        private Dictionary<WorkType, Queue<CaseWorker>> _queues;
+        private Dictionary<WorkType, Queue<CaseWorker>> _workerQueues;
 
         internal readonly CaseWorker Chair;
         internal readonly CaseWorker Rapporteur;
         internal readonly CaseWorker OtherMember;
         
-        internal Queue<CaseWorker> SummonsQueue { get { return _queues[WorkType.Summons]; } }
-        internal Queue<CaseWorker> DecisionQueue { get { return _queues[WorkType.Decision]; } }
+        internal Queue<CaseWorker> SummonsQueue { get { return _workerQueues[WorkType.Summons]; } }
+        internal Queue<CaseWorker> DecisionQueue { get { return _workerQueues[WorkType.Decision]; } }
 
 
         internal IEnumerable<CaseWorker> Members
@@ -29,15 +29,15 @@ namespace Simulator
 
 
         #region construction
-        internal CaseBoard(Member ch, Member rp, Member om)
+        internal CaseBoard(Member ch, Member rp, Member om, BoardQueue boardQueues)
         {
-            Chair = new CaseWorker(ch, WorkerRole.Chair);
-            Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur);
-            OtherMember = new CaseWorker(om, WorkerRole.OtherMember);
+            Chair = new CaseWorker(ch, WorkerRole.Chair, boardQueues);
+            Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur, boardQueues);
+            OtherMember = new CaseWorker(om, WorkerRole.OtherMember, boardQueues);
 
-            _queues = new Dictionary<WorkType, Queue<CaseWorker>>();
-            _queues[WorkType.Summons] = _makeQueue();
-            _queues[WorkType.Decision] = _makeQueue();
+            _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>();
+            _workerQueues[WorkType.Summons] = _makeQueue();
+            _workerQueues[WorkType.Decision] = _makeQueue();
             
         }
 
@@ -103,10 +103,10 @@ namespace Simulator
         {
             CaseWorker nextWorker = null;
 
-            if (_queues[WorkType.Summons].Count > 0)
-                nextWorker = _queues[WorkType.Summons].Dequeue();
-            else if (_queues[WorkType.Decision].Count > 0)
-                nextWorker = _queues[WorkType.Decision].Dequeue();
+            if (_workerQueues[WorkType.Summons].Count > 0)
+                nextWorker = _workerQueues[WorkType.Summons].Dequeue();
+            else if (_workerQueues[WorkType.Decision].Count > 0)
+                nextWorker = _workerQueues[WorkType.Decision].Dequeue();
 
             if (nextWorker == null)
                 return WorkerRole.None;

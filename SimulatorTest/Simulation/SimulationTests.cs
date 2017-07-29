@@ -61,8 +61,7 @@ namespace Simulator.Tests
                 legals);
 
             caseList = new List<AppealCase> { new AppealCase() };
-
-            WorkQueues.ClearAllQueues();
+            
         }
 
         [TestMethod()]

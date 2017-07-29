@@ -9,6 +9,12 @@ namespace Simulator
         private SimulationTimeSpan _timeSpan;
         private SimulationLog _log;
         private Board _board;
+
+        private BoardQueue _boardQueue;
+        private IncomingCaseQueue _incoming;
+        private CirculationQueue _circulation;
+        private OPSchedule _opSchedule;
+
         #endregion
 
 
@@ -18,21 +24,36 @@ namespace Simulator
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours));
             _log = new SimulationLog();
 
-            Member chair = new Member(boardParameters.Chair);
+            _boardQueue = new BoardQueue();
+            _incoming = new IncomingCaseQueue();
+            _circulation = new CirculationQueue();
+            _opSchedule = new OPSchedule(_circulation);
+
+
+            Member chair = new Member(boardParameters.Chair, _boardQueue, _circulation);
 
             List<Member> technicals = new List<Member>();
             foreach (MemberParameterCollection parameters in boardParameters.Technicals)
             {
-                technicals.Add( new Member(parameters));
+                technicals.Add( new Member(parameters, _boardQueue, _circulation));
             }
 
             List<Member> legals = new List<Member>();
             foreach (MemberParameterCollection  parameters in boardParameters.Legals)
             {
-                legals.Add(new Member(parameters));
-            }
+                legals.Add(new Member(parameters, _boardQueue, _circulation));
+            }            
 
-            _board = new Board(chair, boardParameters.ChairType, technicals, legals);
+            _board = new Board(
+                chair, 
+                boardParameters.ChairType, 
+                technicals, 
+                legals,
+                _boardQueue,
+                _incoming,
+                _circulation,
+                _opSchedule);
+
             foreach (AppealCase ac in initialCases)
             {
                 _board.ProcessNewCase(ac, _timeSpan.Start);

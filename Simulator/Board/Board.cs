@@ -6,18 +6,16 @@ namespace Simulator
 {
     internal class Board
     {
-        #if DEBUG 
-        private static IncomingCaseQueue __incoming = WorkQueues.Incoming;
-        private static CirculationQueue __circulation = WorkQueues.Circulation;
-        private static OPSchedule __opSchedule = WorkQueues.OPSchedule;
-        #endif
-
-
         #region fields and properties
         private Member _chair;
         private ChairType _chairType;
         private List<Member> _technicals;
         private List<Member> _legals;
+
+        private BoardQueue _boardQueue;
+        private IncomingCaseQueue _incoming;
+        private CirculationQueue _circulation;
+        private OPSchedule _opSchedule;
 
         private Dictionary<Member, int> _allocationCount;
 
@@ -38,12 +36,25 @@ namespace Simulator
 
 
         #region construction
-        internal Board(Member chair, ChairType chairType, List<Member> technicals, List<Member> legals)
+        internal Board(
+            Member chair, 
+            ChairType chairType, 
+            List<Member> technicals, 
+            List<Member> legals,
+            BoardQueue boardQueues,
+            IncomingCaseQueue incoming,
+            CirculationQueue circulation,
+            OPSchedule opSchedule)
         {
             _chair = chair;
             _chairType = chairType;
             _technicals = technicals;
             _legals = legals;
+
+            _boardQueue = boardQueues;
+            _incoming = incoming;
+            _circulation = circulation;
+            _opSchedule = opSchedule;
 
             _allocationCount = new Dictionary<Member, int>();
             foreach (Member member in _members)
@@ -57,10 +68,9 @@ namespace Simulator
 
         internal void DoWork(Hour currentHour)
         {
-            WorkQueues.Incoming.EnqueueForNextStage(currentHour);
-            WorkQueues.OPSchedule.EnqueueFinishedCasesForDecision(currentHour);
-            WorkQueues.Circulation.EnqueueForNextStage(currentHour);
-            
+            _incoming.EnqueueForNextStage(currentHour);
+            _opSchedule.EnqueueFinishedCasesForDecision(currentHour);
+            _circulation.EnqueueForNextStage(currentHour);            
 
             foreach (Member member in _members)
             {
@@ -68,10 +78,11 @@ namespace Simulator
             }
         }
 
+
         internal void ProcessNewCase(AppealCase appealCase, Hour currentHour)
         {
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            WorkQueues.Incoming.Enqueue(allocatedCase);
+            _incoming.Enqueue(allocatedCase);
         }
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
@@ -89,9 +100,9 @@ namespace Simulator
             _allocationCount[rapporteur]++;
             _allocationCount[other]++;
 
-            CaseBoard board = new CaseBoard(chair, rapporteur, other);
+            CaseBoard board = new CaseBoard(chair, rapporteur, other, _boardQueue);
 
-            return new AllocatedCase(appealCase, board, currentHour);
+            return new AllocatedCase(appealCase, board, currentHour, _opSchedule);
         }
 
         private Member _getMemberWithFewestAllocations(List<Member> members)

@@ -8,25 +8,25 @@ namespace Simulator
         #region static
         private static int __instanceCounter = 0;
 
-        internal static Member DefaultMember()
-        {
-            MemberParameters chair = new MemberParameters(16, 4, 8);
-            MemberParameters rapporteur = new MemberParameters(40, 8, 24);
-            MemberParameters other = new MemberParameters(8, 4, 8);
+        //internal static Member DefaultMember()
+        //{
+        //    MemberParameters chair = new MemberParameters(16, 4, 8);
+        //    MemberParameters rapporteur = new MemberParameters(40, 8, 24);
+        //    MemberParameters other = new MemberParameters(8, 4, 8);
 
-            MemberParameterCollection parameters =
-                new MemberParameterCollection(chair, rapporteur, other);
+        //    MemberParameterCollection parameters =
+        //        new MemberParameterCollection(chair, rapporteur, other);
 
-            return new Member(parameters);
-        }
+        //    return new Member(parameters);
+        //}
         #endregion
 
 
 
         #region fields and properties        
         private int _workCounter = 0;
-        private BoardQueue _boardQueues = WorkQueues.Members;
-        private CirculationQueue _circulationQueue = WorkQueues.Circulation;
+        private BoardQueue _boardQueues;
+        private CirculationQueue _circulationQueue;
         private Dictionary<WorkerRole, MemberParameters> _parameters;
 
         private AllocatedCase _currentCase { get { return _boardQueues.Peek(this); } }
@@ -38,7 +38,7 @@ namespace Simulator
 
 
         #region construction
-        internal Member(MemberParameterCollection parameters)
+        internal Member(MemberParameterCollection parameters, BoardQueue boardQueue, CirculationQueue circulation)
         {
             ID = __instanceCounter;
             __instanceCounter++;
@@ -48,7 +48,10 @@ namespace Simulator
             _parameters[WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters;
             _parameters[WorkerRole.OtherMember] = parameters.OtherWorkParameters;
 
+            _circulationQueue = circulation;
+            _boardQueues = boardQueue;
             _boardQueues.Register(this);
+
         }
         #endregion
 

@@ -15,25 +15,42 @@ namespace Simulator.Tests
         private Member rapporteur;
         private Member other;
         private Board board;
+
         private CaseBoard caseboard;
         private AppealCase appealCase;
         private AllocatedCase allocatedCase;
+
         private Hour startHour;
+        private CirculationQueue circulation;
         private OPSchedule schedule;
+        private BoardQueue boardQueues;
 
 
         [TestInitialize]
         public void Initialise()
         {
-            chair = Member.DefaultMember();
-            rapporteur = Member.DefaultMember();
-            other = Member.DefaultMember();
-            board = new Board(chair, ChairType.Technical, new List<Member> { rapporteur }, new List<Member> { other });
-            caseboard = new CaseBoard(chair, rapporteur, other);
+            boardQueues = new BoardQueue();
+            circulation = new CirculationQueue();
+            schedule = new OPSchedule(circulation);
+
+            chair = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            rapporteur = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            other = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            board = new Board(
+                chair, 
+                ChairType.Technical, 
+                new List<Member> { rapporteur }, 
+                new List<Member> { other },
+                boardQueues,
+                null,
+                circulation,
+                schedule);
+
+            caseboard = new CaseBoard(chair, rapporteur, other, boardQueues);
             appealCase = new AppealCase();
-            allocatedCase = new AllocatedCase(appealCase, caseboard, SimulationTime.CurrentHour);
+            allocatedCase = new AllocatedCase(appealCase, caseboard, SimulationTime.CurrentHour, schedule);
+
             startHour = new Hour(100);
-            schedule = new OPSchedule();
 
             SimulationTime.Reset();
         }
@@ -49,7 +66,7 @@ namespace Simulator.Tests
                 schedule.Add(startHour, allocatedCase);
                 Assert.Fail("Adding a second OP for the same hour failed to throw an exception.");
             }
-            catch (Exception e)
+            catch (Exception)
             { }
 
             Assert.AreEqual(3, schedule.Count);
@@ -107,9 +124,9 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Schedule2()
         {
-            Member rapporteur2 = Member.DefaultMember();
-            CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other);
-            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, SimulationTime.CurrentHour);
+            Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other, boardQueues);
+            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, SimulationTime.CurrentHour, schedule);
 
 
             schedule.Schedule(allocatedCase);

@@ -16,10 +16,7 @@ namespace OldSim
         private AppealCaseQueuePair _incomingQueue;
         private AppealCaseQueuePair _activeQueue;
         private AppealCase _currentCase;
-        private int _workCounter;
-
-
-        private AllocatedCaseQueuePair _inQueue;
+        private int _workCounter;        
         #endregion
 
 

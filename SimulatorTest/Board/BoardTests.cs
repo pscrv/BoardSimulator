@@ -28,24 +28,33 @@ namespace Simulator.Tests
         List<Member> technicals;
         List<Member> legals;
 
+        BoardQueue boardQueues;
+        IncomingCaseQueue incoming;
+        CirculationQueue circulation;
+        OPSchedule opSchedule;           
+
 
         [TestInitialize]
         public void Initialise()
         {
             SimulationTime.Reset();
-            WorkQueues.ClearAllQueues();
+
+            boardQueues = new BoardQueue();
+            incoming = new IncomingCaseQueue();
+            circulation = new CirculationQueue();
+            opSchedule = new OPSchedule(circulation);
 
             parameterCollection = new MemberParameterCollection(memberParameters, memberParameters, memberParameters);
 
-            chair = new Member(parameterCollection);
-            technicals = new List<Member> { new Member(parameterCollection) };
-            legals = new List<Member> { new Member(parameterCollection) };
+            chair = new Member(parameterCollection, boardQueues, circulation);
+            technicals = new List<Member> { new Member(parameterCollection, boardQueues, circulation) };
+            legals = new List<Member> { new Member(parameterCollection, boardQueues, circulation) };
 
-            board = new Board(chair, ChairType.Technical, technicals, legals);
-            caseBoard1 = new CaseBoard(chair, technicals[0], legals[0]);
-            caseBoard2 = new CaseBoard(chair, technicals[0], legals[0]);
-            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, SimulationTime.CurrentHour);
-            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, SimulationTime.CurrentHour);
+            board = new Board(chair, ChairType.Technical, technicals, legals, boardQueues, incoming, circulation, opSchedule);
+            caseBoard1 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
+            caseBoard2 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
+            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, SimulationTime.CurrentHour, opSchedule);
+            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, SimulationTime.CurrentHour, opSchedule);
         }
 
 
@@ -53,14 +62,14 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Work_oneCase()
         {
-            WorkQueues.Incoming.Enqueue(allocatedCase1);
+            incoming.Enqueue(allocatedCase1);
             while (allocatedCase1.Record.ChairDecision.Finish == null)
             {
                 if (allocatedCase1.Stage == CaseStage.OP && allocatedCase1.Record.OP.Enqueue != null)
                 {
                     allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
                     allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    WorkQueues.Circulation.Enqueue(allocatedCase1);
+                    circulation.Enqueue(allocatedCase1);
                 }
 
                 //board.DoWork();
@@ -76,8 +85,8 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Work_twoCases()
         {
-            WorkQueues.Incoming.Enqueue(allocatedCase1);
-            WorkQueues.Incoming.Enqueue(allocatedCase2);
+            incoming.Enqueue(allocatedCase1);
+            incoming.Enqueue(allocatedCase2);
 
             while (allocatedCase2.Record.ChairDecision.Finish == null)
             {
@@ -85,14 +94,14 @@ namespace Simulator.Tests
                 {
                     allocatedCase1.Record.SetOPStart(SimulationTime.CurrentHour);
                     allocatedCase1.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    WorkQueues.Circulation.Enqueue(allocatedCase1);
+                    circulation.Enqueue(allocatedCase1);
                 }
 
                 if (allocatedCase2.Stage == CaseStage.OP && allocatedCase2.Record.OP.Enqueue != null)
                 {
                     allocatedCase2.Record.SetOPStart(SimulationTime.CurrentHour);
                     allocatedCase2.Record.SetOPFinished(SimulationTime.CurrentHour);
-                    WorkQueues.Circulation.Enqueue(allocatedCase2);
+                    circulation.Enqueue(allocatedCase2);
                 }
 
                 //board.DoWork();

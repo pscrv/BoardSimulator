@@ -6,7 +6,7 @@ namespace Simulator
     internal class AllocatedCase
     {
         #region fields and properties
-        private OPSchedule _opSchedule = WorkQueues.OPSchedule;
+        private OPSchedule _opSchedule;
 
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
@@ -55,13 +55,15 @@ namespace Simulator
 
 
         #region construction
-        internal AllocatedCase(AppealCase ac, CaseBoard bd, Hour currentHour)
+        internal AllocatedCase(AppealCase ac, CaseBoard bd, Hour currentHour, OPSchedule opSchedule)
         {
             Case = ac;
             Board = bd;
 
             Record = new CaseRecord(ac);
-            Record.SetAllocation(currentHour);            
+            Record.SetAllocation(currentHour);
+
+            _opSchedule = opSchedule;
         }
         #endregion
 

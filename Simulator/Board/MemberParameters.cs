@@ -18,6 +18,16 @@
 
     internal class MemberParameterCollection
     {
+        internal static MemberParameterCollection DefaultCollection()
+        {
+            MemberParameters chair = new MemberParameters(16, 4, 8);
+            MemberParameters rapporteur = new MemberParameters(40, 8, 24);
+            MemberParameters other = new MemberParameters(8, 4, 8);
+
+            return new MemberParameterCollection(chair, rapporteur, other);
+        }
+
+
         internal readonly MemberParameters ChairWorkParameters;
         internal readonly MemberParameters RapporteurWorkParameters;
         internal readonly MemberParameters OtherWorkParameters;

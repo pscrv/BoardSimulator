@@ -18,7 +18,11 @@ namespace Simulator.Tests
         MemberParameterCollection parameterCollection;
         AppealCase appealCase;
         AllocatedCase allocatedCase;
-        CaseBoard caseBoard; 
+        CaseBoard caseBoard;
+
+        BoardQueue boardQueues;
+        CirculationQueue circulation;
+        OPSchedule opSchedule;
 
 
 
@@ -26,17 +30,20 @@ namespace Simulator.Tests
         public void Initialise()
         {
             SimulationTime.Reset();
-            WorkQueues.ClearAllQueues();
+
+            boardQueues = new BoardQueue();
+            circulation = new CirculationQueue();
+            opSchedule = new OPSchedule(circulation);
 
             parameters = new MemberParameters(2, 1, 2);
             parameterCollection = new MemberParameterCollection(parameters, parameters, parameters);
-            chair =  new Member(parameterCollection);
-            rapporteur = new Member(parameterCollection);
-            other = new Member(parameterCollection);
+            chair =  new Member(parameterCollection, boardQueues, circulation);
+            rapporteur = new Member(parameterCollection, boardQueues, circulation);
+            other = new Member(parameterCollection, boardQueues, circulation);
             appealCase = new AppealCase();
 
-            caseBoard = new CaseBoard(chair, rapporteur, other);
-            allocatedCase = new AllocatedCase(appealCase, caseBoard, SimulationTime.CurrentHour);
+            caseBoard = new CaseBoard(chair, rapporteur, other, boardQueues);
+            allocatedCase = new AllocatedCase(appealCase, caseBoard, SimulationTime.CurrentHour, opSchedule);
         }
 
 
@@ -65,8 +72,8 @@ namespace Simulator.Tests
             Assert.AreEqual(hour0, allocatedCase.Record.RapporteurSummons.Enqueue);
             Assert.AreEqual(hour0, allocatedCase.Record.RapporteurSummons.Start);
             Assert.AreEqual(hour1, allocatedCase.Record.RapporteurSummons.Finish);
-            Assert.AreEqual(0, WorkQueues.Members.Count(rapporteur));
-            Assert.AreEqual(1, WorkQueues.Circulation.Count);
+            Assert.AreEqual(0, boardQueues.Count(rapporteur));
+            Assert.AreEqual(1, circulation.Count);
         }
 
         [TestMethod()]
@@ -83,8 +90,8 @@ namespace Simulator.Tests
             Assert.AreEqual(hour2, allocatedCase.Record.OtherMemberSummons.Enqueue, "Enqueue");
             Assert.AreEqual(hour2, allocatedCase.Record.OtherMemberSummons.Start, "Start");
             Assert.AreEqual(hour3, allocatedCase.Record.OtherMemberSummons.Finish, "Finish");
-            Assert.AreEqual(0, WorkQueues.Members.Count(other));
-            Assert.AreEqual(1, WorkQueues.Circulation.Count);
+            Assert.AreEqual(0, boardQueues.Count(other));
+            Assert.AreEqual(1, circulation.Count);
         }
 
         [TestMethod()]
@@ -102,8 +109,8 @@ namespace Simulator.Tests
             Assert.AreEqual(hour4, allocatedCase.Record.ChairSummons.Enqueue, "Enqueue");
             Assert.AreEqual(hour4, allocatedCase.Record.ChairSummons.Start, "Start");
             Assert.AreEqual(hour5, allocatedCase.Record.ChairSummons.Finish, "Finish");
-            Assert.AreEqual(0, WorkQueues.Members.Count(chair));
-            Assert.AreEqual(1, WorkQueues.Circulation.Count);
+            Assert.AreEqual(0, boardQueues.Count(chair));
+            Assert.AreEqual(1, circulation.Count);
         }
 
         [TestMethod()]
@@ -119,9 +126,8 @@ namespace Simulator.Tests
 
             Hour hour6 = new Hour(6);
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
-            Assert.AreEqual(0, WorkQueues.Circulation.Count);
-            //Assert.AreEqual(1, WorkQueues.OP.Count);
-            Assert.AreEqual(3, WorkQueues.OPSchedule.Count);
+            Assert.AreEqual(0, circulation.Count);
+            Assert.AreEqual(3, opSchedule.Count);
         }
 
 
@@ -211,13 +217,11 @@ namespace Simulator.Tests
             Assert.AreEqual(hour13, allocatedCase.Record.ChairDecision.Finish, "Finish");
         }
 
-
-
-        private static void _incrementTimeAndSkipOP()
+        
+        private void _incrementTimeAndSkipOP()
         {
             SimulationTime.Increment();
-            //foreach (AllocatedCase ac in WorkQueues.OP.Enumeration)
-            foreach(AllocatedCase ac in WorkQueues.OPSchedule.ScheduledCases)
+            foreach(AllocatedCase ac in opSchedule.ScheduledCases)
             {
                 ac.Record.SetOPStart(SimulationTime.CurrentHour);
                 ac.Record.SetOPFinished(SimulationTime.CurrentHour);
@@ -225,10 +229,10 @@ namespace Simulator.Tests
             }
         }
 
-        private static void _incrementTimeAndCirculateCases()
+        private void _incrementTimeAndCirculateCases()
         {
             SimulationTime.Increment();
-            WorkQueues.Circulation.EnqueueForNextStage(SimulationTime.CurrentHour);
+            circulation.EnqueueForNextStage(SimulationTime.CurrentHour);
         }
 
 
