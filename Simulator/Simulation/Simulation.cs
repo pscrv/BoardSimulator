@@ -49,9 +49,8 @@ namespace Simulator
                 boardParameters.ChairType, 
                 technicals, 
                 legals,
-                _boardQueue,
                 _incoming,
-                _circulation,
+                //_circulation,
                 _opSchedule);
 
             foreach (AppealCase ac in initialCases)

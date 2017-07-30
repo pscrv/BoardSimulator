@@ -8,7 +8,7 @@ namespace Simulator
         private Dictionary<Member, MemberWorkQueue> _memberQueues = new Dictionary<Member, MemberWorkQueue>();
 
 
-        #region MemberQueues
+
         internal void Register(Member member)
         {
             if (_memberQueues.ContainsKey(member))
@@ -19,10 +19,10 @@ namespace Simulator
 
 
 
-        internal void EnqueueForMember(Hour currentHour, Member member, WorkerRole role, AllocatedCase allocatedCase)
+        internal void EnqueueForMember(Hour currentHour, CaseWorker worker, AllocatedCase allocatedCase)
         {
-            _checkMemberIsRegistered(member);
-            _memberQueues[member].Enqueue(currentHour, allocatedCase, role);
+            _checkMemberIsRegistered(worker.Member);
+            _memberQueues[worker.Member].Enqueue(currentHour, allocatedCase, worker.Role);
         }
 
         internal AllocatedCase Dequeue(Member member)
@@ -59,6 +59,5 @@ namespace Simulator
             if (!_memberQueues.ContainsKey(member))
                 throw new InvalidOperationException("Member is not registered.");
         }
-        #endregion
     }
 }

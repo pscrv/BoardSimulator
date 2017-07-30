@@ -41,19 +41,18 @@ namespace Simulator
             ChairType chairType, 
             List<Member> technicals, 
             List<Member> legals,
-            BoardQueue boardQueues,
             IncomingCaseQueue incoming,
-            CirculationQueue circulation,
+            //CirculationQueue circulation,
             OPSchedule opSchedule)
         {
             _chair = chair;
             _chairType = chairType;
             _technicals = technicals;
             _legals = legals;
-
-            _boardQueue = boardQueues;
+            
+            _boardQueue = new BoardQueue();
             _incoming = incoming;
-            _circulation = circulation;
+            _circulation = new CirculationQueue();
             _opSchedule = opSchedule;
             _finished = new FinishedCaseList();
 
@@ -61,10 +60,6 @@ namespace Simulator
             foreach (Member member in _members)
             {
                 _allocationCount[member] = 0;
-            }
-
-            foreach (Member member in _members)
-            {
                 _boardQueue.Register(member);
             }
         }
@@ -78,13 +73,19 @@ namespace Simulator
             AllocatedCase currentCase;
 
             _incoming.EnqueueForNextStage(currentHour);
-            _opSchedule.EnqueueFinishedCasesForDecision(currentHour);
+            
+            List<AllocatedCase> finishedOPCases = _opSchedule.UpdateScheduleAndGetFinishedCases(currentHour);
+            foreach (AllocatedCase finishedCase in finishedOPCases)
+            {
+                finishedCase.EnqueueForWork(currentHour);
+            }
+
             _circulation.EnqueueForNextStage(currentHour);
 
             foreach (Member member in _members)
             {
                 currentCase = _currentCase(member);
-                state = member.Work(currentHour, _currentCase(member));
+                state = member.Work(currentHour, currentCase);
                 if (state == WorkState.Finished)
                 {
                     _circulation.Enqueue(currentHour, currentCase);
@@ -94,14 +95,30 @@ namespace Simulator
         }
 
 
-        internal void ProcessNewCase(AppealCase appealCase, Hour currentHour)
+        internal AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
         {
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
             _incoming.Enqueue(currentHour, allocatedCase);
+            return allocatedCase;
+        }
+
+
+        internal void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour)
+        {
+            _circulation.Enqueue(currentHour, allocatedCase);
         }
 
 
 
+        internal int MemberQueueCount(Member member)
+        {
+            return _boardQueue.Count(member);
+        }
+
+        internal int CirculationQueueCount()
+        {
+            return _circulation.Count;
+        }
 
 
 

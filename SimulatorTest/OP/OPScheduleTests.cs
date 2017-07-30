@@ -37,9 +37,7 @@ namespace Simulator.Tests
                 ChairType.Technical, 
                 new List<Member> { rapporteur }, 
                 new List<Member> { other },
-                boardQueues,
                 null,
-                circulation,
                 schedule);
 
             caseboard = new CaseBoard(chair, rapporteur, other, boardQueues);

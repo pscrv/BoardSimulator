@@ -5,8 +5,6 @@ namespace Simulator
     internal class CaseWorker
     {
         #region fields and properties
-        private BoardQueue _boardQueues;
-
         internal readonly Member Member;
         internal readonly WorkerRole Role;
 
@@ -22,14 +20,7 @@ namespace Simulator
         {
             Member = member;
             Role = role;
-            _boardQueues = boardQueues;
         }
-        #endregion
-
-
-        internal void Enqueue(Hour currentHour, AllocatedCase allocatedCase)
-        {
-            _boardQueues.EnqueueForMember(currentHour, Member, Role, allocatedCase);
-        }        
+        #endregion     
     }
 }

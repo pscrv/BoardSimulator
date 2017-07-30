@@ -7,6 +7,7 @@ namespace Simulator
     {
         #region fields and properties
         private Dictionary<WorkType, Queue<CaseWorker>> _workerQueues;
+        private BoardQueue _boardQueues;
 
         internal readonly CaseWorker Chair;
         internal readonly CaseWorker Rapporteur;
@@ -38,7 +39,8 @@ namespace Simulator
             _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>();
             _workerQueues[WorkType.Summons] = _makeQueue();
             _workerQueues[WorkType.Decision] = _makeQueue();
-            
+
+            _boardQueues = boardQueues;
         }
 
 
@@ -111,7 +113,7 @@ namespace Simulator
             if (nextWorker == null)
                 return WorkerRole.None;
 
-            nextWorker.Enqueue(currentHour, allocatedCase);
+            _boardQueues.EnqueueForMember(currentHour, nextWorker, allocatedCase);
             return nextWorker.Role;
         }
 
@@ -132,6 +134,5 @@ namespace Simulator
                     Rapporteur.HoursOPPreparation,
                     OtherMember.HoursOPPreparation));
         }
-
     }
 }
