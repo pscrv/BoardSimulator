@@ -17,7 +17,7 @@ namespace Simulator.Tests
         BoardQueue boardQueues;
         CirculationQueue circulation;
         OPSchedule opSchedule;
-
+        FinishedCaseList finished;
 
 
         [TestInitialize]
@@ -26,6 +26,7 @@ namespace Simulator.Tests
             boardQueues = new BoardQueue();
             circulation = new CirculationQueue();
             opSchedule = new OPSchedule(circulation);
+            finished = new FinishedCaseList();
 
             parameters = new MemberParameters(2, 1, 2);
             parameterCollection = new MemberParameterCollection(parameters, parameters, parameters);
@@ -35,7 +36,7 @@ namespace Simulator.Tests
             appealCase = new AppealCase();
 
             caseBoard = new CaseBoard(chair, rapporteur, other, boardQueues);
-            allocatedCase = new AllocatedCase(appealCase, caseBoard, new Hour(0), opSchedule);
+            allocatedCase = new AllocatedCase(appealCase, caseBoard, new Hour(0), opSchedule, finished);
         }
 
 
@@ -137,8 +138,7 @@ namespace Simulator.Tests
             Assert.AreEqual(0, circulation.Count);
             Assert.AreEqual(3, opSchedule.Count);
         }
-
-
+        
 
         [TestMethod()]
         public void EnequeueDecision()
@@ -195,6 +195,7 @@ namespace Simulator.Tests
             Assert.AreEqual(hour8, allocatedCase.Record.RapporteurDecision.Start, "Start");
             Assert.AreEqual(hour9, allocatedCase.Record.RapporteurDecision.Finish, "Finish");
         }
+
 
         [TestMethod()]
         public void OtherMemberDecisionWork()
@@ -271,6 +272,10 @@ namespace Simulator.Tests
         }
 
 
+
+
+
+
         private void _skipOP(Hour hour)
         {
             foreach (AllocatedCase ac in opSchedule.ScheduledCases)
@@ -286,27 +291,26 @@ namespace Simulator.Tests
         {
             circulation.EnqueueForNextStage(hour.AddHours(1));
         }
-        
-
+  
 
         private void _doRapporteurWork(Hour hour)
         {
-            allocatedCase.Board.Rapporteur.Member.Work(hour);
-            allocatedCase.Board.Rapporteur.Member.Work(hour.AddHours(1));
+            allocatedCase.Board.Rapporteur.Member.Work(hour, allocatedCase);
+            allocatedCase.Board.Rapporteur.Member.Work(hour.AddHours(1), allocatedCase);
         }
         
 
         private void _doOtherMemberWork(Hour hour)
         {
-            allocatedCase.Board.OtherMember.Member.Work(hour);
-            allocatedCase.Board.OtherMember.Member.Work(hour.AddHours(1));
+            allocatedCase.Board.OtherMember.Member.Work(hour, allocatedCase);
+            allocatedCase.Board.OtherMember.Member.Work(hour.AddHours(1), allocatedCase);
         }
         
 
         private void _doChairWork(Hour hour)
         {
-            allocatedCase.Board.Chair.Member.Work(hour);
-            allocatedCase.Board.Chair.Member.Work(hour.AddHours(1));
+            allocatedCase.Board.Chair.Member.Work(hour, allocatedCase);
+            allocatedCase.Board.Chair.Member.Work(hour.AddHours(1), allocatedCase);
         }
         
     }

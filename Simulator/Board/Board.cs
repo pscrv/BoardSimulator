@@ -16,6 +16,7 @@ namespace Simulator
         private IncomingCaseQueue _incoming;
         private CirculationQueue _circulation;
         private OPSchedule _opSchedule;
+        private FinishedCaseList _finished;
 
         private Dictionary<Member, int> _allocationCount;
 
@@ -30,7 +31,7 @@ namespace Simulator
                     yield return lm;                
                 
             }
-        }
+        }        
         #endregion
 
 
@@ -55,11 +56,17 @@ namespace Simulator
             _incoming = incoming;
             _circulation = circulation;
             _opSchedule = opSchedule;
+            _finished = new FinishedCaseList();
 
             _allocationCount = new Dictionary<Member, int>();
             foreach (Member member in _members)
             {
                 _allocationCount[member] = 0;
+            }
+
+            foreach (Member member in _members)
+            {
+                _boardQueue.Register(member);
             }
         }
         #endregion
@@ -70,11 +77,17 @@ namespace Simulator
         {
             _incoming.EnqueueForNextStage(currentHour);
             _opSchedule.EnqueueFinishedCasesForDecision(currentHour);
-            _circulation.EnqueueForNextStage(currentHour);            
+            _circulation.EnqueueForNextStage(currentHour);
 
+            WorkState state;
             foreach (Member member in _members)
             {
-                member.Work(currentHour);
+                AllocatedCase current = _currentCase(member);
+                state = member.Work(currentHour, _currentCase(member));
+                if (state == WorkState.Finished)
+                {
+                    _boardQueue.Dequeue(member);
+                }
             }
         }
 
@@ -84,6 +97,19 @@ namespace Simulator
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
             _incoming.Enqueue(currentHour, allocatedCase);
         }
+
+
+
+
+
+
+
+
+        private AllocatedCase _currentCase(Member member)
+        {
+            return _boardQueue.Peek(member);
+        }
+        
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
         {
@@ -102,8 +128,9 @@ namespace Simulator
 
             CaseBoard board = new CaseBoard(chair, rapporteur, other, _boardQueue);
 
-            return new AllocatedCase(appealCase, board, currentHour, _opSchedule);
+            return new AllocatedCase(appealCase, board, currentHour, _opSchedule, _finished);
         }
+
 
         private Member _getMemberWithFewestAllocations(List<Member> members)
         {

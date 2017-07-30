@@ -44,7 +44,8 @@
     <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="Board\MemberParameters.cs" />
-    <Compile Include="OP\OPSchedule.cs" />
+    <Compile Include="Queues\FinishedCaseList.cs" />
+    <Compile Include="Queues\OPSchedule.cs" />
     <Compile Include="Board\BoardParameters.cs" />
     <Compile Include="Simulation\Simulation.cs" />
     <Compile Include="Queues\BoardQueue.cs" />
@@ -62,28 +63,16 @@
     <Compile Include="Queues\MemberWorkQueue.cs" />
     <Compile Include="Time\Hour.cs" />
     <Compile Include="Time\TimeParameters.cs" />
-    <Compile Include="__Old\CaseBoard.cs" />
-    <Compile Include="__Old\AppealCase.cs" />
-    <Compile Include="__Old\AppealCaseState.cs" />
-    <Compile Include="__Old\Board.cs" />
-    <Compile Include="__Old\AllocatedCase.cs" />
-    <Compile Include="__Old\CaseWork.cs" />
-    <Compile Include="__Old\SimulationLog.cs" />
-    <Compile Include="__Old\SimulationTime.cs" />
-    <Compile Include="__Old\WorkState.cs" />
-    <Compile Include="__Old\DummyAllocator.cs" />
     <Compile Include="Logging\SimulationLog.cs" />
-    <Compile Include="__Old\Engine.cs" />
-    <Compile Include="__Old\Member.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Time\SimulationTime.cs" />
-    <Compile Include="__Old\CaseQueue.cs" />
-    <Compile Include="__Old\CyclicQueue.cs" />
     <Compile Include="Work\Work.cs" />
     <Compile Include="Work\WorkReport.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\" />
+    <Folder Include="OP\" />
+    <Folder Include="__Old\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

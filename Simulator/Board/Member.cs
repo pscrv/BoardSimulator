@@ -7,31 +7,14 @@ namespace Simulator
     {
         #region static
         private static int __instanceCounter = 0;
-
-        //internal static Member DefaultMember()
-        //{
-        //    MemberParameters chair = new MemberParameters(16, 4, 8);
-        //    MemberParameters rapporteur = new MemberParameters(40, 8, 24);
-        //    MemberParameters other = new MemberParameters(8, 4, 8);
-
-        //    MemberParameterCollection parameters =
-        //        new MemberParameterCollection(chair, rapporteur, other);
-
-        //    return new Member(parameters);
-        //}
         #endregion
 
 
 
         #region fields and properties        
         private int _workCounter = 0;
-        private BoardQueue _boardQueues;
         private CirculationQueue _circulationQueue;
         private Dictionary<WorkerRole, MemberParameters> _parameters;
-
-        private AllocatedCase _currentCase { get { return _boardQueues.Peek(this); } }
-        private WorkerRole _currentRole { get { return _currentCase.Board.GetRole(this); } }
-        private CaseWorker _thisAsCaseWorker { get { return _currentCase.Board.GetMemberAsCaseWorker(this); } }
 
         internal readonly int ID;
         #endregion
@@ -49,8 +32,6 @@ namespace Simulator
             _parameters[WorkerRole.OtherMember] = parameters.OtherWorkParameters;
 
             _circulationQueue = circulation;
-            _boardQueues = boardQueue;
-            _boardQueues.Register(this);
 
         }
         #endregion
@@ -62,19 +43,20 @@ namespace Simulator
         }
 
 
-        internal void Work(Hour currentHour)
+        internal WorkState Work(Hour currentHour, AllocatedCase currentCase)
         {
 
-            if (_currentCase == null)
+            if (currentCase == null)
             {
                 _logWork(); // no work
-                return;
+                return WorkState.None;
             }
 
+            CaseWorker thisAsCaseWorker = currentCase.Board.GetMemberAsCaseWorker(this);
             if (_workCounter == 0)
             {
-                _currentCase.RecordStartOfWork(_thisAsCaseWorker, currentHour);
-                _setWorkCounter();
+                currentCase.RecordStartOfWork(thisAsCaseWorker, currentHour);
+                _setWorkCounter(currentCase);
             }
 
             _workCounter--;
@@ -82,39 +64,36 @@ namespace Simulator
 
             if (_workCounter == 0)
             {
-                _finishCase(currentHour);
+                currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);
+                _circulationQueue.Enqueue(currentHour, currentCase);
+                return WorkState.Finished;
             }
+
+            return WorkState.Ongoing;
         }
 
 
 
-        private void _setWorkCounter()
+        private void _setWorkCounter(AllocatedCase currentCase)
         {
-            if (_currentCase == null)
+            if (currentCase == null)
                 return;
 
-            switch (_currentCase.WorkType)
+            WorkerRole currentRole = currentCase.Board.GetRole(this);
+            switch (currentCase.WorkType)
             {
                 case WorkType.Summons:
-                    _workCounter = _parameters[_currentRole].HoursForSummons;
+                    _workCounter = _parameters[currentRole].HoursForSummons;
                     break;
                 case WorkType.Decision:
-                    _workCounter = _parameters[_currentRole].HoursForDecision;
+                    _workCounter = _parameters[currentRole].HoursForDecision;
                     break;
                 case WorkType.None:
                     throw new InvalidOperationException("member.Work: no work to do on this case.");
             }
         }
 
-        private void _finishCase(Hour currentHour)
-        {
-            _currentCase.RecordFinishedWork(_thisAsCaseWorker, currentHour);
-            if (_currentCase.Stage != CaseStage.Finished)
-            {
-                _circulationQueue.Enqueue(currentHour, _currentCase);
-            }
-            _boardQueues.Dequeue(this);
-        }
+
 
         private void _logWork()
         {

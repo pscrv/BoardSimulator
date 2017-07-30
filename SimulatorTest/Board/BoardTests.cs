@@ -31,7 +31,8 @@ namespace Simulator.Tests
         BoardQueue boardQueues;
         IncomingCaseQueue incoming;
         CirculationQueue circulation;
-        OPSchedule opSchedule;           
+        OPSchedule opSchedule;
+        FinishedCaseList finished;     
 
 
         [TestInitialize]
@@ -41,6 +42,7 @@ namespace Simulator.Tests
             incoming = new IncomingCaseQueue();
             circulation = new CirculationQueue();
             opSchedule = new OPSchedule(circulation);
+            finished = new FinishedCaseList();
 
             parameterCollection = new MemberParameterCollection(memberParameters, memberParameters, memberParameters);
 
@@ -51,8 +53,8 @@ namespace Simulator.Tests
             board = new Board(chair, ChairType.Technical, technicals, legals, boardQueues, incoming, circulation, opSchedule);
             caseBoard1 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
             caseBoard2 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);
-            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, new Hour(0), opSchedule);
-            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, new Hour(0), opSchedule);
+            allocatedCase1 = new AllocatedCase(appealCase1, caseBoard1, new Hour(0), opSchedule, finished);
+            allocatedCase2 = new AllocatedCase(appealCase2, caseBoard2, new Hour(0), opSchedule, finished);
         }
 
 

@@ -23,6 +23,7 @@ namespace Simulator.Tests
         private CirculationQueue circulation;
         private OPSchedule schedule;
         private BoardQueue boardQueues;
+        private FinishedCaseList finished;
         
 
         [TestInitialize]
@@ -31,6 +32,7 @@ namespace Simulator.Tests
             boardQueues = new BoardQueue();
             circulation = new CirculationQueue();
             schedule = new OPSchedule(circulation);
+            finished = new FinishedCaseList();
 
             chair = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
             rapporteur = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
@@ -47,7 +49,7 @@ namespace Simulator.Tests
 
             caseboard = new CaseBoard(chair, rapporteur, other, boardQueues);
             appealCase = new AppealCase();
-            allocatedCase = new AllocatedCase(appealCase, caseboard, new Hour(0), schedule);
+            allocatedCase = new AllocatedCase(appealCase, caseboard, new Hour(0), schedule, finished);
             
         }
 
@@ -110,7 +112,7 @@ namespace Simulator.Tests
         {
             Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
             CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other, boardQueues);
-            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, new Hour(0), schedule);
+            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, new Hour(0), schedule, finished);
 
             Hour hour = new Hour(0);
 

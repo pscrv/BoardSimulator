@@ -73,6 +73,12 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Run()
         {
+            caseList = new List<AppealCase>();
+            for (int i = 0; i < 10; i++)
+            {
+                caseList.Add(new AppealCase());
+            }
+
             Simulation sim = new Simulation(1000, parameters, caseList);
             sim.Run();
         }

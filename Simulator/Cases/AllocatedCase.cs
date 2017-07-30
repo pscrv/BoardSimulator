@@ -7,6 +7,8 @@ namespace Simulator
     {
         #region fields and properties
         private OPSchedule _opSchedule;
+        private FinishedCaseList _finished;
+
 
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
@@ -55,7 +57,12 @@ namespace Simulator
 
 
         #region construction
-        internal AllocatedCase(AppealCase ac, CaseBoard bd, Hour currentHour, OPSchedule opSchedule)
+        internal AllocatedCase(
+            AppealCase ac, 
+            CaseBoard bd, 
+            Hour currentHour, 
+            OPSchedule opSchedule, 
+            FinishedCaseList finished)
         {
             Case = ac;
             Board = bd;
@@ -64,6 +71,7 @@ namespace Simulator
             Record.SetAllocation(currentHour);
 
             _opSchedule = opSchedule;
+            _finished = finished;
         }
         #endregion
 
@@ -115,7 +123,7 @@ namespace Simulator
         {
             if (_isFinished)
             {
-                //TODO: decide what to do with finished cases. Possible nothing;
+                _finished.Add(this);
                 return;
             }
 
@@ -147,5 +155,14 @@ namespace Simulator
 
         private bool _isFinished
         { get { return Record.ChairDecision.Finish != null; } }
+
+
+
+        #region overrides
+        public override string ToString()
+        {
+            return string.Format("Allocated <{0}>", Case.ToString());
+        }
+        #endregion
     }
 }
