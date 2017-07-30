@@ -30,18 +30,18 @@ namespace Simulator
             _opSchedule = new OPSchedule(_circulation);
 
 
-            Member chair = new Member(boardParameters.Chair, _boardQueue, _circulation);
+            Member chair = new Member(boardParameters.Chair);
 
             List<Member> technicals = new List<Member>();
             foreach (MemberParameterCollection parameters in boardParameters.Technicals)
             {
-                technicals.Add( new Member(parameters, _boardQueue, _circulation));
+                technicals.Add( new Member(parameters));
             }
 
             List<Member> legals = new List<Member>();
             foreach (MemberParameterCollection  parameters in boardParameters.Legals)
             {
-                legals.Add(new Member(parameters, _boardQueue, _circulation));
+                legals.Add(new Member(parameters));
             }            
 
             _board = new Board(

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Simulator
@@ -75,17 +74,20 @@ namespace Simulator
 
         internal void DoWork(Hour currentHour)
         {
+            WorkState state;
+            AllocatedCase currentCase;
+
             _incoming.EnqueueForNextStage(currentHour);
             _opSchedule.EnqueueFinishedCasesForDecision(currentHour);
             _circulation.EnqueueForNextStage(currentHour);
 
-            WorkState state;
             foreach (Member member in _members)
             {
-                AllocatedCase current = _currentCase(member);
+                currentCase = _currentCase(member);
                 state = member.Work(currentHour, _currentCase(member));
                 if (state == WorkState.Finished)
                 {
+                    _circulation.Enqueue(currentHour, currentCase);
                     _boardQueue.Dequeue(member);
                 }
             }

@@ -13,7 +13,6 @@ namespace Simulator
 
         #region fields and properties        
         private int _workCounter = 0;
-        private CirculationQueue _circulationQueue;
         private Dictionary<WorkerRole, MemberParameters> _parameters;
 
         internal readonly int ID;
@@ -21,7 +20,7 @@ namespace Simulator
 
 
         #region construction
-        internal Member(MemberParameterCollection parameters, BoardQueue boardQueue, CirculationQueue circulation)
+        internal Member(MemberParameterCollection parameters)
         {
             ID = __instanceCounter;
             __instanceCounter++;
@@ -30,8 +29,6 @@ namespace Simulator
             _parameters[WorkerRole.Chair] = parameters.ChairWorkParameters;
             _parameters[WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters;
             _parameters[WorkerRole.OtherMember] = parameters.OtherWorkParameters;
-
-            _circulationQueue = circulation;
 
         }
         #endregion
@@ -65,7 +62,6 @@ namespace Simulator
             if (_workCounter == 0)
             {
                 currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);
-                _circulationQueue.Enqueue(currentHour, currentCase);
                 return WorkState.Finished;
             }
 

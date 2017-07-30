@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Simulator.Tests
 {
@@ -46,9 +41,9 @@ namespace Simulator.Tests
 
             parameterCollection = new MemberParameterCollection(memberParameters, memberParameters, memberParameters);
 
-            chair = new Member(parameterCollection, boardQueues, circulation);
-            technicals = new List<Member> { new Member(parameterCollection, boardQueues, circulation) };
-            legals = new List<Member> { new Member(parameterCollection, boardQueues, circulation) };
+            chair = new Member(parameterCollection);
+            technicals = new List<Member> { new Member(parameterCollection) };
+            legals = new List<Member> { new Member(parameterCollection) };
 
             board = new Board(chair, ChairType.Technical, technicals, legals, boardQueues, incoming, circulation, opSchedule);
             caseBoard1 = new CaseBoard(chair, technicals[0], legals[0], boardQueues);

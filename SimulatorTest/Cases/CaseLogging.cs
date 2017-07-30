@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Simulator.Tests
 {
@@ -8,6 +9,7 @@ namespace Simulator.Tests
         Member chair ;
         Member rapporteur;
         Member other;
+        Board board;
         MemberParameters parameters;
         MemberParameterCollection parameterCollection;
         AppealCase appealCase;
@@ -15,6 +17,7 @@ namespace Simulator.Tests
         CaseBoard caseBoard;
 
         BoardQueue boardQueues;
+        IncomingCaseQueue incoming;
         CirculationQueue circulation;
         OPSchedule opSchedule;
         FinishedCaseList finished;
@@ -24,17 +27,27 @@ namespace Simulator.Tests
         public void Initialise()
         {
             boardQueues = new BoardQueue();
+            incoming = new IncomingCaseQueue();
             circulation = new CirculationQueue();
             opSchedule = new OPSchedule(circulation);
             finished = new FinishedCaseList();
 
             parameters = new MemberParameters(2, 1, 2);
             parameterCollection = new MemberParameterCollection(parameters, parameters, parameters);
-            chair =  new Member(parameterCollection, boardQueues, circulation);
-            rapporteur = new Member(parameterCollection, boardQueues, circulation);
-            other = new Member(parameterCollection, boardQueues, circulation);
-            appealCase = new AppealCase();
+            chair =  new Member(parameterCollection);
+            rapporteur = new Member(parameterCollection);
+            other = new Member(parameterCollection);
+            board = new Board(
+                chair, 
+                ChairType.Technical, 
+                new List<Member> { rapporteur }, 
+                new List<Member> { other },
+                boardQueues,
+                incoming,
+                circulation,
+                opSchedule);
 
+            appealCase = new AppealCase();
             caseBoard = new CaseBoard(chair, rapporteur, other, boardQueues);
             allocatedCase = new AllocatedCase(appealCase, caseBoard, new Hour(0), opSchedule, finished);
         }
@@ -60,7 +73,8 @@ namespace Simulator.Tests
             Hour hour0 = new Hour(0);
             Hour hour1 = new Hour(1);
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
 
             Assert.AreEqual(hour0, allocatedCase.Record.RapporteurSummons.Enqueue);
             Assert.AreEqual(hour0, allocatedCase.Record.RapporteurSummons.Start);
@@ -78,9 +92,11 @@ namespace Simulator.Tests
             Hour hour3 = new Hour(3);
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
 
 
             Assert.AreEqual(hour2, allocatedCase.Record.OtherMemberSummons.Enqueue, "Enqueue");
@@ -100,13 +116,17 @@ namespace Simulator.Tests
             Hour hour4 = new Hour(4);
             Hour hour5 = new Hour(5);
 
+
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
-            
+            board.DoWork(hour4);
+            board.DoWork(hour5);
+
             Assert.AreEqual(hour4, allocatedCase.Record.ChairSummons.Enqueue, "Enqueue");
             Assert.AreEqual(hour4, allocatedCase.Record.ChairSummons.Start, "Start");
             Assert.AreEqual(hour5, allocatedCase.Record.ChairSummons.Finish, "Finish");
@@ -124,14 +144,17 @@ namespace Simulator.Tests
             Hour hour4 = new Hour(4);
             Hour hour5 = new Hour(5);
             Hour hour6 = new Hour(6);
-            
+
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
+            board.DoWork(hour4);
+            board.DoWork(hour5);
             _incrementTimeAndCirculateCases(hour5);
 
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
@@ -154,11 +177,14 @@ namespace Simulator.Tests
 
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
+            board.DoWork(hour4);
+            board.DoWork(hour5);
             _incrementTimeAndCirculateCases(hour5);
             _skipOP(hour7);
 
@@ -182,15 +208,19 @@ namespace Simulator.Tests
 
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
+            board.DoWork(hour4);
+            board.DoWork(hour5);
             _incrementTimeAndCirculateCases(hour5);
             _skipOP(hour7);
             _incrementTimeAndCirculateCases(hour7);
-            _doRapporteurWork(hour8);
+            board.DoWork(hour8);
+            board.DoWork(hour9);
 
             Assert.AreEqual(hour8, allocatedCase.Record.RapporteurDecision.Start, "Start");
             Assert.AreEqual(hour9, allocatedCase.Record.RapporteurDecision.Finish, "Finish");
@@ -215,17 +245,22 @@ namespace Simulator.Tests
 
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
+            board.DoWork(hour4);
+            board.DoWork(hour5);
             _incrementTimeAndCirculateCases(hour5);
             _skipOP(hour7);
             _incrementTimeAndCirculateCases(hour7);
-            _doRapporteurWork(hour8);
+            board.DoWork(hour8);
+            board.DoWork(hour9);
             _incrementTimeAndCirculateCases(hour9);
-            _doOtherMemberWork(hour10);
+            board.DoWork(hour10);
+            board.DoWork(hour11);
 
             Assert.AreEqual(hour10, allocatedCase.Record.OtherMemberDecision.Enqueue, "Enqueue");
             Assert.AreEqual(hour10, allocatedCase.Record.OtherMemberDecision.Start, "Start");
@@ -252,19 +287,25 @@ namespace Simulator.Tests
 
 
             allocatedCase.EnqueueForWork(hour0);
-            _doRapporteurWork(hour0);
+            board.DoWork(hour0);
+            board.DoWork(hour1);
             _incrementTimeAndCirculateCases(hour1);
-            _doOtherMemberWork(hour2);
+            board.DoWork(hour2);
+            board.DoWork(hour3);
             _incrementTimeAndCirculateCases(hour3);
-            _doChairWork(hour4);
+            board.DoWork(hour4);
+            board.DoWork(hour5);
             _incrementTimeAndCirculateCases(hour5);
             _skipOP(hour7);
             _incrementTimeAndCirculateCases(hour7);
-            _doRapporteurWork(hour8);
+            board.DoWork(hour8);
+            board.DoWork(hour9);
             _incrementTimeAndCirculateCases(hour9);
-            _doOtherMemberWork(hour10);
+            board.DoWork(hour10);
+            board.DoWork(hour11);
             _incrementTimeAndCirculateCases(hour11);
-            _doChairWork(hour12);
+            board.DoWork(hour12);
+            board.DoWork(hour13);
 
             Assert.AreEqual(hour12, allocatedCase.Record.ChairDecision.Enqueue, "Enqueue");
             Assert.AreEqual(hour12, allocatedCase.Record.ChairDecision.Start, "Start");
@@ -290,27 +331,6 @@ namespace Simulator.Tests
         private void _incrementTimeAndCirculateCases(Hour hour)
         {
             circulation.EnqueueForNextStage(hour.AddHours(1));
-        }
-  
-
-        private void _doRapporteurWork(Hour hour)
-        {
-            allocatedCase.Board.Rapporteur.Member.Work(hour, allocatedCase);
-            allocatedCase.Board.Rapporteur.Member.Work(hour.AddHours(1), allocatedCase);
-        }
-        
-
-        private void _doOtherMemberWork(Hour hour)
-        {
-            allocatedCase.Board.OtherMember.Member.Work(hour, allocatedCase);
-            allocatedCase.Board.OtherMember.Member.Work(hour.AddHours(1), allocatedCase);
-        }
-        
-
-        private void _doChairWork(Hour hour)
-        {
-            allocatedCase.Board.Chair.Member.Work(hour, allocatedCase);
-            allocatedCase.Board.Chair.Member.Work(hour.AddHours(1), allocatedCase);
         }
         
     }

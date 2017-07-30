@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Simulator.Tests
 {
@@ -34,9 +29,9 @@ namespace Simulator.Tests
             schedule = new OPSchedule(circulation);
             finished = new FinishedCaseList();
 
-            chair = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
-            rapporteur = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
-            other = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            chair = new Member(MemberParameterCollection.DefaultCollection());
+            rapporteur = new Member(MemberParameterCollection.DefaultCollection());
+            other = new Member(MemberParameterCollection.DefaultCollection());
             board = new Board(
                 chair, 
                 ChairType.Technical, 
@@ -110,7 +105,7 @@ namespace Simulator.Tests
         [TestMethod()]
         public void Schedule2()
         {
-            Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection(), boardQueues, circulation);
+            Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection());
             CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other, boardQueues);
             AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, new Hour(0), schedule, finished);
 
