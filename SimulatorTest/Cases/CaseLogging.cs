@@ -15,22 +15,10 @@ namespace Simulator.Tests
         AppealCase appealCase;
         AllocatedCase allocatedCase;
 
-        BoardQueue boardQueues;
-        IncomingCaseQueue incoming;
-        CirculationQueue circulation;
-        OPSchedule opSchedule;
-        FinishedCaseList finished;
-
 
         [TestInitialize]
         public void Initialise()
         {
-            boardQueues = new BoardQueue();
-            incoming = new IncomingCaseQueue();
-            circulation = new CirculationQueue();
-            opSchedule = new OPSchedule(circulation);
-            finished = new FinishedCaseList();
-
             parameters = new MemberParameters(2, 1, 2);
             parameterCollection = new MemberParameterCollection(parameters, parameters, parameters);
             chair =  new Member(parameterCollection);
@@ -40,9 +28,7 @@ namespace Simulator.Tests
                 chair, 
                 ChairType.Technical, 
                 new List<Member> { rapporteur }, 
-                new List<Member> { other },
-                incoming,
-                opSchedule);
+                new List<Member> { other });
 
             appealCase = new AppealCase();
             allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));
@@ -147,7 +133,7 @@ namespace Simulator.Tests
 
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
             Assert.AreEqual(0, board.CirculationQueueCount());
-            Assert.AreEqual(3, opSchedule.Count);
+            Assert.AreEqual(3, board.OPScheduleCount());
         }
         
 

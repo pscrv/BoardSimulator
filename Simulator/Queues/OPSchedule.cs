@@ -8,8 +8,7 @@ namespace Simulator
     {
         #region fields and properties
         private Dictionary<Member, Dictionary<Hour, AllocatedCase>> _schedule = new Dictionary<Member, Dictionary<Hour, AllocatedCase>>();
-        private CirculationQueue _circulation;
-        
+       
         internal int Count
         {
             get
@@ -60,13 +59,6 @@ namespace Simulator
         }
         #endregion
 
-
-        #region construction
-        internal OPSchedule(CirculationQueue circulation)
-        {
-            _circulation = circulation;
-        }
-        #endregion
 
 
         internal void Add(Hour hour, AllocatedCase âllocatedCase)

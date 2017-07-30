@@ -8,13 +8,7 @@ namespace Simulator
         #region fields and properties
         private SimulationTimeSpan _timeSpan;
         private SimulationLog _log;
-        private Board _board;
-
-        private BoardQueue _boardQueue;
-        private IncomingCaseQueue _incoming;
-        private CirculationQueue _circulation;
-        private OPSchedule _opSchedule;
-
+        private Board _board;        
         #endregion
 
 
@@ -23,11 +17,6 @@ namespace Simulator
         {
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours));
             _log = new SimulationLog();
-
-            _boardQueue = new BoardQueue();
-            _incoming = new IncomingCaseQueue();
-            _circulation = new CirculationQueue();
-            _opSchedule = new OPSchedule(_circulation);
 
 
             Member chair = new Member(boardParameters.Chair);
@@ -48,10 +37,8 @@ namespace Simulator
                 chair, 
                 boardParameters.ChairType, 
                 technicals, 
-                legals,
-                _incoming,
-                //_circulation,
-                _opSchedule);
+                legals               
+                );
 
             foreach (AppealCase ac in initialCases)
             {

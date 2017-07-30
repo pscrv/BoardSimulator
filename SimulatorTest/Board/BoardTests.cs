@@ -20,23 +20,12 @@ namespace Simulator.Tests
         Member chair;
         List<Member> technicals;
         List<Member> legals;
-
-        BoardQueue boardQueues;
-        IncomingCaseQueue incoming;
-        CirculationQueue circulation;
-        OPSchedule opSchedule;
-        FinishedCaseList finished;     
+ 
 
 
         [TestInitialize]
         public void Initialise()
         {
-            boardQueues = new BoardQueue();
-            incoming = new IncomingCaseQueue();
-            circulation = new CirculationQueue();
-            opSchedule = new OPSchedule(circulation);
-            finished = new FinishedCaseList();
-
             parameterCollection = new MemberParameterCollection(memberParameters, memberParameters, memberParameters);
 
             chair = new Member(parameterCollection);
@@ -47,9 +36,7 @@ namespace Simulator.Tests
                 chair, 
                 ChairType.Technical, 
                 technicals, 
-                legals,  
-                incoming,
-                opSchedule);
+                legals);
             allocatedCase1 = board.ProcessNewCase(appealCase1, new Hour(0));
         }
 

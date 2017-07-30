@@ -10,24 +10,17 @@ namespace Simulator.Tests
         private Member rapporteur;
         private Member other;
         private Board board;
-
-        private CaseBoard caseboard;
+        
         private AppealCase appealCase;
         private AllocatedCase allocatedCase;
         
-        private CirculationQueue circulation;
         private OPSchedule schedule;
-        private BoardQueue boardQueues;
-        private FinishedCaseList finished;
         
 
         [TestInitialize]
         public void Initialise()
         {
-            boardQueues = new BoardQueue();
-            circulation = new CirculationQueue();
-            schedule = new OPSchedule(circulation);
-            finished = new FinishedCaseList();
+            schedule = new OPSchedule();
 
             chair = new Member(MemberParameterCollection.DefaultCollection());
             rapporteur = new Member(MemberParameterCollection.DefaultCollection());
@@ -36,14 +29,10 @@ namespace Simulator.Tests
                 chair, 
                 ChairType.Technical, 
                 new List<Member> { rapporteur }, 
-                new List<Member> { other },
-                null,
-                schedule);
+                new List<Member> { other });
 
-            caseboard = new CaseBoard(chair, rapporteur, other, boardQueues);
             appealCase = new AppealCase();
-            allocatedCase = new AllocatedCase(appealCase, caseboard, new Hour(0), schedule, finished);
-            
+            allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));            
         }
 
 
@@ -97,35 +86,6 @@ namespace Simulator.Tests
             Assert.IsTrue(startHours.Contains(hour1));
             Assert.IsTrue(startHours.Contains(hour2));
             Assert.IsTrue(startHours.Contains(hour3));
-        }
-
-
-        [TestMethod()]
-        public void Schedule2()
-        {
-            Member rapporteur2 = new Member(MemberParameterCollection.DefaultCollection());
-            CaseBoard cb2 = new CaseBoard(chair, rapporteur2, other, boardQueues);
-            AllocatedCase ac2 = new AllocatedCase(appealCase, cb2, new Hour(0), schedule, finished);
-
-            Hour hour = new Hour(0);
-
-            schedule.Schedule(hour, allocatedCase);
-            schedule.Schedule(hour, ac2);
-            schedule.Schedule(hour, allocatedCase);
-            schedule.Schedule(hour, ac2);
-            List<Hour> startHours = schedule.StartHours;
-
-            Hour hour1 = new Hour(712);
-            Hour hour2 = new Hour(728);
-            Hour hour3 = new Hour(744);
-            Hour hour4 = new Hour(760);
-
-            Assert.AreEqual(12, schedule.Count);
-            Assert.AreEqual(4, startHours.Count);
-            Assert.IsTrue(startHours.Contains(hour1));
-            Assert.IsTrue(startHours.Contains(hour2));
-            Assert.IsTrue(startHours.Contains(hour3));
-            Assert.IsTrue(startHours.Contains(hour4));
-        }
+        }        
     }
 }

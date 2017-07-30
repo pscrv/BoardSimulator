@@ -40,10 +40,7 @@ namespace Simulator
             Member chair, 
             ChairType chairType, 
             List<Member> technicals, 
-            List<Member> legals,
-            IncomingCaseQueue incoming,
-            //CirculationQueue circulation,
-            OPSchedule opSchedule)
+            List<Member> legals)
         {
             _chair = chair;
             _chairType = chairType;
@@ -51,9 +48,9 @@ namespace Simulator
             _legals = legals;
             
             _boardQueue = new BoardQueue();
-            _incoming = incoming;
+            _incoming = new IncomingCaseQueue();
             _circulation = new CirculationQueue();
-            _opSchedule = opSchedule;
+            _opSchedule = new OPSchedule();
             _finished = new FinishedCaseList();
 
             _allocationCount = new Dictionary<Member, int>();
@@ -120,6 +117,10 @@ namespace Simulator
             return _circulation.Count;
         }
 
+        internal int OPScheduleCount()
+        {
+            return _opSchedule.Count;
+        }
 
 
 
