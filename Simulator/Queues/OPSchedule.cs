@@ -77,6 +77,11 @@ namespace Simulator
         {
             return _hasOPWorkAtHour(hour, worker);
         }
+
+        internal AllocatedCase GetOPWork(Hour hour, Member member)
+        {
+            return _hasOPWorkAtHour(hour, member);
+        }
         
 
         internal void Schedule(Hour currentHour, AllocatedCase allocateCase)
@@ -225,7 +230,6 @@ namespace Simulator
             return true;
         }
 
-
         private bool _hasOPWorkAtHour(Hour hour, CaseWorker worker)
         { 
             if (worker == null)
@@ -259,7 +263,43 @@ namespace Simulator
             return false;
         }
 
+        private AllocatedCase _hasOPWorkAtHour(Hour hour, Member member)
+        {
+            if (member == null)
+                throw new NullReferenceException("OPSchedule.HasOPWork: parameter <worker> is null.");
 
-        
+            if (!_schedule.ContainsKey(member))
+                return null;
+
+            Hour lastStartBeforeHour =
+                 (from h in _schedule[member].Keys
+                  where h < hour
+                  select h).Max();
+
+            if (lastStartBeforeHour != null)
+            {
+                if (lastStartBeforeHour.AddHours(TimeParameters.OPDurationInHours - 1) >= hour)
+                {
+                    return _schedule[member][lastStartBeforeHour];
+                }
+            }
+
+            Hour nextStartTime =
+                (from h in _schedule[member].Keys
+                 where h >= hour
+                 select h).Min();
+            if (nextStartTime == null)
+                return null;
+
+            WorkerRole roleInNextCase = _schedule[member][nextStartTime].Board.GetRole(member);
+            int hoursOfPreparation = member.GetParameters(roleInNextCase).HoursOPPrepration;
+
+            Hour nextWorkStartHour = nextStartTime.SubtractHours(hoursOfPreparation);
+            if (nextWorkStartHour <= hour)
+                return _schedule[member][nextStartTime];
+
+            return null;
+        }
+
     }
 }

@@ -41,9 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board\Board.cs" />
+    <Compile Include="Board\BoardReport.cs" />
     <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="Board\MemberParameters.cs" />
+    <Compile Include="Board\SimulationReports.cs" />
     <Compile Include="Queues\FinishedCaseList.cs" />
     <Compile Include="Queues\OPSchedule.cs" />
     <Compile Include="Board\BoardParameters.cs" />
@@ -66,7 +68,6 @@
     <Compile Include="Logging\SimulationLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Time\SimulationTime.cs" />
-    <Compile Include="Work\Work.cs" />
     <Compile Include="Work\WorkReport.cs" />
   </ItemGroup>
   <ItemGroup>

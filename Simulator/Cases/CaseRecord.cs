@@ -53,14 +53,14 @@ namespace Simulator
         #endregion
 
 
+        #region Record setters
         internal void SetAllocation(Hour currentHour)
         {
             if (Allocation != null)
                 throw new InvalidOperationException("Allocation can only be set once.");
             
             Allocation = currentHour;
-        }
-       
+        }       
 
         internal void SetSummonsEnqueue(WorkerRole role, Hour currentHour)
         {
@@ -106,5 +106,7 @@ namespace Simulator
         {
             _decisionRecords[role].SetFinish(currentHour);
         }
+        #endregion
+        
     }
 }

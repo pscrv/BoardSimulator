@@ -71,7 +71,7 @@ namespace Simulator.Tests
         }
 
         [TestMethod()]
-        public void Run()
+        public void Run_NoArrivingCases()
         {
             caseList = new List<AppealCase>();
             for (int i = 0; i < 10; i++)
@@ -80,6 +80,33 @@ namespace Simulator.Tests
             }
 
             Simulation sim = new Simulation(1000, parameters, caseList);
+            sim.Run();
+        }
+
+        [TestMethod()]
+        public void Run_WithArrivingCases()
+        {
+            caseList = new List<AppealCase>();
+            for (int i = 0; i < 10; i++)
+            {
+                caseList.Add(new AppealCase());
+            }
+
+            Dictionary<Hour, List<AppealCase>> arrivingCases = new Dictionary<Hour, List<AppealCase>>();
+            for (int i = 1; i < 5; i++)
+            {
+                arrivingCases.Add(
+                    new Hour(i * 171),
+                    new List<AppealCase>
+                    {
+                        new AppealCase(),
+                        new AppealCase(),
+                        new AppealCase(),                
+                    });
+            }
+
+
+            Simulation sim = new Simulation(2000, parameters, caseList, arrivingCases);
             sim.Run();
         }
     }

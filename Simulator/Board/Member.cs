@@ -40,34 +40,52 @@ namespace Simulator
         }
 
 
-        internal WorkState Work(Hour currentHour, AllocatedCase currentCase)
+        internal WorkReport Work(Hour currentHour, AllocatedCase currentCase)
         {
-
             if (currentCase == null)
             {
-                _logWork(); // no work
-                return WorkState.None;
+                return WorkReport.MakeNullReport();
             }
 
             CaseWorker thisAsCaseWorker = currentCase.Board.GetMemberAsCaseWorker(this);
-            if (_workCounter == 0)
-            {
-                currentCase.RecordStartOfWork(thisAsCaseWorker, currentHour);
-                _setWorkCounter(currentCase);
-            }
+            //if (_workCounter == 0)
+            //{
+            //    currentCase.RecordStartOfWork(thisAsCaseWorker, currentHour);
+            //    _setWorkCounter(currentCase);
+            //}
 
-            _workCounter--;
-            _logWork();
+            //_workCounter--;
+            
+            int workCounter = currentCase.DoWork(thisAsCaseWorker, currentHour);
 
-            if (_workCounter == 0)
+            if (workCounter == 0)
             {
                 currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);
-                return WorkState.Finished;
+                return WorkReport.MakeReport(
+                    currentCase.Case,
+                    currentCase.WorkType,
+                    thisAsCaseWorker.Role,
+                    WorkState.Finished);
             }
 
-            return WorkState.Ongoing;
+
+            return WorkReport.MakeReport(
+                currentCase.Case,
+                currentCase.WorkType,
+                thisAsCaseWorker.Role,
+                WorkState.Ongoing);
         }
 
+
+        internal WorkReport OPWork(AllocatedCase currentCase)
+        {
+            if (currentCase == null)
+                throw new InvalidOperationException("Member.OPWork: currentCase is null.");
+
+            return WorkReport.MakeOPReport(
+                currentCase.Case,
+                currentCase.Board.GetMemberAsCaseWorker(this).Role);
+        }
 
 
         private void _setWorkCounter(AllocatedCase currentCase)
@@ -89,12 +107,8 @@ namespace Simulator
             }
         }
 
+        
 
-
-        private void _logWork()
-        {
-            // TODO: log work
-        }
 
 
 

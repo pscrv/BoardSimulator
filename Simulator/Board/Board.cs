@@ -64,9 +64,9 @@ namespace Simulator
 
 
 
-        internal void DoWork(Hour currentHour)
+        internal BoardReport DoWork(Hour currentHour)
         {
-            WorkState state;
+            WorkReport report;
             AllocatedCase currentCase;
 
             _incoming.EnqueueForNextStage(currentHour);
@@ -79,16 +79,30 @@ namespace Simulator
 
             _circulation.EnqueueForNextStage(currentHour);
 
+
+            BoardReport boardReport = new BoardReport(_members);
             foreach (Member member in _members)
             {
-                currentCase = _currentCase(member);
-                state = member.Work(currentHour, currentCase);
-                if (state == WorkState.Finished)
+                currentCase = _opSchedule.GetOPWork(currentHour, member);
+                if (currentCase != null)
                 {
-                    _circulation.Enqueue(currentHour, currentCase);
-                    _boardQueue.Dequeue(member);
+                    report = member.OPWork(currentCase);
                 }
+                else
+                {
+                    currentCase = _currentCase(member);
+                    report = member.Work(currentHour, currentCase);
+                    if (report.State == WorkState.Finished)
+                    {
+                        _circulation.Enqueue(currentHour, currentCase);
+                        _boardQueue.Dequeue(member);
+                    }
+                }
+
+                boardReport.Add(member, report);
             }
+
+            return boardReport;
         }
 
 
@@ -97,6 +111,16 @@ namespace Simulator
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
             _incoming.Enqueue(currentHour, allocatedCase);
             return allocatedCase;
+        }
+
+
+        internal void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
+        {
+            foreach (AppealCase appealCase in appealCases)
+            {
+                AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
+                _incoming.Enqueue(currentHour, allocatedCase);
+            }
         }
 
 

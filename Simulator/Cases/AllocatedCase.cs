@@ -6,9 +6,12 @@ namespace Simulator
     internal class AllocatedCase
     {
         #region fields and properties
+        // TODO: removed the dependency on _opSchedule
         private OPSchedule _opSchedule;
         private FinishedCaseList _finished;
 
+        private Member _currentWorkingMember = null;
+        private int _workCounter = 0;
 
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
@@ -76,6 +79,57 @@ namespace Simulator
         #endregion
 
 
+
+
+        internal int DoWork(CaseWorker worker, Hour currentHour)
+        {
+            if (worker == null)
+                throw new InvalidOperationException("AllocatedCase.Dowork: worker is null.");
+
+            if (_currentWorkingMember == null)
+            {
+                _setNewWorker(worker, currentHour);
+            }
+
+            if (worker.Member != _currentWorkingMember)
+                throw new InvalidOperationException("AllocatedCase.Dowork: previous member has not yet finished.");
+
+            _workCounter--;
+
+            if (_workCounter == 0)
+            {
+                _currentWorkingMember = null;
+            }
+
+            return _workCounter;
+        }
+
+
+        private void _setNewWorker(CaseWorker worker, Hour currentHour)
+        {
+            _currentWorkingMember = worker.Member;
+
+            WorkerRole role = Board.GetRole(_currentWorkingMember);
+            MemberParameters parameters = _currentWorkingMember.GetParameters(role);
+            
+            switch (WorkType)
+            {
+                case WorkType.Summons:
+                    Record.SetSummonsStart(role, currentHour);
+                    _workCounter = parameters.HoursForSummons;
+                    break;
+                case WorkType.Decision:
+                    Record.SetDecisionStart(role, currentHour);
+                    _workCounter = parameters.HoursForDecision;
+                    break;
+
+                case WorkType.None:
+                    throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
+            }        
+        }
+
+
+
         internal void RecordStartOfWork(CaseWorker caseWorker, Hour currentHour)
         {
             WorkerRole role = caseWorker.Role;
@@ -133,8 +187,7 @@ namespace Simulator
                 Record.SetOPEnqueue(currentHour);
                 return;
             }
-
-
+        
             WorkerRole role = Board.EnqueueForNextWorker(currentHour, this);
             switch (WorkType)
             {
@@ -149,6 +202,9 @@ namespace Simulator
             
             }
         }
+
+
+
 
         private bool _isReadyForOP
         { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }

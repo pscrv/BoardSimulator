@@ -10,7 +10,7 @@ namespace Simulator
 
     
     // Work
-    internal enum WorkType { Summons, Decision, None }
+    internal enum WorkType { Summons, Decision, OP, None }
     internal enum WorkState { Ongoing, Finished, None }
 
 
