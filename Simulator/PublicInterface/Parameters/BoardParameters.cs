@@ -2,7 +2,7 @@
 
 namespace Simulator
 {
-    internal class BoardParameters
+    public class BoardParameters
     {
         internal readonly ChairType ChairType;
         internal readonly MemberParameterCollection Chair;
@@ -10,7 +10,7 @@ namespace Simulator
         internal readonly List<MemberParameterCollection> Legals;
 
 
-        internal BoardParameters(
+        public BoardParameters(
             ChairType chairType, 
             MemberParameterCollection chair, 
             List<MemberParameterCollection> technicals,

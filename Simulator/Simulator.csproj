@@ -41,15 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board\Board.cs" />
-    <Compile Include="Board\BoardReport.cs" />
+    <Compile Include="Board\Registrar.cs" />
+    <Compile Include="PublicInterface\Logging\CompletedCaseReport.cs" />
+    <Compile Include="PublicInterface\Logging\BoardReport.cs" />
     <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
-    <Compile Include="Board\MemberParameters.cs" />
-    <Compile Include="Board\SimulationReports.cs" />
+    <Compile Include="PublicInterface\Parameters\MemberParameters.cs" />
+    <Compile Include="PublicInterface\Logging\HourlyReports.cs" />
     <Compile Include="Queues\FinishedCaseList.cs" />
     <Compile Include="Queues\OPSchedule.cs" />
-    <Compile Include="Board\BoardParameters.cs" />
-    <Compile Include="Simulation\Simulation.cs" />
+    <Compile Include="PublicInterface\Parameters\BoardParameters.cs" />
+    <Compile Include="PublicInterface\Simulation\Simulation.cs" />
     <Compile Include="Queues\BoardQueue.cs" />
     <Compile Include="Queues\CaseBuffer.cs" />
     <Compile Include="Queues\WorkQueues.cs" />
@@ -65,10 +67,9 @@
     <Compile Include="Queues\MemberWorkQueue.cs" />
     <Compile Include="Time\Hour.cs" />
     <Compile Include="Time\TimeParameters.cs" />
-    <Compile Include="Logging\SimulationLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Time\SimulationTime.cs" />
-    <Compile Include="Work\WorkReport.cs" />
+    <Compile Include="PublicInterface\Logging\WorkReport.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\" />

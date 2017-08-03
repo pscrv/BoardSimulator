@@ -8,6 +8,7 @@ namespace Simulator
         internal readonly Member Member;
         internal readonly WorkerRole Role;
 
+        internal int ID { get { return Member.ID; } }
 
         internal int HoursForSummons { get { return Member.GetParameters(Role).HoursForSummons; } }
         internal int HoursForDecision { get { return Member.GetParameters(Role).HoursForDecision; } }
@@ -16,7 +17,7 @@ namespace Simulator
 
 
         #region construction
-        internal CaseWorker(Member member, WorkerRole role, BoardQueue boardQueues)
+        internal CaseWorker(Member member, WorkerRole role)
         {
             Member = member;
             Role = role;

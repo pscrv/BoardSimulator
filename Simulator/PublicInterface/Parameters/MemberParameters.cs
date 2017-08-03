@@ -1,13 +1,13 @@
 ﻿namespace Simulator
 {
-    internal class MemberParameters
+    public class MemberParameters
     {
         internal readonly int HoursForSummons;
         internal readonly int HoursOPPrepration;
         internal readonly int HoursForDecision;
 
 
-        internal MemberParameters(int summonsHours, int opPreparationHours, int decisionHours)
+        public MemberParameters(int summonsHours, int opPreparationHours, int decisionHours)
         {
             HoursForSummons = summonsHours;
             HoursOPPrepration = opPreparationHours;
@@ -16,7 +16,7 @@
     }
 
 
-    internal class MemberParameterCollection
+    public class MemberParameterCollection
     {
         internal static MemberParameterCollection DefaultCollection()
         {
@@ -33,7 +33,7 @@
         internal readonly MemberParameters OtherWorkParameters;
 
 
-        internal MemberParameterCollection(MemberParameters chair, MemberParameters rapporteur, MemberParameters other)
+        public MemberParameterCollection(MemberParameters chair, MemberParameters rapporteur, MemberParameters other)
         {
             ChairWorkParameters = chair;
             RapporteurWorkParameters = rapporteur;

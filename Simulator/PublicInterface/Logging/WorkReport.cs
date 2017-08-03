@@ -1,6 +1,6 @@
 ﻿namespace Simulator
 {
-    internal class WorkReport
+    public class WorkReport
     {
         #region static constructors
         internal static WorkReport MakeReport(AppealCase ac, WorkType type, WorkerRole role, WorkState state)
@@ -20,7 +20,6 @@
         #endregion
 
 
-
         #region internal properties
         internal readonly AppealCase Case;
         internal readonly WorkType Type;
@@ -37,6 +36,15 @@
             Role = role;
             State = state;
         }
+        #endregion
+
+
+
+        #region public interface
+        public int AppealCase { get { return Case.ID; } }
+        public WorkType WorkType { get { return Type; } }
+        public WorkerRole WorkerRole { get { return Role; } }
+        public WorkState WorkState { get { return State; } }
         #endregion
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal class HourlyReports
+    public class HourlyReports
     {
         #region fields and properties
         private readonly Dictionary<Hour, BoardReport> _reports = new Dictionary<Hour, BoardReport>();
@@ -24,7 +24,5 @@ namespace Simulator
         {
             return _reports[hour];
         }
-
-
     }
 }

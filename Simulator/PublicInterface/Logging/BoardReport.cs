@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal class BoardReport
+    public class BoardReport
     {
         #region fields and properties
         private List<Member> _members;
-        private Dictionary<Member, WorkReport> _reports;
+        private Dictionary<int, WorkReport> _publicReports;
         #endregion
 
 
@@ -20,8 +20,8 @@ namespace Simulator
             {
                 _members.Add(m);
             }
-
-            _reports = new Dictionary<Member, WorkReport>();
+            
+            _publicReports = new Dictionary<int, WorkReport>();
         }
         #endregion
 
@@ -31,16 +31,31 @@ namespace Simulator
             if (!_members.Contains(member))
                 throw new InvalidOperationException("BoardReport.Add: member is not registered.");
 
-            if (_reports.ContainsKey(member))
+            if (_publicReports.ContainsKey(member.ID))
                 throw new InvalidOperationException("BoardReport.Add: a report has already been recorded for member.");
-
-            _reports[member] = report;
+            
+            _publicReports[member.ID] = report;
         }
 
 
         internal WorkReport Read(Member member)
         {
-            return _reports[member];
+            if (!_publicReports.ContainsKey(member.ID))
+                throw new InvalidOperationException("BoardReport.Read: member has no record.");
+            
+            return _publicReports[member.ID];
         }
+
+
+
+        #region public interface
+        public WorkReport Read(int memberID)
+        {
+            if (!_publicReports.ContainsKey(memberID))
+                throw new InvalidOperationException("BoardReport.Read: member has no record.");
+
+            return _publicReports[memberID];
+        }
+        #endregion
     }
 }

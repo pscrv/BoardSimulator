@@ -12,7 +12,8 @@ namespace Simulator.Tests
     public class SimulationTests
     {
         BoardParameters parameters;
-        List<AppealCase> caseList;
+        int initialCaseCount;
+
 
         [TestInitialize]
         public void Initialise()
@@ -58,55 +59,49 @@ namespace Simulator.Tests
                 type,
                 chair,
                 technicals,
-                legals);
-
-            caseList = new List<AppealCase> { new AppealCase() };
-            
+                legals);          
         }
+
 
         [TestMethod()]
         public void Constructor()
         {
-            Simulation sim = new Simulation(10, parameters, caseList);
+            Simulation sim = new Simulation(10, parameters, 1);
         }
+
 
         [TestMethod()]
         public void Run_NoArrivingCases()
         {
-            caseList = new List<AppealCase>();
-            for (int i = 0; i < 10; i++)
-            {
-                caseList.Add(new AppealCase());
-            }
-
-            Simulation sim = new Simulation(1000, parameters, caseList);
+            Simulation sim = new Simulation(1000, parameters, 10);
             sim.Run();
         }
+
 
         [TestMethod()]
         public void Run_WithArrivingCases()
         {
-            caseList = new List<AppealCase>();
-            for (int i = 0; i < 10; i++)
-            {
-                caseList.Add(new AppealCase());
-            }
-
-            Dictionary<Hour, List<AppealCase>> arrivingCases = new Dictionary<Hour, List<AppealCase>>();
+            Dictionary<int, int> arrivingCases = new Dictionary<int, int>();
             for (int i = 1; i < 5; i++)
             {
-                arrivingCases.Add(
-                    new Hour(i * 171),
-                    new List<AppealCase>
-                    {
-                        new AppealCase(),
-                        new AppealCase(),
-                        new AppealCase(),                
-                    });
+                arrivingCases.Add(i * 171, 3);
             }
+            
+            Simulation sim = new Simulation(1000, parameters, 10, arrivingCases);
+            sim.Run();
+        }
 
 
-            Simulation sim = new Simulation(2000, parameters, caseList, arrivingCases);
+        [TestMethod()]
+        public void BigRun()
+        {
+            Dictionary<int, int> arrivingCases = new Dictionary<int, int>();
+            for (int i = 1; i < 5; i++)
+            {
+                arrivingCases.Add(i * 160, 1);
+            }
+            
+            Simulation sim = new Simulation(1000, parameters, 450, arrivingCases);
             sim.Run();
         }
     }

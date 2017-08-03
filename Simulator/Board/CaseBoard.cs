@@ -7,7 +7,8 @@ namespace Simulator
     {
         #region fields and properties
         private Dictionary<WorkType, Queue<CaseWorker>> _workerQueues;
-        private BoardQueue _boardQueues;
+
+        private Registrar _registrar;
 
         internal readonly CaseWorker Chair;
         internal readonly CaseWorker Rapporteur;
@@ -30,17 +31,22 @@ namespace Simulator
 
 
         #region construction
-        internal CaseBoard(Member ch, Member rp, Member om, BoardQueue boardQueues)
+        internal CaseBoard(
+            Member ch, 
+            Member rp, 
+            Member om, 
+            Registrar registrar)
         {
-            Chair = new CaseWorker(ch, WorkerRole.Chair, boardQueues);
-            Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur, boardQueues);
-            OtherMember = new CaseWorker(om, WorkerRole.OtherMember, boardQueues);
+            Chair = new CaseWorker(ch, WorkerRole.Chair);
+            Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur);
+            OtherMember = new CaseWorker(om, WorkerRole.OtherMember);
 
             _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>();
             _workerQueues[WorkType.Summons] = _makeQueue();
             _workerQueues[WorkType.Decision] = _makeQueue();
+            
 
-            _boardQueues = boardQueues;
+            _registrar = registrar;
         }
 
 
@@ -112,10 +118,17 @@ namespace Simulator
 
             if (nextWorker == null)
                 return WorkerRole.None;
-
-            _boardQueues.EnqueueForMember(currentHour, nextWorker, allocatedCase);
+            
+            _registrar.EnqueueForMember(currentHour, nextWorker, allocatedCase);
             return nextWorker.Role;
         }
+
+
+        internal void ScheduleOP(Hour currentHour, AllocatedCase allocatedCase)
+        {
+            _registrar.ScheduleOP(currentHour, allocatedCase);
+        }
+
 
         internal int GetLongestOPPreparationHours()
         {

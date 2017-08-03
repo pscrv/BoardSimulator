@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Simulator
@@ -10,12 +11,7 @@ namespace Simulator
         private ChairType _chairType;
         private List<Member> _technicals;
         private List<Member> _legals;
-
-        private BoardQueue _boardQueue;
-        private IncomingCaseQueue _incoming;
-        private CirculationQueue _circulation;
-        private OPSchedule _opSchedule;
-        private FinishedCaseList _finished;
+        private Registrar _registrar;
 
         private Dictionary<Member, int> _allocationCount;
 
@@ -30,7 +26,13 @@ namespace Simulator
                     yield return lm;                
                 
             }
-        }        
+        }                
+
+
+        internal List<AllocatedCase> FinishedCases
+        {
+            get { return _registrar.FinishedCases; }
+        }
         #endregion
 
 
@@ -46,18 +48,14 @@ namespace Simulator
             _chairType = chairType;
             _technicals = technicals;
             _legals = legals;
-            
-            _boardQueue = new BoardQueue();
-            _incoming = new IncomingCaseQueue();
-            _circulation = new CirculationQueue();
-            _opSchedule = new OPSchedule();
-            _finished = new FinishedCaseList();
+
+            _registrar = new Registrar();
 
             _allocationCount = new Dictionary<Member, int>();
             foreach (Member member in _members)
             {
                 _allocationCount[member] = 0;
-                _boardQueue.Register(member);
+                _registrar.RegisterMember(member);
             }
         }
         #endregion
@@ -66,50 +64,22 @@ namespace Simulator
 
         internal BoardReport DoWork(Hour currentHour)
         {
-            WorkReport report;
-            AllocatedCase currentCase;
-
-            _incoming.EnqueueForNextStage(currentHour);
-            
-            List<AllocatedCase> finishedOPCases = _opSchedule.UpdateScheduleAndGetFinishedCases(currentHour);
-            foreach (AllocatedCase finishedCase in finishedOPCases)
-            {
-                finishedCase.EnqueueForWork(currentHour);
-            }
-
-            _circulation.EnqueueForNextStage(currentHour);
-
-
             BoardReport boardReport = new BoardReport(_members);
+
+            _registrar.DoWork(currentHour);
+
             foreach (Member member in _members)
             {
-                currentCase = _opSchedule.GetOPWork(currentHour, member);
-                if (currentCase != null)
-                {
-                    report = member.OPWork(currentCase);
-                }
-                else
-                {
-                    currentCase = _currentCase(member);
-                    report = member.Work(currentHour, currentCase);
-                    if (report.State == WorkState.Finished)
-                    {
-                        _circulation.Enqueue(currentHour, currentCase);
-                        _boardQueue.Dequeue(member);
-                    }
-                }
-
-                boardReport.Add(member, report);
+                boardReport.Add(member, _memberWork(currentHour, member));
             }
 
             return boardReport;
         }
 
-
         internal AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
         {
             AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            _incoming.Enqueue(currentHour, allocatedCase);
+            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
             return allocatedCase;
         }
 
@@ -119,41 +89,50 @@ namespace Simulator
             foreach (AppealCase appealCase in appealCases)
             {
                 AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-                _incoming.Enqueue(currentHour, allocatedCase);
+                _registrar.ProcessIncomingCase(currentHour, allocatedCase);
             }
         }
 
 
         internal void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour)
         {
-            _circulation.Enqueue(currentHour, allocatedCase);
+            _registrar.AddToCirculation(currentHour, allocatedCase);
         }
 
 
 
         internal int MemberQueueCount(Member member)
         {
-            return _boardQueue.Count(member);
+            return _registrar.MemberQueueCount(member);
         }
 
         internal int CirculationQueueCount()
         {
-            return _circulation.Count;
+            return _registrar.CirculationQueueCount();
         }
 
         internal int OPScheduleCount()
         {
-            return _opSchedule.Count;
-        }
-
-
-
-
-        private AllocatedCase _currentCase(Member member)
-        {
-            return _boardQueue.Peek(member);
+            return _registrar.OPScheduleCount();
         }
         
+
+
+
+        private WorkReport _memberWork(Hour currentHour, Member member)
+        {
+            WorkReport report;
+            AllocatedCase currentCase = _registrar.GetCurrentCase(currentHour, member);
+
+            report = member.Work(currentHour, currentCase);
+            if (report.State == WorkState.Finished)
+            {
+                _registrar.ProcessFinishedWork(currentHour, currentCase, member);
+            }
+
+            return report;
+        }
+
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
         {
@@ -170,9 +149,9 @@ namespace Simulator
             _allocationCount[rapporteur]++;
             _allocationCount[other]++;
 
-            CaseBoard board = new CaseBoard(chair, rapporteur, other, _boardQueue);
+            CaseBoard board = new CaseBoard(chair, rapporteur, other, _registrar);
 
-            return new AllocatedCase(appealCase, board, currentHour, _opSchedule, _finished);
+            return new AllocatedCase(appealCase, board, currentHour);
         }
 
 

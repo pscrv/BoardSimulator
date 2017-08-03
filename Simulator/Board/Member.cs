@@ -11,8 +11,7 @@ namespace Simulator
 
 
 
-        #region fields and properties        
-        private int _workCounter = 0;
+        #region fields and properties     
         private Dictionary<WorkerRole, MemberParameters> _parameters;
 
         internal readonly int ID;
@@ -43,37 +42,25 @@ namespace Simulator
         internal WorkReport Work(Hour currentHour, AllocatedCase currentCase)
         {
             if (currentCase == null)
-            {
                 return WorkReport.MakeNullReport();
-            }
 
             CaseWorker thisAsCaseWorker = currentCase.Board.GetMemberAsCaseWorker(this);
-            //if (_workCounter == 0)
-            //{
-            //    currentCase.RecordStartOfWork(thisAsCaseWorker, currentHour);
-            //    _setWorkCounter(currentCase);
-            //}
-
-            //_workCounter--;
-            
-            int workCounter = currentCase.DoWork(thisAsCaseWorker, currentHour);
-
-            if (workCounter == 0)
+            if (currentCase.Stage == CaseStage.OP)
             {
-                currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);
-                return WorkReport.MakeReport(
-                    currentCase.Case,
-                    currentCase.WorkType,
-                    thisAsCaseWorker.Role,
-                    WorkState.Finished);
+                return WorkReport.MakeOPReport(currentCase.Case, thisAsCaseWorker.Role);
             }
 
+            WorkState workState = currentCase.DoWork(thisAsCaseWorker, currentHour);
+            if (workState == WorkState.Finished)
+            {
+                currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);               
+            }
 
             return WorkReport.MakeReport(
                 currentCase.Case,
                 currentCase.WorkType,
                 thisAsCaseWorker.Role,
-                WorkState.Ongoing);
+                workState);
         }
 
 
@@ -86,30 +73,6 @@ namespace Simulator
                 currentCase.Case,
                 currentCase.Board.GetMemberAsCaseWorker(this).Role);
         }
-
-
-        private void _setWorkCounter(AllocatedCase currentCase)
-        {
-            if (currentCase == null)
-                return;
-
-            WorkerRole currentRole = currentCase.Board.GetRole(this);
-            switch (currentCase.WorkType)
-            {
-                case WorkType.Summons:
-                    _workCounter = _parameters[currentRole].HoursForSummons;
-                    break;
-                case WorkType.Decision:
-                    _workCounter = _parameters[currentRole].HoursForDecision;
-                    break;
-                case WorkType.None:
-                    throw new InvalidOperationException("member.Work: no work to do on this case.");
-            }
-        }
-
-        
-
-
 
 
 
