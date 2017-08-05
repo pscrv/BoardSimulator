@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace BoardSimulator
+namespace SimulatorUI
 {
     public abstract class ObservableObject : INotifyPropertyChanged
     {

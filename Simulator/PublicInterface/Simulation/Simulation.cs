@@ -47,7 +47,7 @@ namespace Simulator
             _assembleArrivingCases(arriving);
         }
 
-        internal Simulation(
+        public Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
             int initialCaseCount)
@@ -56,7 +56,7 @@ namespace Simulator
         #endregion
 
 
-        internal void Run()
+        public void Run()
         {
             BoardReport report;
 
