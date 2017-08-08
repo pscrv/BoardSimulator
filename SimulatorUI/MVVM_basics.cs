@@ -21,22 +21,37 @@ namespace SimulatorUI
         /// <param name="propertyName">The property that has a new value.</param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null)
+            if (PropertyChanged != null)
             {
-                var e = new PropertyChangedEventArgs(propertyName);
-                handler(this, e);
+                PropertyChanged(
+                    this, 
+                    new PropertyChangedEventArgs(propertyName));
             }
         }
+
+
+        protected void SetProperty<T>(ref T backingfield, T value, string propertyName)
+        {
+            if (Equals(backingfield, value))
+                return;
+
+            backingfield = value;
+            OnPropertyChanged(propertyName);            
+        }
+        
     }
 
 
-    public class DelegateCommand : ICommand
+
+
+
+    public class DelegateActionCommand : ICommand
     {
+
         private readonly Action _action;
         public event EventHandler CanExecuteChanged;
 
-        public DelegateCommand(Action action)
+        public DelegateActionCommand(Action action)
         {
             _action = action;
         }
@@ -49,7 +64,42 @@ namespace SimulatorUI
         public bool CanExecute(object parameter)
         {
             return true;
+        }        
+    }
+
+
+
+    public class DelegateParamterisedCommand : ICommand
+    {
+        public delegate bool Enabler(object obj);
+        public delegate void Executable(object parameter);
+        private readonly Enabler _canExecute;
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
-        
+
+        private Executable _execute;
+
+        public DelegateParamterisedCommand(Executable execute, Enabler canExecute)
+        {
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+
+        public DelegateParamterisedCommand(Executable exectute) 
+            : this(exectute, p => true)
+        { }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute(parameter);
+        }
     }
 }

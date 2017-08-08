@@ -86,6 +86,8 @@ namespace BoardSimulator
     }
     #endregion
 
+
+
     #region timelines
     class ReportLogList_VM : List<BoardWorkReport_VM>
     {
@@ -284,6 +286,7 @@ namespace BoardSimulator
 
     }
 
+
     class BoardOutputGraphs_VM
     {
         static protected Brush __summonsFill = Brushes.LightBlue;
@@ -379,6 +382,7 @@ namespace BoardSimulator
     {
 
     }
+
 
     class Board_VM : ViewModel
     {

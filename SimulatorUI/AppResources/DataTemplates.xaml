@@ -1,48 +1,55 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:local="clr-namespace:SimulatorUI"
                     xmlns:usercontrols="clr-namespace:SimulatorUI.Resources">
     
 
     <DataTemplate DataType="{x:Type local:MemberParametersViewModel}">
-        <StackPanel Background="AliceBlue">
+        <StackPanel Background="Transparent">
 
-            <Border BorderThickness="1" CornerRadius="3" BorderBrush="Blue" Padding="20">
+            <Border Style="{StaticResource PropertyBorderStyle}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
-                        Label="Summons"
-                        Value="{Binding HoursForSummons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            Label="Summons"
+                            Value="{Binding HoursForSummons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Maximum="100"
+                            Minimum="1"/>
                         <usercontrols:Label_Int_Pair
-                        Label="OP Preparation"
-                        Value="{Binding HoursForOPPreparation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            Label="OP Preparation"
+                            Value="{Binding HoursForOPPreparation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Maximum="100"
+                            Minimum="1"/>
                         <usercontrols:Label_Int_Pair
-                        Label="Decision"
-                        Value="{Binding HoursForDecision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            Label="Decision"
+                            Value="{Binding HoursForDecision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Maximum="100"
+                            Minimum="1"/>
                     </StackPanel>
-
                 </StackPanel>
             </Border>
 
         </StackPanel>
     </DataTemplate>
 
+    
     <DataTemplate DataType="{x:Type local:MemberParameterCollectionViewModel}">
-        <StackPanel Background="AliceBlue">
+        <StackPanel Background="Transparent">
 
-            <Border BorderThickness="1" BorderBrush="Blue" CornerRadius="5" Padding="5" Margin="5">
+            <Border Style="{StaticResource PropertyBorderStyle}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical">
                         <Label Content="Work as chair" />
-                        <ContentControl Content="{Binding ChairParameters}"/>
+                        <Label Content="{Binding ChairParameters}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <Label Content="Work as Rapporteur" />
-                        <ContentControl Content="{Binding RapporteurParameters}"/>
+                        <Label Content="{Binding RapporteurParameters}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <Label Content="Work as other member" />
-                        <ContentControl Content="{Binding OtherMemberParameters}"/>
+                        <Label Content="{Binding OtherMemberParameters}"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -50,8 +57,10 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type local:BoardParametersViewModel}">
-        <StackPanel Background="AliceBlue">
+
+
+    <DataTemplate DataType="{x:Type local:SimulationViewModel}">
+        <StackPanel Background="AliceBlue" Margin="10">
             <TextBlock 
                 Text="Board Parameters" 
                 FontSize="24"
@@ -70,13 +79,50 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Label Grid.Column="0" Grid.Row="0" Content="Chair" />
-                <ContentControl Grid.Column="1" Grid.Row="0" Content="{Binding Chair}"/>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Chair" FontSize="16" TextWrapping="Wrap"/>
+                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                    <ContentControl Content="{Binding ChairParameters}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding ChairType}" FontSize="16" Margin="20" VerticalAlignment="Center"/>
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Refresh}" 
+                            Command="{Binding ChangeBoardTypeCommand}" 
+                            ToolTip="Toggle chair type."/>
+                    </StackPanel>
+                </StackPanel>
 
-                <Label Grid.Column="0" Grid.Row="1" Content="Technical" />
+                <StackPanel Grid.Column="0" Grid.Row="1">
+                    <TextBlock Text="Technical Members" FontSize="16" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Add}" 
+                            Command="{Binding AddMemberCommand}" 
+                            CommandParameter="{Binding Technicals}"
+                            ToolTip="Add another technically qualified member."/>
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Close}" 
+                            Command="{Binding RemoveMemberCommand}" 
+                            CommandParameter="{Binding Technicals}"
+                            ToolTip="Remove a technically qualified member."/>
+                    </StackPanel>
+                </StackPanel>
                 <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Technicals}" />
 
-                <Label Grid.Column="0" Grid.Row="2" Content="Legal" />
+                <StackPanel Grid.Column="0" Grid.Row="2" >
+                    <TextBlock Text="Legal Members" FontSize="16" TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button 
+                                Content="{iconpacks:PackIconModern Kind=Add}" 
+                                Command="{Binding AddMemberCommand}" 
+                                CommandParameter="{Binding Legals}"
+                            ToolTip="Add another legally qualified member."/>
+                        <Button 
+                                Content="{iconpacks:PackIconModern Kind=Close}" 
+                                Command="{Binding RemoveMemberCommand}" 
+                                CommandParameter="{Binding Legals}"
+                            ToolTip="Remove a legally qualified member." />
+                    </StackPanel>
+                </StackPanel>
                 <ItemsControl Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Legals}" />
 
                 <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" >

@@ -1,6 +1,6 @@
 ﻿namespace SimulatorUI
 {
-    internal class MemberParametersViewModel : ObservableObject
+    public class MemberParametersViewModel : ObservableObject
     {
         private MemberParameters _parameters;
 
@@ -12,39 +12,19 @@
         public int HoursForSummons
         {
             get { return _parameters.HoursForSummons; }
-            set
-            {
-                if (_parameters.HoursForSummons != value)
-                {
-                    _parameters.HoursForSummons = value;
-                    OnPropertyChanged("HoursForSummons");
-                }
-            }
+            set { SetProperty(ref _parameters.HoursForSummons, value, "HoursForSummons"); }
         }
 
         public int HoursForOPPreparation
         {
             get { return _parameters.HoursOPPrepration; }
-            set
-            {
-                if (_parameters.HoursOPPrepration != value)
-                {
-                    _parameters.HoursOPPrepration = value;
-                    OnPropertyChanged("HoursForOPPreparation");}
-            }
+            set { SetProperty(ref _parameters.HoursOPPrepration, value, "HoursForOPPreparation"); }
         }
 
         public int HoursForDecision
         {
             get { return _parameters.HoursForDecision; }
-            set
-            {
-                if (_parameters.HoursForDecision != value)
-                {
-                    _parameters.HoursForDecision = value;
-                    OnPropertyChanged("HoursForDecision");
-                }
-            }
+            set { SetProperty(ref _parameters.HoursForDecision, value, "HoursForDecision"); }
         }
     }
 }

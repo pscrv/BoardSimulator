@@ -1,11 +1,14 @@
 ﻿namespace SimulatorUI
 {
-    internal class MemberParameterCollectionViewModel : ObservableObject
+    public class MemberParameterCollectionViewModel : ObservableObject
     {
         private MemberParameterCollection _collection;
         private MemberParametersViewModel _chair;
         private MemberParametersViewModel _rapporteur;
         private MemberParametersViewModel _other;
+
+
+        public MemberParameterCollection Parameters { get { return _collection; } }
 
 
         public MemberParameterCollectionViewModel(MemberParameterCollection collection)

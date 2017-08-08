@@ -306,7 +306,8 @@
                         Width="200"
                         Margin="10"/>
                     <Button 
-                        Content="Show Activities" Command="{Binding ShowActivities_Command}"
+                        Content="Show Activities" 
+                        Command="{Binding ShowActivities_Command}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom" 
                         Width="200"
