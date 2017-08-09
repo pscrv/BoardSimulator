@@ -24,7 +24,6 @@ namespace SimulatorUI.Resources
         public Label_Int_Pair()
         {
             InitializeComponent();
-            { }
         }
         #endregion
 

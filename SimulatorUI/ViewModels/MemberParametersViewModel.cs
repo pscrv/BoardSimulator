@@ -8,6 +8,7 @@
         {
             _parameters = parameters;
         }
+        
 
         public int HoursForSummons
         {

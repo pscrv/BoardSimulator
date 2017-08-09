@@ -13,17 +13,17 @@
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
                             Label="Summons"
-                            Value="{Binding HoursForSummons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="{Binding HoursForSummons, Mode=TwoWay}"
                             Maximum="100"
                             Minimum="1"/>
                         <usercontrols:Label_Int_Pair
                             Label="OP Preparation"
-                            Value="{Binding HoursForOPPreparation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="{Binding HoursForOPPreparation, Mode=TwoWay}"
                             Maximum="100"
                             Minimum="1"/>
                         <usercontrols:Label_Int_Pair
                             Label="Decision"
-                            Value="{Binding HoursForDecision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="{Binding HoursForDecision, Mode=TwoWay}"
                             Maximum="100"
                             Minimum="1"/>
                     </StackPanel>
@@ -59,19 +59,19 @@
 
 
 
-    <DataTemplate DataType="{x:Type local:SimulationViewModel}">
-        <StackPanel Background="AliceBlue" Margin="10">
+    <DataTemplate DataType="{x:Type local:BoardParametersViewModel}">
+        <StackPanel Background="Transparent" Margin="10">
             <TextBlock 
                 Text="Board Parameters" 
                 FontSize="24"
-                FontWeight="Bold"   
+                FontWeight="Bold"
+                TextAlignment="Center"
                 />
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="550" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -81,7 +81,7 @@
 
                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Chair" FontSize="16" TextWrapping="Wrap"/>
                 <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
-                    <ContentControl Content="{Binding ChairParameters}"/>
+                    <ContentControl Content="{Binding Chair.ChairParameters}"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding ChairType}" FontSize="16" Margin="20" VerticalAlignment="Center"/>
                         <Button 
@@ -124,6 +124,43 @@
                     </StackPanel>
                 </StackPanel>
                 <ItemsControl Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Legals}" />
+                
+
+            </Grid>
+
+        </StackPanel>
+    </DataTemplate>
+
+
+
+
+
+    <DataTemplate DataType="{x:Type local:SimulationViewModel}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+
+
+            <ContentControl 
+                Grid.Column="0"
+                Content="{Binding BoardVM}" />
+
+
+            <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
+                    <Border Style="{StaticResource PropertyBorderStyle}">
+                        <usercontrols:Label_Int_Pair
+                            Label="Initial stock"
+                            Value="{Binding InitialCaseCount, Mode=TwoWay}"
+                            ValueWidth="50"
+                            Maximum="10000"
+                            Minimum="0" 
+                            Margin="20"/>
+                    </Border>
+                </StackPanel>
 
                 <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" >
                     <Label Content="Cases Finshed" Padding="5" FontSize="18"/>
@@ -132,7 +169,6 @@
 
             </Grid>
 
-        </StackPanel>
     </DataTemplate>
 
 </ResourceDictionary>

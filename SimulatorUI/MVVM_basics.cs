@@ -45,32 +45,35 @@ namespace SimulatorUI
 
 
 
-    public class DelegateActionCommand : ICommand
-    {
+    //public class DelegateActionCommand : ICommand
+    //{
 
-        private readonly Action _action;
-        public event EventHandler CanExecuteChanged;
+    //    private readonly Action _action;
+    //    public event EventHandler CanExecuteChanged;
 
-        public DelegateActionCommand(Action action)
-        {
-            _action = action;
-        }
+    //    public DelegateActionCommand(Action action)
+    //    {
+    //        _action = action;
+    //    }
 
-        public void Execute(object parameter)
-        {
-            _action();
-        }
+    //    public void Execute(object parameter)
+    //    {
+    //        _action();
+    //    }
 
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }        
-    }
+    //    public bool CanExecute(object parameter)
+    //    {
+    //        return true;
+    //    }        
+    //}
 
 
 
     public class DelegateParamterisedCommand : ICommand
     {
+        public static int __InstanceCount = 0;
+        public static int __CanExecuteCount = 0;
+
         public delegate bool Enabler(object obj);
         public delegate void Executable(object parameter);
         private readonly Enabler _canExecute;
@@ -84,12 +87,13 @@ namespace SimulatorUI
 
         public DelegateParamterisedCommand(Executable execute, Enabler canExecute)
         {
+            __InstanceCount++;
             _execute = execute;
             _canExecute = canExecute;
         }
 
-        public DelegateParamterisedCommand(Executable exectute) 
-            : this(exectute, p => true)
+        public DelegateParamterisedCommand(Executable execute) 
+            : this(execute, p => true)
         { }
 
         public void Execute(object parameter)
@@ -99,6 +103,8 @@ namespace SimulatorUI
 
         public bool CanExecute(object parameter)
         {
+            __CanExecuteCount++;
+            var x = __CanExecuteCount;
             return _canExecute(parameter);
         }
     }
