@@ -6,29 +6,69 @@ namespace Simulator
 {
     public class Simulation
     {
+        #region static  
+        private static Dictionary<Hour, int> __scheduleArrivals(Dictionary<int, int> arriving)
+        {
+            Dictionary<Hour, int> arrivingCases = new Dictionary<Hour, int>();
+            foreach (int hour in arriving.Keys)
+            {
+                arrivingCases[new Hour(hour)] = arriving[hour];
+            }
+
+            return arrivingCases;
+        }
+
+        private static Dictionary<Hour, int> __scheduleArrivals(int arrivalsPerMonth, int lengthInHours)
+        {
+            Dictionary<Hour, int> schedule = new Dictionary<Hour, int>();
+            SimulationTimeSpan timespan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
+
+            Hour hour = new Hour(0);
+            while (hour <= timespan.End)
+            {
+                schedule[hour] = arrivalsPerMonth;
+                hour = hour.FirstHourOfNextMonth();
+            }
+
+            return schedule;
+        }
+#endregion
+
+
         #region fields and properties
         private SimulationTimeSpan _timeSpan;
         private Board _board;
         private Dictionary<Hour, int> _arrivingCases;
         private HourlyReports _reports;
+        private SimulationReport _simulationReport;
         #endregion
 
 
-        #region publlic access
-        public ReadOnlyCollection<CompletedCaseReport> FinishedCases
-        { get { return _compileCompletedCaseReports(); } }
-        
+        #region public access
+        public static Simulation MakeSimulation(
+            int years,
+            BoardParameters boardParameters,
+            int initialCaseCount,
+            int arrivalsPerMonth = 0)
+        {
+            return new Simulation(
+                years * TimeParameters.HoursPerYear,
+                boardParameters,
+                initialCaseCount,
+                arrivalsPerMonth);
+        }
 
-        public HourlyReports Reports { get { return _reports; } }
+
+        public SimulationReport SimulationReport { get { return _simulationReport; } }
         #endregion
 
 
         #region construction
-        public Simulation(
+        internal Simulation(
             int lengthInHours, 
             BoardParameters boardParameters, 
             int initialCaseCount,
-            Dictionary<int, int> arriving)
+            Dictionary<Hour, int> arriving)
         {
             Member chair = new Member(boardParameters.Chair);
             List<Member> technicals = _assembleMemberList(boardParameters.Technicals);
@@ -43,16 +83,48 @@ namespace Simulator
 
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
             _reports = new HourlyReports();
+            _arrivingCases = arriving;
+
             _assembleInitialCases(initialCaseCount);
-            _assembleArrivingCases(arriving);
         }
+
+        internal Simulation(
+            int lengthInHours,
+            BoardParameters boardParameters,
+            int initialCaseCount,
+            Dictionary<int, int> arriving)
+            : this (
+                  lengthInHours,
+                  boardParameters,
+                  initialCaseCount,
+                  __scheduleArrivals(arriving))
+        { }
 
         public Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
             int initialCaseCount)
-            : this (lengthInHours, boardParameters, initialCaseCount, new Dictionary<int, int>())
+            : this (
+                  lengthInHours, 
+                  boardParameters, 
+                  initialCaseCount, 
+                  new Dictionary<Hour, int>())
         { }
+
+
+        public Simulation(
+            int lengthInHours,
+            BoardParameters boardParameters,
+            int initialCaseCount,
+            int arrivalsPerMonth)
+            : this (
+                  lengthInHours, 
+                  boardParameters, 
+                  initialCaseCount, 
+                  __scheduleArrivals(arrivalsPerMonth, lengthInHours))
+        { }
+
+
         #endregion
 
 
@@ -72,7 +144,12 @@ namespace Simulator
 
                 report = _board.DoWork(hour);
                 _reports.Add(hour, report);
+
             }
+
+            _simulationReport = new SimulationReport(
+                _compileCompletedCaseReports(),
+                _reports);
         }
 
 
@@ -85,16 +162,6 @@ namespace Simulator
                 result.Add(new CompletedCaseReport(ac));
             }
             return new ReadOnlyCollection<CompletedCaseReport>(result);
-        }
-
-
-        private void _assembleArrivingCases(Dictionary<int, int> arriving)
-        {
-            _arrivingCases = new Dictionary<Hour, int>();
-            foreach (int hour in arriving.Keys)
-            {
-                _arrivingCases[new Hour(hour)] = arriving[hour];
-            }
         }
 
         private void _assembleInitialCases(int initialCaseCount)

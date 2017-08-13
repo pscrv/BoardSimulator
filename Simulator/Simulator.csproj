@@ -52,6 +52,7 @@
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="PublicInterface\Parameters\MemberParameters.cs" />
     <Compile Include="PublicInterface\Logging\HourlyReports.cs" />
+    <Compile Include="PublicInterface\Simulation\SimulationReport.cs" />
     <Compile Include="Queues\FinishedCaseList.cs" />
     <Compile Include="Queues\OPSchedule.cs" />
     <Compile Include="PublicInterface\Parameters\BoardParameters.cs" />

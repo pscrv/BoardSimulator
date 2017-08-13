@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimulatorUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="1250">
+        
+        Title="MainWindow" 
+        Height="750" 
+        Width="1250"
+        Background="{StaticResource LightBackgroundBrush}">
     
     
     <Grid>

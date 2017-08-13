@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+
+        <ResourceDictionary Source="MemberParametersViewModel.xaml" />
+        <ResourceDictionary Source="MemberParametersCollectionViewModel.xaml" />
+        <ResourceDictionary Source="BoardParametersViewModel.xaml" />
+        <ResourceDictionary Source="SimulationParametersViewModel.xaml" />
+        <ResourceDictionary Source="SimulationViewModel.xaml" />
+
+    </ResourceDictionary.MergedDictionaries>
+    
+</ResourceDictionary>

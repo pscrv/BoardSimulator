@@ -41,6 +41,15 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Core.3.1.1\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Interfaces.3.1.1\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Linq.3.1.1\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -65,12 +74,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppResources\Label_Int_Pair_updown.xaml.cs">
+    <Compile Include="AppResources\UserControls\Label_Int_Pair_updown.xaml.cs">
       <DependentUpon>Label_Int_Pair_updown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AppResources\Label_Value_Pair.xaml.cs">
+    <Compile Include="AppResources\UserControls\Label_Value_Pair.xaml.cs">
       <DependentUpon>Label_Value_Pair.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\ObservableObject.cs" />
+    <Compile Include="MVVM\DebouncedHandler.cs" />
+    <Compile Include="ViewModels\SimulationParametersViewModel.cs" />
+    <Compile Include="ViewModels\SimulationReportViewModel.cs" />
     <Compile Include="ViewModels\SimulationViewModel.cs" />
     <Compile Include="ViewModels\MemberParameterCollectionViewModel.cs" />
     <Compile Include="ViewModels\MemberParametersViewModel.cs" />
@@ -82,7 +95,7 @@
     <Compile Include="Parameters\BoardParameters.cs" />
     <Compile Include="Parameters\MemberParameters.cs" />
     <Compile Include="ViewModels\BoardParametersViewModel.cs" />
-    <Compile Include="MVVM_basics.cs" />
+    <Compile Include="MVVM\DelegatCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +112,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -111,19 +125,63 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AppResources\DataTemplates.xaml">
+    <Page Include="AppResources\Colours\Colours.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\Label_Int_Pair_updown.xaml">
+    <Page Include="AppResources\DataTemplates\AllDataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\BoardParametersViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\MemberParametersCollectionViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\MemberParametersViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\SimulationParametersViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\SimulationViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\Styles\Border.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\Styles\Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\Styles\AllStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\Styles\FrameworkElementBase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\Styles\ToolTip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\UserControls\Label_Int_Pair_updown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="AppResources\Label_Value_Pair.xaml">
+    <Page Include="AppResources\UserControls\Label_Value_Pair.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="AppResources\Styles.xaml">
+    <Page Include="AppResources\Styles\Label_Int_Pair.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
