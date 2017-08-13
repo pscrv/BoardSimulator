@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Simulator.Tests
 {
@@ -12,7 +7,6 @@ namespace Simulator.Tests
     public class SimulationTests
     {
         BoardParameters parameters;
-        int initialCaseCount;
 
 
         [TestInitialize]

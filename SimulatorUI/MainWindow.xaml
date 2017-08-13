@@ -12,7 +12,7 @@
         Background="{StaticResource LightBackgroundBrush}">
     
     
-    <Grid>
+    <Grid Margin="20">
         <ContentControl Content="{Binding}" />
     </Grid>
 </Window>

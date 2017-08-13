@@ -39,7 +39,6 @@ namespace SimulatorUI
             get
             {
                 return _miniSimReportVM?.FinishedCaseCount ?? 0;
-                //return _simulation?.FinishedCases.Count ?? 0;
             }
         }
         #endregion
@@ -110,7 +109,7 @@ namespace SimulatorUI
 
         private void _raisePropertyChanged()
         { 
-            OnPropertyChanged("FinishedCaseCount");
+            OnPropertyChanged("SimulationReportVM");
         }
     }
 }

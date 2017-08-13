@@ -7,7 +7,16 @@
         <StackPanel 
             Grid.Column="1" 
             Grid.Row="1" 
-            VerticalAlignment="Top">
+            Background="Transparent"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left">
+
+            <TextBlock Text="Simulation Parameters" 
+                FontSize="24"
+                FontWeight="Bold"
+                TextAlignment="Center"
+                Foreground="DarkBlue" />
+
             <Border Style="{StaticResource PropertyBorderStyle}">
                 <usercontrols:Label_Int_Pair
                     Label="Initial stock"

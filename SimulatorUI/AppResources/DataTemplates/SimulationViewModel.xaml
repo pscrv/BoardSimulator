@@ -10,7 +10,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -27,42 +27,30 @@
 
             <ContentControl
                 Grid.Column="1"
-                Grid.Row="1"
+                Grid.Row="0"
                 Content="{Binding SimulationParametersVM}" />
 
-            <!--<StackPanel 
-                Grid.Column="1" 
-                Grid.Row="1" 
-                VerticalAlignment="Top">
-                    <Border Style="{StaticResource PropertyBorderStyle}">
-                        <usercontrols:Label_Int_Pair
-                                Label="Initial stock"
-                                Value="{Binding InitialCaseCount, Mode=TwoWay}"
-                                ValueWidth="50"
-                                Maximum="10000"
-                                Minimum="0" 
-                                Margin="20"/>
-                    </Border>
-                    <Border Style="{StaticResource PropertyBorderStyle}">
-                        <usercontrols:Label_Int_Pair
-                                Label="Monthly arrivals"
-                                Value="{Binding MonthlyArrivals, Mode=TwoWay}"
-                                ValueWidth="50"
-                                Maximum="1000"
-                                Minimum="0" 
-                                Margin="20"/>
-                    </Border>
-            </StackPanel>-->
+            <Button 
+                Grid.Column="1"
+                Grid.Row="1"
+                Content="{iconpacks:PackIconModern Kind=Cog}"                    
+                Command="{Binding FullSimulationCommand, Delay=50}" 
+                HorizontalAlignment="Left"
+                Height="60"
+                Width="60"
+                ToolTip="Run full simulation."/>
 
-            <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top">
+
+            <ContentControl
+                Grid.Column="2"
+                Grid.Row="1"
+                Content="{Binding SimulationReportVM}" />
+            
+            <!--<StackPanel Grid.Column="2" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top">
                 <Label Content="Cases Finshed" Padding="5" FontSize="18"/>
                 <Label Content="{Binding FinishedCaseCount}" Padding="10" FontSize="18"/>
 
-                <Button 
-                    Content="{iconpacks:PackIconModern Kind=Cog}"                    
-                    Command="{Binding FullSimulationCommand, Delay=100}" 
-                    HorizontalAlignment="Left"/>
-            </StackPanel>
+            </StackPanel>-->
 
         </Grid>
 

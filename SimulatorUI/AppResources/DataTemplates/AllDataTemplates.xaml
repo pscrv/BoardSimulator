@@ -8,6 +8,7 @@
         <ResourceDictionary Source="BoardParametersViewModel.xaml" />
         <ResourceDictionary Source="SimulationParametersViewModel.xaml" />
         <ResourceDictionary Source="SimulationViewModel.xaml" />
+        <ResourceDictionary Source="SimulationReportViewModel.xaml" />
 
     </ResourceDictionary.MergedDictionaries>
     

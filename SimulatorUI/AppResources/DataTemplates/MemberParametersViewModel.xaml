@@ -11,13 +11,13 @@
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
                             Label="Summons"
-                            Value="{Binding HoursForSummons, Mode=TwoWay, Delay=100}" />
+                            Value="{Binding HoursForSummons, Mode=TwoWay, Delay=10}" />
                         <usercontrols:Label_Int_Pair
                             Label="OP Preparation"
-                            Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=100}" />
+                            Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=10}" />
                         <usercontrols:Label_Int_Pair
                             Label="Decision"
-                            Value="{Binding HoursForDecision, Mode=TwoWay,Delay=100}" />
+                            Value="{Binding HoursForDecision, Mode=TwoWay,Delay=10}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

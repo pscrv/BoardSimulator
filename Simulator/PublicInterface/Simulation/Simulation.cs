@@ -40,7 +40,6 @@ namespace Simulator
         private Board _board;
         private Dictionary<Hour, int> _arrivingCases;
         private HourlyReports _reports;
-        private SimulationReport _simulationReport;
         #endregion
 
 
@@ -59,7 +58,15 @@ namespace Simulator
         }
 
 
-        public SimulationReport SimulationReport { get { return _simulationReport; } }
+        public SimulationReport SimulationReport
+        {
+            get
+            {
+                return new SimulationReport(
+                    _compileCompletedCaseReports(),
+                    _reports);
+            }
+        }
         #endregion
 
 
@@ -146,10 +153,6 @@ namespace Simulator
                 _reports.Add(hour, report);
 
             }
-
-            _simulationReport = new SimulationReport(
-                _compileCompletedCaseReports(),
-                _reports);
         }
 
 
