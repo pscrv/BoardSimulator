@@ -1,6 +1,6 @@
 ﻿namespace SimulatorUI
 {
-    public class SimulationParametersViewModel : ObservableObject
+    public class SimulationParametersViewModel : ViewModel
     {
         private int _miniRunLength;
         private int _fullRunLength;

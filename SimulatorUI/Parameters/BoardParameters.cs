@@ -25,6 +25,8 @@ namespace SimulatorUI
             }
         }
 
+
+
         public BoardParameters(
             ChairType chairType, 
             MemberParameterCollection chair, 
@@ -48,5 +50,6 @@ namespace SimulatorUI
             }
             return result;
         }
+        
     }
 }

@@ -1,0 +1,45 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:customcontrols="clr-namespace:SimulatorUI.AppResources.CustomControls">
+
+    <ControlTemplate x:Key="IconLeft" TargetType="customcontrols:TextIconButton">
+            <StackPanel Orientation="Horizontal" Background="Transparent">
+                <ContentPresenter VerticalAlignment="Center"/>
+                <TextBlock 
+                    Text="{TemplateBinding Text}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="10"/>
+            </StackPanel>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="IconRight" TargetType="customcontrols:TextIconButton">
+
+            <StackPanel Orientation="Horizontal" Background="Transparent">
+                <TextBlock 
+                    Text="{TemplateBinding Text}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="10"/>
+                <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Content}"/>
+            </StackPanel>
+    </ControlTemplate>
+
+
+
+    <Style TargetType="{x:Type customcontrols:TextIconButton}">
+
+        <Setter Property="Background" Value="Transparent" />
+
+        <Style.Triggers>
+            <Trigger Property="ContentPosition" Value="Left">
+                <Setter Property="Template" Value="{StaticResource IconLeft}" />
+            </Trigger>
+            <Trigger Property="ContentPosition" Value="Right">
+                <Setter Property="Template" Value="{StaticResource IconRight}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+</ResourceDictionary>

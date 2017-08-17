@@ -10,7 +10,10 @@
         Height="750" 
         Width="1250"
         Background="{StaticResource LightBackgroundBrush}">
-    
+
+    <Window.DataContext>
+        <local:StartupViewModel />
+    </Window.DataContext>
     
     <Grid Margin="20">
         <ContentControl Content="{Binding}" />

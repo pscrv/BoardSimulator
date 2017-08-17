@@ -25,10 +25,6 @@ namespace SimulatorUI
         public MainWindow()
         {
             InitializeComponent();
-
-            SimulationViewModel simulationViewModel = new SimulationViewModel();
-
-            DataContext = simulationViewModel;
         }
         
     }

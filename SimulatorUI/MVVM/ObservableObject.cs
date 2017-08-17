@@ -3,7 +3,7 @@
 namespace SimulatorUI
 {
 
-    public abstract class ObservableObject : INotifyPropertyChanged
+    public abstract class ViewModel : INotifyPropertyChanged
     {
         /// <summary>
         /// Raised when a property on this object has a new value.

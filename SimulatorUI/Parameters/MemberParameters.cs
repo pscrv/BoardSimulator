@@ -1,4 +1,6 @@
-﻿namespace SimulatorUI
+﻿using Simulator;
+
+namespace SimulatorUI
 {
     public class MemberParameters
     {
@@ -22,47 +24,17 @@
             HoursOPPrepration = opPreparationHours;
             HoursForDecision = decisionHours;
         }
+
+
+        public MemberParameters Add(MemberParameters other)
+        {
+            return new MemberParameters(
+                HoursForSummons + other.HoursForSummons,
+                HoursOPPrepration + other.HoursOPPrepration,
+                HoursForDecision + other.HoursForDecision);
+        }
+
     }
 
-
-    public class MemberParameterCollection
-    {
-        public static MemberParameterCollection DefaultCollection()
-        {
-            MemberParameters chair = new MemberParameters(16, 4, 8);
-            MemberParameters rapporteur = new MemberParameters(40, 8, 24);
-            MemberParameters other = new MemberParameters(8, 4, 8);
-
-            return new MemberParameterCollection(chair, rapporteur, other);
-        }
-
-
-
-        public MemberParameters ChairWorkParameters;
-        public MemberParameters RapporteurWorkParameters;
-        public MemberParameters OtherWorkParameters;
-
-
-
-        public Simulator.MemberParameterCollection AsSimulatorParameters
-        {
-            get
-            {
-                return new Simulator.MemberParameterCollection(
-                    ChairWorkParameters.AsSimulatorParameters,
-                    RapporteurWorkParameters.AsSimulatorParameters,
-                    OtherWorkParameters.AsSimulatorParameters);
-            }
-        }
-
-
-
-        public MemberParameterCollection(MemberParameters chair, MemberParameters rapporteur, MemberParameters other)
-        {
-            ChairWorkParameters = chair;
-            RapporteurWorkParameters = rapporteur;
-            OtherWorkParameters = other;
-        }
-    }
-
+    
 }

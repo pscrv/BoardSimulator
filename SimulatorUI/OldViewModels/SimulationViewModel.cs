@@ -6,7 +6,7 @@ using Simulator;
 
 namespace SimulatorUI
 {
-    public class SimulationViewModel : ObservableObject
+    public class SimulationViewModel : ViewModel
     {
         #region static
         private static int __miniSimulationLengthInYears = 1;
@@ -14,12 +14,11 @@ namespace SimulatorUI
         private static int __initialCaseCount = 100;
         private static int __monthlyArrivals = 10;
         #endregion
-
-
+        
 
         #region fields and properties
         private Simulation _simulation;
-        private BoardParametersViewModel _boardVM;
+        private BoardDetailsViewModel _boardVM;
         private SimulationParametersViewModel _simulationParametersVM;
         private SimulationReportViewModel _miniSimReportVM;
         
@@ -27,7 +26,7 @@ namespace SimulatorUI
         private DebouncedHandler _debouncedHandler = new DebouncedHandler();
 
 
-        public BoardParametersViewModel BoardVM { get => _boardVM; }
+        public BoardDetailsViewModel BoardVM { get => _boardVM; }
 
         public SimulationParametersViewModel SimulationParametersVM { get => _simulationParametersVM; }
 
@@ -57,7 +56,7 @@ namespace SimulatorUI
         #region construction
         public SimulationViewModel()
         {
-            _boardVM = BoardParametersViewModel.MakeDefaultBoard();
+            _boardVM = BoardDetailsViewModel.MakeDefaultBoard();
             _simulationParametersVM = new SimulationParametersViewModel
             {
                 InitialCaseCount = __initialCaseCount,

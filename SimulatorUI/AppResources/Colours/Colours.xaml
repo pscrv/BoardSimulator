@@ -6,12 +6,14 @@
     <Color x:Key="MediumBackgroundColour">LightBlue</Color>
     <Color x:Key="BorderBaseColour">Blue</Color>
     <Color x:Key="BorderHighlightColour">Maroon</Color>
+    <Color x:Key="DarkTextColour">DarkBlue</Color>
 
 
     <SolidColorBrush x:Key="LightBackgroundBrush" Color="{StaticResource LightBackgroundColour}" />
     <SolidColorBrush x:Key="MediumBackgroundBrush" Color="{StaticResource MediumBackgroundColour}" />
     <SolidColorBrush x:Key="BorderBaseBrush" Color="{StaticResource BorderBaseColour}" />
     <SolidColorBrush x:Key="BorderHighlightBrush" Color="{StaticResource BorderHighlightColour}" />
+    <SolidColorBrush x:Key="DarkTextBrush" Color="{StaticResource DarkTextColour}" />
 
 
 </ResourceDictionary>

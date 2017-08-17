@@ -3,28 +3,48 @@
                     xmlns:local="clr-namespace:SimulatorUI"
                     xmlns:usercontrols="clr-namespace:SimulatorUI.Resources">
 
-    <DataTemplate DataType="{x:Type local:MemberParametersViewModel}">
+    <DataTemplate DataType="{x:Type local:MemberParameters_DynamicViewModel}">
         <StackPanel Background="Transparent">
 
             <Border Style="{StaticResource PropertyBorderStyle}">
-                <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
+                            Style="{StaticResource MemberParametersUpDownStyle}"
                             Label="Summons"
                             Value="{Binding HoursForSummons, Mode=TwoWay, Delay=10}" />
-                        <usercontrols:Label_Int_Pair
+                    <usercontrols:Label_Int_Pair
+                            Style="{StaticResource MemberParametersUpDownStyle}"
                             Label="OP Preparation"
                             Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=10}" />
-                        <usercontrols:Label_Int_Pair
+                    <usercontrols:Label_Int_Pair
+                            Style="{StaticResource MemberParametersUpDownStyle}"
                             Label="Decision"
                             Value="{Binding HoursForDecision, Mode=TwoWay,Delay=10}" />
                     </StackPanel>
-                </StackPanel>
             </Border>
 
         </StackPanel>
     </DataTemplate>
 
 
+    <DataTemplate DataType="{x:Type local:MemberParameters_FixedViewModel}">
+        <StackPanel Background="Transparent">
+
+            <Border Style="{StaticResource PropertyBorderStyle}">
+                <StackPanel Orientation="Vertical">
+                    <usercontrols:Label_Value_Pair
+                            Label="Summons"
+                            Value="{Binding HoursForSummons, Mode=TwoWay, Delay=10}" />
+                    <usercontrols:Label_Value_Pair
+                            Label="OP Preparation"
+                            Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=10}" />
+                    <usercontrols:Label_Value_Pair
+                            Label="Decision"
+                            Value="{Binding HoursForDecision, Mode=TwoWay,Delay=10}" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </DataTemplate>
 
 </ResourceDictionary>

@@ -10,9 +10,6 @@ namespace SimulatorUI
 {   
     public class DelegateParamterisedCommand : ICommand
     {
-        public static int __InstanceCount = 0;
-        public static int __CanExecuteCount = 0;
-
         public delegate bool Enabler(object obj);
         public delegate void Executable(object parameter);
         private readonly Enabler _canExecute;
@@ -26,7 +23,6 @@ namespace SimulatorUI
 
         public DelegateParamterisedCommand(Executable execute, Enabler canExecute)
         {
-            __InstanceCount++;
             _execute = execute;
             _canExecute = canExecute;
         }
@@ -42,8 +38,6 @@ namespace SimulatorUI
 
         public bool CanExecute(object parameter)
         {
-            __CanExecuteCount++;
-            var x = __CanExecuteCount;
             return _canExecute(parameter);
         }
     }

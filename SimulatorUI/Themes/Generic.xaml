@@ -1,0 +1,17 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:SimulatorUI"
+    xmlns:customcontrols="clr-namespace:SimulatorUI.AppResources.CustomControls"
+    xmlns:defaultstyles="clr-namespace:SimulatorUI.AppResources.CustomControls.DefaultStyles">
+
+
+    <ResourceDictionary.MergedDictionaries>
+
+        <ResourceDictionary Source="../AppResources/CustomControls/DefaultStyles/AllDefaultStyles.xaml" />
+
+    </ResourceDictionary.MergedDictionaries>
+    
+
+
+</ResourceDictionary>

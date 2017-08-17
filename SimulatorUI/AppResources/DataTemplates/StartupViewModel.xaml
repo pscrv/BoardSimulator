@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:SimulatorUI">
+
+
+    <DataTemplate DataType="{x:Type local:StartupViewModel}">
+
+        <StackPanel Orientation="Horizontal">
+
+            <ContentControl
+                Content="{Binding BoardParametersVM}" 
+                MinWidth="300" />
+            <ContentControl
+                Content="{Binding SimulationParametersVM }" 
+                MinWidth="300" />
+            <ContentControl
+                Content="{Binding SimulationReportVM }" 
+                MinWidth="300" />
+
+        </StackPanel>
+
+    </DataTemplate>
+    
+    
+</ResourceDictionary>

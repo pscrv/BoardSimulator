@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.Core.3.1.1\lib\net45\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -50,6 +51,7 @@
     <Reference Include="System.Reactive.Linq, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.Linq.3.1.1\lib\net45\System.Reactive.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -67,10 +69,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="App\App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="AppResources\CustomControls\TextIconButton.cs" />
+    <Compile Include="AppResources\UserControls\TextIconButton.xaml.cs">
+      <DependentUpon>TextIconButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="App\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -82,20 +88,26 @@
     </Compile>
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\DebouncedHandler.cs" />
-    <Compile Include="ViewModels\SimulationParametersViewModel.cs" />
-    <Compile Include="ViewModels\SimulationReportViewModel.cs" />
-    <Compile Include="ViewModels\SimulationViewModel.cs" />
+    <Compile Include="Parameters\MemberParametersCollection.cs" />
+    <Compile Include="ViewModels\BoardDetailsViewModel.cs" />
+    <Compile Include="ViewModels\BoardSummaryViewModel.cs" />
+    <Compile Include="OldViewModels\SimulationParameterSummaryViewModel.cs" />
+    <Compile Include="OldViewModels\SimulationParametersViewModel.cs" />
+    <Compile Include="OldViewModels\SummaryViewModels\SimulationReportSummaryViewModel.cs" />
+    <Compile Include="OldViewModels\SimulationReportViewModel.cs" />
+    <Compile Include="OldViewModels\SimulationViewModel.cs" />
     <Compile Include="ViewModels\MemberParameterCollectionViewModel.cs" />
     <Compile Include="ViewModels\MemberParametersViewModel.cs" />
+    <Compile Include="ViewModels\StartupViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Parameters\BoardParameters.cs" />
     <Compile Include="Parameters\MemberParameters.cs" />
     <Compile Include="ViewModels\BoardParametersViewModel.cs" />
-    <Compile Include="MVVM\DelegatCommand.cs" />
+    <Compile Include="MVVM\DelegateCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -114,7 +126,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="packages.config" />
+    <None Include="App\packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -122,10 +134,18 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App\App.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="AppResources\Colours\Colours.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\CustomControls\DefaultStyles\AllDefaultStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\CustomControls\DefaultStyles\TextIconButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -133,15 +153,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\DataTemplates\BoardParametersViewModel.xaml">
+    <Page Include="AppResources\UserControls\TextIconButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\DataTemplates\MemberParametersCollectionViewModel.xaml">
+    <Page Include="AppResources\DataTemplates\MemberParameterCollectionViewModel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AppResources\DataTemplates\MemberParametersViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\BoardDetailsViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\BoardParametersViewModel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,7 +181,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\DataTemplates\SimulationViewModel.xaml">
+    <Page Include="AppResources\DataTemplates\BoardSummaryViewModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\DataTemplates\StartupViewModel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,11 +201,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\Styles\FrameworkElementBase.xaml">
+    <Page Include="OldAppResources\Styles\FrameworkElementBase.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\Styles\ToolTip.xaml">
+    <Page Include="AppResources\Styles\TextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OldAppResources\Styles\ToolTip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -189,7 +225,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -200,7 +240,9 @@
       <Name>Simulator</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="OldAppResources\DataTemplates\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

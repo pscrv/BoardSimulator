@@ -1,0 +1,106 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                    xmlns:local="clr-namespace:SimulatorUI">
+
+
+    <DataTemplate DataType="{x:Type local:BoardDetailsViewModel}">
+        <StackPanel Margin="10" Background="Transparent">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock 
+                    Grid.Column="0" 
+                    Grid.Row="0" 
+                    Text="Chair" 
+                    FontSize="16" 
+                    TextWrapping="Wrap"/>
+
+                <StackPanel 
+                    Grid.Column="1" 
+                    Grid.Row="0" 
+                    Orientation="Horizontal">
+                    
+                    <ContentControl Content="{Binding Chair.ChairParameters}"/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock 
+                            Text="{Binding ChairType}" 
+                            FontSize="16" 
+                            Margin="20" 
+                            VerticalAlignment="Center"/>
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Refresh}" 
+                            Command="{Binding ChangeBoardTypeCommand}" 
+                            ToolTip="Change chair type."/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel 
+                    Grid.Column="0" 
+                    Grid.Row="1">
+                    
+                    <TextBlock 
+                        Text="Technical Members" 
+                        FontSize="16" 
+                        TextWrapping="Wrap" />
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Add}" 
+                            Command="{Binding AddMemberCommand}" 
+                            CommandParameter="{Binding Technicals}"
+                            ToolTip="Add another technically qualified member."/>
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Close}" 
+                            Command="{Binding RemoveMemberCommand}" 
+                            CommandParameter="{Binding Technicals}"
+                            ToolTip="Remove a technically qualified member."/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <ItemsControl 
+                    Grid.Column="1" 
+                    Grid.Row="1" 
+                    ItemsSource="{Binding Technicals}" />
+
+                <StackPanel 
+                    Grid.Column="0" 
+                    Grid.Row="2" >
+                    
+                    <TextBlock 
+                        Text="Legal Members" 
+                        FontSize="16" 
+                        TextWrapping="Wrap"/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Add}" 
+                            Command="{Binding AddMemberCommand}" 
+                            CommandParameter="{Binding Legals}"
+                            ToolTip="Add another legally qualified member."/>
+                        <Button 
+                            Content="{iconpacks:PackIconModern Kind=Close}" 
+                            Command="{Binding RemoveMemberCommand}" 
+                            CommandParameter="{Binding Legals}"
+                            ToolTip="Remove a legally qualified member." />
+                    </StackPanel>
+                </StackPanel>
+                <ItemsControl Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Legals}" />
+
+            </Grid>
+
+        </StackPanel>
+    </DataTemplate>
+
+
+</ResourceDictionary>
