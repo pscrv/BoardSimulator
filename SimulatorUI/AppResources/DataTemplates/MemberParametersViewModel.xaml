@@ -6,18 +6,18 @@
     <DataTemplate DataType="{x:Type local:MemberParameters_DynamicViewModel}">
         <StackPanel Background="Transparent">
 
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
-                            Style="{StaticResource MemberParametersUpDownStyle}"
+                            Style="{StaticResource ParametersUpDownStyle}"
                             Label="Summons"
                             Value="{Binding HoursForSummons, Mode=TwoWay, Delay=10}" />
                     <usercontrols:Label_Int_Pair
-                            Style="{StaticResource MemberParametersUpDownStyle}"
+                            Style="{StaticResource ParametersUpDownStyle}"
                             Label="OP Preparation"
                             Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=10}" />
                     <usercontrols:Label_Int_Pair
-                            Style="{StaticResource MemberParametersUpDownStyle}"
+                            Style="{StaticResource ParametersUpDownStyle}"
                             Label="Decision"
                             Value="{Binding HoursForDecision, Mode=TwoWay,Delay=10}" />
                     </StackPanel>
@@ -30,7 +30,7 @@
     <DataTemplate DataType="{x:Type local:MemberParameters_FixedViewModel}">
         <StackPanel Background="Transparent">
 
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <StackPanel Orientation="Vertical">
                     <usercontrols:Label_Value_Pair
                             Label="Summons"

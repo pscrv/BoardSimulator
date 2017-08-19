@@ -6,10 +6,9 @@
         xmlns:local="clr-namespace:SimulatorUI"
         mc:Ignorable="d"
         
-        Title="MainWindow" 
-        Height="750" 
-        Width="1250"
-        Background="{StaticResource LightBackgroundBrush}">
+        Title="Board Simulator" 
+        Background="{StaticResource LightBackgroundBrush}"        
+        WindowState="Maximized">
 
     <Window.DataContext>
         <local:StartupViewModel />
@@ -18,4 +17,5 @@
     <Grid Margin="20">
         <ContentControl Content="{Binding}" />
     </Grid>
+    
 </Window>

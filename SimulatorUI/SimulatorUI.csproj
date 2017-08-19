@@ -92,7 +92,7 @@
     <Compile Include="ViewModels\BoardDetailsViewModel.cs" />
     <Compile Include="ViewModels\BoardSummaryViewModel.cs" />
     <Compile Include="OldViewModels\SimulationParameterSummaryViewModel.cs" />
-    <Compile Include="OldViewModels\SimulationParametersViewModel.cs" />
+    <Compile Include="ViewModels\SimulationParametersViewModel.cs" />
     <Compile Include="OldViewModels\SummaryViewModels\SimulationReportSummaryViewModel.cs" />
     <Compile Include="OldViewModels\SimulationReportViewModel.cs" />
     <Compile Include="OldViewModels\SimulationViewModel.cs" />
@@ -201,7 +201,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OldAppResources\Styles\FrameworkElementBase.xaml">
+    <Page Include="AppResources\Styles\FrameworkElementBase.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -209,7 +209,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OldAppResources\Styles\ToolTip.xaml">
+    <Page Include="AppResources\Styles\ToolTip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,6 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OldAppResources\DataTemplates\" />
+    <Folder Include="OldAppResources\Styles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

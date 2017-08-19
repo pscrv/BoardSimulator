@@ -3,19 +3,18 @@
                     xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:local="clr-namespace:SimulatorUI">
 
-
+    
     <DataTemplate DataType="{x:Type local:BoardDetailsViewModel}">
-        <StackPanel Margin="10" Background="Transparent">
-
+        <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" Height="500">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock 
@@ -29,9 +28,9 @@
                     Grid.Column="1" 
                     Grid.Row="0" 
                     Orientation="Horizontal">
-                    
+
                     <ContentControl Content="{Binding Chair.ChairParameters}"/>
-                    
+
                     <StackPanel Orientation="Horizontal">
                         <TextBlock 
                             Text="{Binding ChairType}" 
@@ -48,12 +47,12 @@
                 <StackPanel 
                     Grid.Column="0" 
                     Grid.Row="1">
-                    
+
                     <TextBlock 
                         Text="Technical Members" 
                         FontSize="16" 
                         TextWrapping="Wrap" />
-                    
+
                     <StackPanel Orientation="Horizontal">
                         <Button 
                             Content="{iconpacks:PackIconModern Kind=Add}" 
@@ -67,7 +66,7 @@
                             ToolTip="Remove a technically qualified member."/>
                     </StackPanel>
                 </StackPanel>
-                
+
                 <ItemsControl 
                     Grid.Column="1" 
                     Grid.Row="1" 
@@ -76,12 +75,12 @@
                 <StackPanel 
                     Grid.Column="0" 
                     Grid.Row="2" >
-                    
+
                     <TextBlock 
                         Text="Legal Members" 
                         FontSize="16" 
                         TextWrapping="Wrap"/>
-                    
+
                     <StackPanel Orientation="Horizontal">
                         <Button 
                             Content="{iconpacks:PackIconModern Kind=Add}" 
@@ -95,11 +94,15 @@
                             ToolTip="Remove a legally qualified member." />
                     </StackPanel>
                 </StackPanel>
-                <ItemsControl Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Legals}" />
-
+                
+                <ItemsControl 
+                    Grid.Column="1" 
+                    Grid.Row="2" 
+                    ItemsSource="{Binding Legals}" />
+                
             </Grid>
+        </ScrollViewer>
 
-        </StackPanel>
     </DataTemplate>
 
 

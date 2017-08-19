@@ -1,16 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    
-    <Color x:Key="LightBackgroundColour">AliceBlue</Color>
-    <Color x:Key="MediumBackgroundColour">LightBlue</Color>
-    <Color x:Key="BorderBaseColour">Blue</Color>
-    <Color x:Key="BorderHighlightColour">Maroon</Color>
-    <Color x:Key="DarkTextColour">DarkBlue</Color>
+
+    <Color x:Key="LightBackgroundColour">#FFE2EAD8</Color>
+    <Color x:Key="MediumBackgroundColour">GreenYellow</Color>
+    <Color x:Key="BorderBaseColour">LimeGreen</Color>
+    <Color x:Key="BorderHighlightColour">Green</Color>
+    <Color x:Key="DarkTextColour">DarkGray</Color>
 
 
+    <SolidColorBrush x:Key="k" Color="#FFE2EAD8" />
     <SolidColorBrush x:Key="LightBackgroundBrush" Color="{StaticResource LightBackgroundColour}" />
-    <SolidColorBrush x:Key="MediumBackgroundBrush" Color="{StaticResource MediumBackgroundColour}" />
+    <SolidColorBrush x:Key="MediumBackgroundBrush" Color="{StaticResource MediumBackgroundColour}" Opacity="0.5"/>
     <SolidColorBrush x:Key="BorderBaseBrush" Color="{StaticResource BorderBaseColour}" />
     <SolidColorBrush x:Key="BorderHighlightBrush" Color="{StaticResource BorderHighlightColour}" />
     <SolidColorBrush x:Key="DarkTextBrush" Color="{StaticResource DarkTextColour}" />

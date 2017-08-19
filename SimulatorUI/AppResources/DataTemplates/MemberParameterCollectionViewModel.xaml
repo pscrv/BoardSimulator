@@ -8,7 +8,7 @@
         
         <StackPanel>
 
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical">
                         <Label Content="Work as chair" />
@@ -34,7 +34,7 @@
         
         <StackPanel Background="Transparent">
 
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Work as chair" />

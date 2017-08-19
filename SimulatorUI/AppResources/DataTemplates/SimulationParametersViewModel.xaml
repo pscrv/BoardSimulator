@@ -4,21 +4,15 @@
                     xmlns:usercontrols="clr-namespace:SimulatorUI.Resources">
 
     <DataTemplate DataType="{x:Type local:SimulationParametersViewModel}">
-        <StackPanel 
-            Grid.Column="1" 
-            Grid.Row="1" 
-            Background="Transparent"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Left">
+        <StackPanel>
 
-            <TextBlock Text="Simulation Parameters" 
-                FontSize="24"
-                FontWeight="Bold"
-                TextAlignment="Center"
-                Foreground="DarkBlue" />
+            <TextBlock 
+                Text="Simulation Parameters"
+                Style="{StaticResource HeaderTBStyle}" />
 
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <usercontrols:Label_Int_Pair
+                    Style="{StaticResource ParametersUpDownStyle}"
                     Label="Initial stock"
                     Value="{Binding InitialCaseCount, Mode=TwoWay, Delay=100}"
                     ValueWidth="50"
@@ -26,8 +20,10 @@
                     Minimum="0" 
                     Margin="20"/>
             </Border>
-            <Border Style="{StaticResource PropertyBorderStyle}">
+            
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <usercontrols:Label_Int_Pair
+                    Style="{StaticResource ParametersUpDownStyle}"
                     Label="Monthly arrivals"
                     Value="{Binding ArrivalsPerMonth, Mode=TwoWay, Delay=100}"
                     ValueWidth="50"

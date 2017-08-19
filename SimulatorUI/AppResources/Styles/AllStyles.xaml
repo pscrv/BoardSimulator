@@ -2,10 +2,12 @@
 
     <ResourceDictionary.MergedDictionaries>
 
+        <ResourceDictionary Source="FrameworkElementBase.xaml" />
         <ResourceDictionary Source="Border.xaml" />
         <ResourceDictionary Source="TextBlock.xaml" />
-        <ResourceDictionary Source="Label_Int_Pair.xaml" />
         <ResourceDictionary Source="Button.xaml" />
+        <ResourceDictionary Source="ToolTip.xaml" />
+        <ResourceDictionary Source="Label_Int_Pair.xaml" />
 
     </ResourceDictionary.MergedDictionaries>
     

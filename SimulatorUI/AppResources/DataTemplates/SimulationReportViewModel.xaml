@@ -7,8 +7,26 @@
     <DataTemplate DataType="{x:Type local:SimulationReportViewModel}">
     
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-            <TextBlock Text="Cases Finished in one year" Padding="5" FontSize="18" TextWrapping="Wrap" />
-            <TextBlock Text="{Binding FinishedCaseCount}" Padding="10" FontSize="18"/>           
+
+            <TextBlock 
+                Style="{StaticResource HeaderTBStyle}" 
+                Text="One year results" />
+
+
+            <Border Style="{StaticResource BasicBorderStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock 
+                        Text="Cases Finished:" 
+                        Padding="5" 
+                        FontSize="18" 
+                        VerticalAlignment="Center"/>
+                    <TextBlock 
+                        Text="{Binding FinishedCaseCount}" 
+                        Padding="10" 
+                        FontSize="18"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
     
     </DataTemplate>
