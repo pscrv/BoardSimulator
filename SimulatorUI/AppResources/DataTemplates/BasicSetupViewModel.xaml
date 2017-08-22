@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:SimulatorUI">
 
 
-    <DataTemplate DataType="{x:Type local:StartupViewModel}">
+    <DataTemplate DataType="{x:Type local:BasicSetupViewModel}">
 
         <DockPanel>
             <StackPanel 
@@ -21,16 +21,7 @@
                     MinWidth="300" />
             </StackPanel>
 
-
-            <Button 
-                DockPanel.Dock="Left"
-                HorizontalAlignment="Left"
-                Margin="10"
-                Height="50"
-                Width="150"                
-                Content="Full Simulation" 
-                Command="{Binding FullSimulationCommand}"/>
-
+          
         </DockPanel>
 
     </DataTemplate>

@@ -11,72 +11,17 @@ namespace SimulatorUI
     public class BoardDetailsViewModel : ViewModel
     {
         #region static
-        private static ChairType __type = ChairType.Technical;
-        private static MemberParameterCollection __chair = new MemberParameterCollection(
-            new MemberParameters(6, 6, 12),
-            new MemberParameters(40, 8, 24),
-            new MemberParameters(3, 4, 8));
 
-
-        private static MemberParameterCollection __defaultTechnical()
+        // TODO: move this out of here?
+        // TODO: different defaults for technical/legal
+        private static MemberParameterCollection __defaultMember()
         {
             return new MemberParameterCollection(
                     new MemberParameters(7, 7, 13),
                     new MemberParameters(41, 9, 25),
                     new MemberParameters(4, 5, 9));
         }
-
-        private static MemberParameterCollection __defaultLegal()
-        {
-            return new MemberParameterCollection(
-                    new MemberParameters(7, 7, 13),
-                    new MemberParameters(41, 9, 25),
-                    new MemberParameters(4, 5, 9));
-        }
-
-
-        private static List<MemberParameterCollection> __technicals = new List<MemberParameterCollection>
-            {
-                new MemberParameterCollection(
-                    new MemberParameters(7, 7, 13),
-                    new MemberParameters(41, 9, 25),
-                    new MemberParameters(4, 5, 9)),
-
-                new MemberParameterCollection(
-                    new MemberParameters(8, 8, 14),
-                    new MemberParameters(42, 10, 26),
-                    new MemberParameters(5, 6, 10))
-            };
-
-        private static List<MemberParameterCollection> __legals = new List<MemberParameterCollection>
-            {
-                new MemberParameterCollection(
-                    new MemberParameters(7, 7, 13),
-                    new MemberParameters(41, 9, 25),
-                    new MemberParameters(4, 5, 9)),
-
-                new MemberParameterCollection(
-                    new MemberParameters(8, 8, 14),
-                    new MemberParameters(42, 10, 26),
-                    new MemberParameters(5, 6, 10)),
-
-                new MemberParameterCollection(
-                    new MemberParameters(9, 9, 15),
-                    new MemberParameters(43, 11, 27),
-                    new MemberParameters(6, 7, 11))
-            };
-
-
-        public static BoardDetailsViewModel MakeDefaultBoard()
-        {
-            BoardParameters boardParameters = new BoardParameters(
-                __type,
-                __chair,
-                __technicals,
-                __legals);
-
-            return new BoardDetailsViewModel(boardParameters);
-        }
+        
         #endregion
 
 
@@ -122,6 +67,7 @@ namespace SimulatorUI
 
 
         #region Commands
+        // TODO: AddMemeberCommand should use different defaults for technical/legal members
         public ICommand AddMemberCommand
         { get { return new DelegateParamterisedCommand(_addMember); } }
 
@@ -137,7 +83,7 @@ namespace SimulatorUI
         {
             ObservableCollection<MemberParameterCollection_DynamicViewModel> collection =
                 parameter as ObservableCollection<MemberParameterCollection_DynamicViewModel>;
-            collection?.Add(new MemberParameterCollection_DynamicViewModel(__defaultTechnical()));
+            collection?.Add(new MemberParameterCollection_DynamicViewModel(__defaultMember()));
         }
 
         private void _removeMember(object parameter)

@@ -11,7 +11,7 @@
         WindowState="Maximized">
 
     <Window.DataContext>
-        <local:StartupViewModel />
+        <local:MainViewModel />
     </Window.DataContext>
     
     <Grid Margin="20">

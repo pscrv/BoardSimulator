@@ -23,7 +23,7 @@ namespace SimulatorUI.AppResources.CustomControls
                 "Text",
                 typeof(string),
                 typeof(TextIconButton),
-                new PropertyMetadata("DefaultTest"));
+                new PropertyMetadata("DefaultText"));
 
 
 

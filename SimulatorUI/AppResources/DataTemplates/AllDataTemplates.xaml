@@ -3,7 +3,8 @@
 
     <ResourceDictionary.MergedDictionaries>
 
-        <ResourceDictionary Source="StartupViewModel.xaml" />
+        <ResourceDictionary Source="MainViewModel.xaml" />
+        <ResourceDictionary Source="BasicSetupViewModel.xaml" />
         <ResourceDictionary Source="MemberParametersViewModel.xaml" />
         <ResourceDictionary Source="MemberParameterCollectionViewModel.xaml" />
         <ResourceDictionary Source="BoardParametersViewModel.xaml" />
