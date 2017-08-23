@@ -2,15 +2,12 @@
 {
     internal class FullSimulationViewModel : ViewModel
     {
-        private BoardParametersViewModel boardParametersVM;
+        private BoardParameters _boardParameters;
+        
 
-        public FullSimulationViewModel()
+        public FullSimulationViewModel(BoardParameters boardParameters)
         {
-        }
-
-        public FullSimulationViewModel(BoardParametersViewModel boardParametersVM)
-        {
-            this.boardParametersVM = boardParametersVM;
+            _boardParameters = boardParameters;
         }
     }
 }

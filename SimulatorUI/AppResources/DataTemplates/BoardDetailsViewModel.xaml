@@ -3,7 +3,27 @@
                     xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:local="clr-namespace:SimulatorUI">
 
+
+    <DataTemplate x:Key="RemovableItemTemplate">
+        <StackPanel 
+            Orientation="Horizontal" 
+            Margin="10">
+            
+            <ContentControl 
+                Content="{Binding}" />
+            <Button 
+                Content="{iconpacks:PackIconModern Kind=Close}" 
+                Command="{
+                    Binding Path=DataContext.RemoveMemberCommand, 
+                    RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                CommandParameter="{Binding}"
+                ToolTip="Remove this member." 
+                VerticalAlignment="Top"/>
+        </StackPanel>
+    </DataTemplate>
     
+    
+
     <DataTemplate DataType="{x:Type local:BoardDetailsViewModel}">
         <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" Height="500">
             <Grid>
@@ -56,21 +76,17 @@
                     <StackPanel Orientation="Horizontal">
                         <Button 
                             Content="{iconpacks:PackIconModern Kind=Add}" 
-                            Command="{Binding AddMemberCommand}" 
-                            CommandParameter="{Binding Technicals}"
+                            Command="{Binding AddTechnicalMemberCommand}" 
                             ToolTip="Add another technically qualified member."/>
-                        <Button 
-                            Content="{iconpacks:PackIconModern Kind=Close}" 
-                            Command="{Binding RemoveMemberCommand}" 
-                            CommandParameter="{Binding Technicals}"
-                            ToolTip="Remove a technically qualified member."/>
                     </StackPanel>
                 </StackPanel>
 
                 <ItemsControl 
                     Grid.Column="1" 
                     Grid.Row="1" 
-                    ItemsSource="{Binding Technicals}" />
+                    ItemsSource="{Binding Technicals}" 
+                    ItemTemplate="{StaticResource RemovableItemTemplate}" />
+
 
                 <StackPanel 
                     Grid.Column="0" 
@@ -84,21 +100,16 @@
                     <StackPanel Orientation="Horizontal">
                         <Button 
                             Content="{iconpacks:PackIconModern Kind=Add}" 
-                            Command="{Binding AddMemberCommand}" 
-                            CommandParameter="{Binding Legals}"
+                            Command="{Binding AddLegalMemberCommand}"
                             ToolTip="Add another legally qualified member."/>
-                        <Button 
-                            Content="{iconpacks:PackIconModern Kind=Close}" 
-                            Command="{Binding RemoveMemberCommand}" 
-                            CommandParameter="{Binding Legals}"
-                            ToolTip="Remove a legally qualified member." />
                     </StackPanel>
                 </StackPanel>
-                
+
                 <ItemsControl 
                     Grid.Column="1" 
                     Grid.Row="2" 
-                    ItemsSource="{Binding Legals}" />
+                    ItemsSource="{Binding Legals}" 
+                    ItemTemplate="{StaticResource RemovableItemTemplate}" />
                 
             </Grid>
         </ScrollViewer>

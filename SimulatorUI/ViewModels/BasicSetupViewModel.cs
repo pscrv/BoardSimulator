@@ -14,9 +14,8 @@ namespace SimulatorUI
         #endregion
 
 
-
-
         #region fields and properties
+        private BoardParameters _boardParameters;
         private Simulation _miniSim;
         
         public BoardParametersViewModel BoardParametersVM { get; private set; }  
@@ -29,9 +28,11 @@ namespace SimulatorUI
 
 
         #region construction
-        public BasicSetupViewModel()
+
+        public BasicSetupViewModel(BoardParameters parameters)
         {
-            BoardParametersVM = new BoardParametersViewModel();
+            _boardParameters = parameters;
+            BoardParametersVM = new BoardParametersViewModel(parameters);
 
             SimulationParametersVM = new SimulationParametersViewModel
             {
@@ -51,6 +52,15 @@ namespace SimulatorUI
         #endregion
 
 
+
+        public void Reset()
+        {
+            BoardParametersVM.Reset();
+        }
+
+
+
+
         private void _runMiniSim()
         {
             Task task = new Task(
@@ -63,7 +73,7 @@ namespace SimulatorUI
         {
             _miniSim = Simulation.MakeSimulation(
                 length,
-                BoardParametersVM.DetailsVM.Parameters.AsSimulatorBoardParameters,  //TODO: improve this
+                BoardParametersVM.DetailsVM.Parameters.AsSimulatorBoardParameters,  
                 SimulationParametersVM.InitialCaseCount,
                 SimulationParametersVM.ArrivalsPerMonth);
             _miniSim.Run();

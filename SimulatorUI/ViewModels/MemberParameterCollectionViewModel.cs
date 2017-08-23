@@ -32,10 +32,6 @@ namespace SimulatorUI
             _collection = collection;
             _setMembers();
 
-            //_chair = new MemberParametersViewModel(collection.ChairWorkParameters);
-            //_rapporteur = new MemberParametersViewModel(collection.RapporteurWorkParameters);
-            //_other = new MemberParametersViewModel(collection.OtherWorkParameters);
-
             _chair.PropertyChanged += (s, e) => this.OnPropertyChanged("Chair");
             _rapporteur.PropertyChanged += (s, e) => this.OnPropertyChanged("Rapporteur");
             _other.PropertyChanged += (s, e) => this.OnPropertyChanged("Other");

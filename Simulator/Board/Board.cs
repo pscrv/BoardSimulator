@@ -141,22 +141,43 @@ namespace Simulator
 
             // TODO: do better than just counting allocations
 
-            Member chair = _chair;
-            Member rapporteur = _getMemberWithFewestAllocations(_technicals);
-            Member other = _getMemberWithFewestAllocations(_legals);
+            Member chair;
+            Member rapporteur;
+            Member other = null;
 
+            chair = _chair;
             _allocationCount[chair]++;
+            rapporteur = _getMemberWithFewestAllocations(_technicals);
             _allocationCount[rapporteur]++;
+            
+            switch (_chairType)
+            {
+                case ChairType.Technical:
+                    other = _getMemberWithFewestAllocations(_legals);
+                    break;
+                case ChairType.Legal:
+                    List<Member> choices = _technicals.Where(x => x != rapporteur).ToList();
+                    other = _getMemberWithFewestAllocations(choices);
+                    break;
+            }
             _allocationCount[other]++;
+            
 
-            CaseBoard board = new CaseBoard(chair, rapporteur, other, _registrar);
-
-            return new AllocatedCase(appealCase, board, currentHour);
+            return new AllocatedCase(
+                appealCase, 
+                new CaseBoard(chair, rapporteur, other, _registrar), 
+                currentHour);
         }
 
 
         private Member _getMemberWithFewestAllocations(List<Member> members)
         {
+            if (members.Count == 0)
+            {
+                var x = 1;
+                return null;
+            }
+
             return members.Aggregate(
                 (currentMin, m) => _allocationCount[m] < _allocationCount[currentMin] ? m : currentMin );            
         }

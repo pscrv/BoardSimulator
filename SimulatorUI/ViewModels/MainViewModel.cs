@@ -10,33 +10,45 @@ namespace SimulatorUI
     public class MainViewModel : ViewModel
     {
         #region fields and properties
+        private BoardParameters _boardParameters;
         private BasicSetupViewModel _basicSetupVM;
 
         public ViewModel CurrentVM { get; private set; }
         #endregion
 
         #region commands
-        public ICommand FullSimulationCommand { get => new DelegateParamterisedCommand(_fullSim); }
-        private ICommand _switchToFullSim { get => new DelegateParamterisedCommand(_fullSim); }
+        public ICommand FullSimulationCommand { get => new DelegateParamterisedCommand(_fullSim, _fullSimActive); }
+
+        public ICommand SetupCommand { get => new DelegateParamterisedCommand(_setup, _setupActive); }
+
         private void _fullSim(object parameter)
         {
-            CurrentVM = new FullSimulationViewModel(_basicSetupVM.BoardParametersVM);
+            CurrentVM = new FullSimulationViewModel(_boardParameters);
             OnPropertyChanged("CurrentVM");
         }
 
-
-        public ICommand SetupCommand { get => new DelegateParamterisedCommand(_setup); }
-        private ICommand _switchtoBasicSetup { get => new DelegateParamterisedCommand(_setup); }
         private void _setup(object parameter)
         {
-            CurrentVM = new BasicSetupViewModel();
+            _basicSetupVM.Reset();
+            CurrentVM = _basicSetupVM;
             OnPropertyChanged("CurrentVM");
+        }
+
+        private bool _setupActive(object obj)
+        {
+            return CurrentVM != _basicSetupVM;
+        }
+
+        private bool _fullSimActive(object obj)
+        {
+            return CurrentVM == _basicSetupVM;
         }
         #endregion
 
         public MainViewModel()
         {
-            _basicSetupVM = new BasicSetupViewModel();
+            _boardParameters = BoardParameters.__DefaultParameters();
+            _basicSetupVM = new BasicSetupViewModel(_boardParameters);
             CurrentVM = _basicSetupVM;
         }
     }
