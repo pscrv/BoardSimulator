@@ -55,6 +55,7 @@ namespace SimulatorUI
             get { return _chairType; }
             set { SetProperty(ref _chairType, value, "ChairType"); }
         }
+
         public MemberParameterCollection_DynamicViewModel Chair { get; }
         public ObservableCollection<MemberParameterCollection_DynamicViewModel> Technicals { get; }
         public ObservableCollection<MemberParameterCollection_DynamicViewModel> Legals { get; }

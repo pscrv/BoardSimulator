@@ -7,15 +7,14 @@
 
 
     <DataTemplate x:Key="DetailsTemplate">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-        <StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-
-                <TextBlock
+                    <TextBlock
                             Text="Board details"
                             Style="{StaticResource HeaderTBStyle}" />
 
-                <customcontrols:TextIconButton
+                    <customcontrols:TextIconButton
                     Text="Summary"
                     Content="{iconpacks:PackIconModern Kind = ChevronLeft}"
                     Command="{Binding ShowSummaryCommand}" 
@@ -33,23 +32,30 @@
     <DataTemplate x:Key="SummaryTemplate">
 
         <StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-
-                <TextBlock
-                            Text="Board averages"
-                            Style="{StaticResource HeaderTBStyle}" />
-
-                <customcontrols:TextIconButton
-                    Text="Details"
-                    Content="{iconpacks:PackIconModern Kind=ChevronRight}"
-                    Command="{Binding ShowDetailsCommand}"
-                    ContentPosition="Right"
-                    Height="35"/>
-
-            </StackPanel>
-
-            <ContentControl Content="{Binding SummaryVM}" />
-
+            <TextBlock
+                Text="Board averages"
+                Style="{StaticResource HeaderTBStyle}" />
+            
+            <ContentControl >
+                <ContentControl.Template>
+                    <ControlTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            
+                            <ContentControl 
+                                Content="{Binding 
+                                    Path=DataContext.SummaryVM, 
+                                    RelativeSource={RelativeSource AncestorType=ContentControl}}" />
+                            <Button
+                                Content="{iconpacks:PackIconModern Kind=Cog}"
+                                Command="{Binding ShowDetailsCommand}" 
+                                ToolTip="Show and edit details."
+                                VerticalAlignment="Top"/>
+                            
+                        </StackPanel>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+            
         </StackPanel>
 
     </DataTemplate>

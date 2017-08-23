@@ -172,12 +172,6 @@ namespace Simulator
 
         private Member _getMemberWithFewestAllocations(List<Member> members)
         {
-            if (members.Count == 0)
-            {
-                var x = 1;
-                return null;
-            }
-
             return members.Aggregate(
                 (currentMin, m) => _allocationCount[m] < _allocationCount[currentMin] ? m : currentMin );            
         }
