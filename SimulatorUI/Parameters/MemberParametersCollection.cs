@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimulatorUI
+﻿namespace SimulatorUI
 {
 
     public class MemberParameterCollection
     {
+        #region static
         public static MemberParameterCollection DefaultCollection()
         {
             return new MemberParameterCollection(
@@ -16,13 +11,13 @@ namespace SimulatorUI
                 new MemberParameters(40, 8, 24),
                 new MemberParameters(8, 4, 8));
         }
-
+        #endregion
 
 
         public readonly MemberParameters ChairWorkParameters;
         public readonly MemberParameters RapporteurWorkParameters;
         public readonly MemberParameters OtherWorkParameters;
-
+        public int ChairWorkPercentage { get; set; }
 
 
         public Simulator.MemberParameterCollection AsSimulatorParameters
@@ -32,18 +27,23 @@ namespace SimulatorUI
                 return new Simulator.MemberParameterCollection(
                     ChairWorkParameters.AsSimulatorParameters,
                     RapporteurWorkParameters.AsSimulatorParameters,
-                    OtherWorkParameters.AsSimulatorParameters);
+                    OtherWorkParameters.AsSimulatorParameters,
+                    ChairWorkPercentage);
             }
         }
 
 
 
-        public MemberParameterCollection(MemberParameters chair, MemberParameters rapporteur, MemberParameters other)
+        public MemberParameterCollection(
+            MemberParameters chair, 
+            MemberParameters rapporteur, 
+            MemberParameters other,
+            int chairWorkPercentage = 0)
         {
             ChairWorkParameters = chair;
             RapporteurWorkParameters = rapporteur;
             OtherWorkParameters = other;
+            ChairWorkPercentage = chairWorkPercentage;
         }
     }
-
 }

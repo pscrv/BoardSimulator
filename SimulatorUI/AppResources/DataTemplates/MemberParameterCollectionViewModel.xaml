@@ -1,7 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:usercontrols="clr-namespace:SimulatorUI.AppResources.UserControls"
                     xmlns:local="clr-namespace:SimulatorUI">
 
+
+    <ToolTip x:Key="ChairWorkToolTip"
+             Content="A member can take up to 50% of the chair work. All members together cannot take more than 100%." />
 
     <DataTemplate 
         DataType="{x:Type local:MemberParameterCollection_DynamicViewModel}">
@@ -9,19 +13,36 @@
         <StackPanel>
 
             <Border Style="{StaticResource BasicBorderStyle}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <Label Content="Work as chair" />
-                        <Label Content="{Binding ChairParameters}"/>
+
+                <StackPanel>
+                    <StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Work as chair" />
+                                <ContentControl Content="{Binding ChairParameters}"/>
+                                <usercontrols:Label_Int_Pair
+                                    Style="{StaticResource ParametersUpDownCompactStyle}"
+                                    Label="Chair work %"
+                                    Value="{Binding ChairWorkPercentage, Mode=TwoWay}" 
+                                    Minimum="0"
+                                    Maximum="{Binding MaximumAvailableChairWorkPercentage, UpdateSourceTrigger=PropertyChanged}" 
+                                    ToolTip="{StaticResource ChairWorkToolTip}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Work as Rapporteur" />
+                                <ContentControl Content="{Binding RapporteurParameters}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Work as other member" />
+                                <ContentControl Content="{Binding OtherMemberParameters}"/>
+                            </StackPanel>
+
+                        </StackPanel>
+
                     </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <Label Content="Work as Rapporteur" />
-                        <Label Content="{Binding RapporteurParameters}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <Label Content="Work as other member" />
-                        <Label Content="{Binding OtherMemberParameters}"/>
-                    </StackPanel>
+
+
                 </StackPanel>
             </Border>
 

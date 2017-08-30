@@ -31,7 +31,6 @@
             get => _arrivalsPerMonth;
             set => SetProperty(ref _arrivalsPerMonth, value, "ArrivalsPerMonth");
         }
-
     }
 
 }

@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace SimulatorUI.Resources
+namespace SimulatorUI.AppResources.UserControls
 {
+
     /// <summary>
     /// Interaction logic for Label_Value_Pair.xaml
     /// </summary>

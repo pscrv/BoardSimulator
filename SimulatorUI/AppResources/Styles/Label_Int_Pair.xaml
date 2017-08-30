@@ -1,10 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:usercontrols="clr-namespace:SimulatorUI.Resources">
-
-    <Style x:Key="ParametersUpDownStyle" TargetType="usercontrols:Label_Int_Pair">
+                    xmlns:usercontrols="clr-namespace:SimulatorUI.AppResources.UserControls">
+    
+    <Style 
+        x:Key="ParametersUpDownCompactStyle" 
+        TargetType="usercontrols:Label_Int_Pair">
+        
+        <Setter Property="Margin" Value="0" />
         <Setter Property="LabelWidth" Value="100" />
-        <Setter Property="ValueWidth" Value="45" />
+        <Setter Property="ValueWidth" Value="50" />
         <Setter Property="Minimum" Value="1" />
         <Setter Property="Maximum" Value="100"/>
         <Style.Triggers>
@@ -18,6 +22,17 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style 
+        x:Key="ParametersUpDownSpaciousStyle" 
+        TargetType="usercontrols:Label_Int_Pair"
+        BasedOn="{StaticResource ParametersUpDownCompactStyle}">
+        
+        <Setter Property="Margin" Value="20" />
+        <Setter Property="LabelWidth" Value="110" />
+    </Style>
+    
+    
     
     <Style TargetType="usercontrols:Label_Value_Pair">
         <Setter Property="LabelWidth" Value="100" />

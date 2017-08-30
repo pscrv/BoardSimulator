@@ -9,12 +9,13 @@ namespace SimulatorUI
     {
         #region static
         private static ChairType __type = ChairType.Technical;
+
         private static MemberParameterCollection __chair = new MemberParameterCollection(
             new MemberParameters(6, 6, 12),
             new MemberParameters(40, 8, 24),
-            new MemberParameters(3, 4, 8));
-
-
+            new MemberParameters(3, 4, 8),
+            100);
+        
         private static MemberParameterCollection __defaultTechnical()
         {
             return new MemberParameterCollection(
@@ -121,54 +122,4 @@ namespace SimulatorUI
         }
         
     }
-
-
-
-    //public class BoardParametersVM : ViewModel
-    //{
-    //    public ChairType ChairType;
-    //    public MemberParameterCollection Chair;
-    //    public ObservableCollection<MemberParameterCollection> Technicals;
-    //    public ObservableCollection<MemberParameterCollection> Legals;
-
-
-    //    public Simulator.BoardParameters AsSimulatorBoardParameters
-    //    {
-    //        get
-    //        {
-    //            return new Simulator.BoardParameters(
-    //                ChairType,
-    //                Chair.AsSimulatorParameters,
-    //                _asSimulatorParameters(Technicals),
-    //                _asSimulatorParameters(Legals));
-    //        }
-    //    }
-
-
-
-    //    public BoardParametersVM(
-    //        ChairType chairType,
-    //        MemberParameterCollection chair,
-    //        List<MemberParameterCollection> technicals,
-    //        List<MemberParameterCollection> legals)
-    //    {
-    //        ChairType = chairType;
-    //        Chair = chair;
-    //        Technicals = new ObservableCollection<MemberParameterCollection>(technicals);
-    //        Legals = new ObservableCollection<MemberParameterCollection>(legals);
-    //    }
-
-
-
-    //    private List<Simulator.MemberParameterCollection> _asSimulatorParameters(
-    //        ObservableCollection<MemberParameterCollection> collectionList)
-    //    {
-    //        List<Simulator.MemberParameterCollection> result = new List<Simulator.MemberParameterCollection>();
-    //        foreach (MemberParameterCollection parameterCollection in collectionList)
-    //        {
-    //            result.Add(parameterCollection.AsSimulatorParameters);
-    //        }
-    //        return result;
-    //    }
-    //}
 }

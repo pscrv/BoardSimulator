@@ -25,9 +25,7 @@
             get => _parameters.HoursForDecision; 
             set { SetProperty(ref _parameters.HoursForDecision, value, "HoursForDecision"); }
         }
-
-
-
+        
 
 
         public MemberParametersViewModel(MemberParameters parameters)
@@ -35,7 +33,6 @@
             _parameters = parameters;
         }
         
-
 
 
         public MemberParametersViewModel Add(MemberParametersViewModel other)

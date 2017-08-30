@@ -11,15 +11,15 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
                     <TextBlock
-                            Text="Board details"
-                            Style="{StaticResource HeaderTBStyle}" />
+                        Text="Board details"
+                        Style="{StaticResource HeaderTBStyle}" />
 
                     <customcontrols:TextIconButton
-                    Text="Summary"
-                    Content="{iconpacks:PackIconModern Kind = ChevronLeft}"
-                    Command="{Binding ShowSummaryCommand}" 
-                    ContentPosition="Left"
-                    Height="35"/>
+                        Text="Summary"
+                        Content="{iconpacks:PackIconModern Kind = ChevronLeft}"
+                        Command="{Binding ShowSummaryCommand}" 
+                        ContentPosition="Left"
+                        Height="35"/>
 
             </StackPanel>
 

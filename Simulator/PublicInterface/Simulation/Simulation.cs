@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Simulator
 {
@@ -77,16 +78,7 @@ namespace Simulator
             int initialCaseCount,
             Dictionary<Hour, int> arriving)
         {
-            Member chair = new Member(boardParameters.Chair);
-            List<Member> technicals = _assembleMemberList(boardParameters.Technicals);
-            List<Member> legals = _assembleMemberList(boardParameters.Legals);
-
-            _board = new Board(
-                chair,
-                boardParameters.ChairType,
-                technicals,
-                legals
-                );
+            _makeBoard(boardParameters);
 
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
             _reports = new HourlyReports();
@@ -132,13 +124,50 @@ namespace Simulator
         { }
 
 
+
+
+        private void _makeBoard(BoardParameters boardParameters)
+        {
+            Member chair = new Member(boardParameters.Chair);
+            List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.xTechnicals);
+            List<Tuple<Member, int>> legals = _assembleMemberList(boardParameters.xLegals);
+            ChairChooser chairChooser = _makeChairChooser(chair, technicals, legals);
+
+            _board = new Board(
+                chair,
+                boardParameters.ChairType,
+                technicals.Select(x => x.Item1).ToList(),
+                legals.Select(x => x.Item1).ToList(),
+                chairChooser
+                );
+        }
+
+
+        private ChairChooser _makeChairChooser(
+            Member chair, 
+            IEnumerable<Tuple<Member, int>> technicals,
+            IEnumerable<Tuple<Member, int>> legals)
+        {
+            ChairChooser chooser = new ChairChooser(chair);
+            foreach (var technical in technicals)
+            {
+                if (technical.Item2 > 0)
+                    chooser.AddSecondaryChair(technical.Item1, technical.Item2);
+            }
+            foreach (var legal in legals)
+            {
+                if (legal.Item2 > 0)
+                    chooser.AddSecondaryChair(legal.Item1, legal.Item2);
+            }
+
+            return chooser;
+        }
+
         #endregion
 
 
         public void Run()
         {
-            BoardReport report;
-
             foreach (Hour hour in _timeSpan)
             {
                 if (_arrivingCases.ContainsKey(hour))
@@ -149,9 +178,8 @@ namespace Simulator
                     }
                 }
 
-                report = _board.DoWork(hour);
+                BoardReport report = _board.DoWork(hour);
                 _reports.Add(hour, report);
-
             }
         }
 
@@ -177,12 +205,26 @@ namespace Simulator
             }
         }
 
-        private static List<Member> _assembleMemberList(List<MemberParameterCollection> parameterList)
+
+
+
+        private static List<Member> _assembleMemberList(IEnumerable<MemberParameterCollection> parameterList)
         {
             List<Member> memberList = new List<Member>();
             foreach (MemberParameterCollection parameters in parameterList)
             {
                 memberList.Add(new Member(parameters));
+            }
+
+            return memberList;
+        }
+
+        private static List<Tuple<Member, int>> _assembleMemberList(IEnumerable<Tuple<MemberParameterCollection, int>> parameterList)
+        {
+            List<Tuple<Member, int>> memberList = new List<Tuple<Member, int>>();
+            foreach (Tuple<MemberParameterCollection, int> parameters in parameterList)
+            {
+                memberList.Add(new Tuple<Member, int>(new Member(parameters.Item1), parameters.Item2));
             }
 
             return memberList;

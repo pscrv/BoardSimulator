@@ -31,13 +31,19 @@
         internal readonly MemberParameters ChairWorkParameters;
         internal readonly MemberParameters RapporteurWorkParameters;
         internal readonly MemberParameters OtherWorkParameters;
+        internal readonly int ChairWorkPercentage;  //TODO: should this be here?
 
 
-        public MemberParameterCollection(MemberParameters chair, MemberParameters rapporteur, MemberParameters other)
+        public MemberParameterCollection(
+            MemberParameters chair, 
+            MemberParameters rapporteur, 
+            MemberParameters other,
+            int chairWorkPercentage = 0)
         {
             ChairWorkParameters = chair;
             RapporteurWorkParameters = rapporteur;
             OtherWorkParameters = other;
+            ChairWorkPercentage = chairWorkPercentage;
         }
     }
 

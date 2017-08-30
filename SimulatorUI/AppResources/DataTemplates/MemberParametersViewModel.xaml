@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:SimulatorUI"
-                    xmlns:usercontrols="clr-namespace:SimulatorUI.Resources">
+                    xmlns:usercontrols="clr-namespace:SimulatorUI.AppResources.UserControls">
 
     <DataTemplate DataType="{x:Type local:MemberParameters_DynamicViewModel}">
         <StackPanel Background="Transparent">
@@ -9,15 +9,15 @@
             <Border Style="{StaticResource BasicBorderStyle}">
                     <StackPanel Orientation="Vertical">
                         <usercontrols:Label_Int_Pair
-                            Style="{StaticResource ParametersUpDownStyle}"
+                            Style="{StaticResource ParametersUpDownCompactStyle}"
                             Label="Summons"
                             Value="{Binding HoursForSummons, Mode=TwoWay, Delay=10}" />
-                    <usercontrols:Label_Int_Pair
-                            Style="{StaticResource ParametersUpDownStyle}"
+                        <usercontrols:Label_Int_Pair
+                            Style="{StaticResource ParametersUpDownCompactStyle}"
                             Label="OP Preparation"
                             Value="{Binding HoursForOPPreparation, Mode=TwoWay, Delay=10}" />
-                    <usercontrols:Label_Int_Pair
-                            Style="{StaticResource ParametersUpDownStyle}"
+                        <usercontrols:Label_Int_Pair
+                            Style="{StaticResource ParametersUpDownCompactStyle}"
                             Label="Decision"
                             Value="{Binding HoursForDecision, Mode=TwoWay,Delay=10}" />
                     </StackPanel>

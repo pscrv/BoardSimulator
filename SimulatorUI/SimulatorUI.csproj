@@ -73,20 +73,25 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Compile Include="AppResources\CustomControls\TextIconButton.cs" />
-    <Compile Include="AppResources\UserControls\TextIconButton.xaml.cs">
-      <DependentUpon>TextIconButton.xaml</DependentUpon>
+    <Compile Include="AppResources\UserControls\IndexedTabControl.xaml.cs">
+      <DependentUpon>IndexedTabControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="App\App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="AppResources\UserControls\Label_Int_Pair_updown.xaml.cs">
-      <DependentUpon>Label_Int_Pair_updown.xaml</DependentUpon>
+    <Compile Include="AppResources\UserControls\Label_Int_Pair.xaml.cs">
+      <DependentUpon>Label_Int_Pair.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppResources\UserControls\Label_Value_Pair.xaml.cs">
       <DependentUpon>Label_Value_Pair.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MVVM\ObservableObject.cs" />
+    <Compile Include="AppResources\UserControls\TextIconButton.xaml.cs">
+      <DependentUpon>TextIconButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AppResources\ValueConverters\ZeroIndexToOneIndexConverter.cs" />
+    <Compile Include="AppResources\ValueConverters\BooleanToOpacityConverter.cs" />
+    <Compile Include="App\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="MVVM\DebouncedHandler.cs" />
     <Compile Include="Parameters\MemberParametersCollection.cs" />
     <Compile Include="ViewModels\SimulationReportViewModel.cs" />
@@ -156,6 +161,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AppResources\Styles\TabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\UserControls\IndexedTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\UserControls\Label_Int_Pair.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppResources\UserControls\Label_Value_Pair.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AppResources\UserControls\TextIconButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -216,14 +237,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AppResources\UserControls\Label_Int_Pair_updown.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AppResources\UserControls\Label_Value_Pair.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="AppResources\Styles\Label_Int_Pair.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -243,7 +256,9 @@
       <Name>Simulator</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="AppResources\Validation\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

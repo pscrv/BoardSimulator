@@ -3,9 +3,10 @@
                     xmlns:local="clr-namespace:SimulatorUI">
 
 
+    <local:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
+
     <DataTemplate DataType="{x:Type local:BasicSetupViewModel}">
 
-        <DockPanel>
             <StackPanel 
                 DockPanel.Dock="Top"
                 Orientation="Horizontal">
@@ -18,11 +19,10 @@
                     MinWidth="300" />
                 <ContentControl
                     Content="{Binding SimulationReportVM }" 
-                    MinWidth="300" />
+                    Opacity="{Binding MiniSimIsRunning, Converter={StaticResource BooleanToOpacityConverter}}"
+                    MinWidth="300"  />
             </StackPanel>
-
           
-        </DockPanel>
 
     </DataTemplate>
     

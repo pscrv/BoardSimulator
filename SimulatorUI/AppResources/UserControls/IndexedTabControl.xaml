@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="SimulatorUI.AppResources.UserControls.IndexedTabControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SimulatorUI"
+             xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+            
+             x:Name="ThisControl">
+
+  
+
+    <TabControl 
+        DataContext="{Binding ElementName=ThisControl}"
+        Style="{StaticResource IndexedTabControlStyle}"
+        ItemsSource="{Binding Collection}"
+        AlternationCount="{Binding Collection.Count}">
+        
+        <TabControl.Resources>
+            <local:ZeroIndexToOneIndexConverter x:Key="IndexConverter" />
+        </TabControl.Resources>
+
+        <TabControl.ItemTemplate>
+            <DataTemplate>
+                <Label 
+                    Content="{Binding 
+                        Path=(ItemsControl.AlternationIndex), 
+                        RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem},
+                        Converter={StaticResource IndexConverter}}" />
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+
+        <TabControl.ContentTemplate>
+            <DataTemplate>
+                <StackPanel 
+                    Orientation="Horizontal" 
+                    Margin="10">
+
+                    <ContentControl 
+                        Content="{Binding}" />
+                    <Button 
+                        Content="{iconpacks:PackIconModern Kind=Close}" 
+                        Command="{
+                            Binding RemoveItemCommand,
+                            ElementName=ThisControl}"
+                        CommandParameter="{Binding}"
+                        ToolTip="Remove this member." 
+                        VerticalAlignment="Top"/>
+                </StackPanel>
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+        
+    </TabControl>
+
+</UserControl>

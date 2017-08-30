@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace SimulatorUI.Resources
+namespace SimulatorUI.AppResources.UserControls
 {
     /// <summary>
     /// Interaction logic for Label_Int_Pair.xaml
@@ -36,9 +24,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty LabelProperty =
             DependencyProperty.Register(
-                "Label", 
-                typeof(string), 
-                typeof(Label_Int_Pair), 
+                "Label",
+                typeof(string),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(""));
 
 
@@ -49,9 +37,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
-                "Value", 
-                typeof(int), 
-                typeof(Label_Int_Pair), 
+                "Value",
+                typeof(int),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(1));
 
 
@@ -63,9 +51,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty LabelWidthProperty =
             DependencyProperty.Register(
-                "LabelWidth", 
-                typeof(int), 
-                typeof(Label_Int_Pair), 
+                "LabelWidth",
+                typeof(int),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(200));
 
 
@@ -77,9 +65,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty ValueWidthProperty =
             DependencyProperty.Register(
-                "ValueWidth", 
-                typeof(int), 
-                typeof(Label_Int_Pair), 
+                "ValueWidth",
+                typeof(int),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(50));
 
 
@@ -91,9 +79,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty MinimumProperty =
             DependencyProperty.Register(
-                "Minimum", 
-                typeof(int), 
-                typeof(Label_Int_Pair), 
+                "Minimum",
+                typeof(int),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(0));
 
 
@@ -104,9 +92,9 @@ namespace SimulatorUI.Resources
         }
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register(
-                "Maximum", 
-                typeof(int), 
-                typeof(Label_Int_Pair), 
+                "Maximum",
+                typeof(int),
+                typeof(Label_Int_Pair),
                 new PropertyMetadata(100));
         #endregion
 

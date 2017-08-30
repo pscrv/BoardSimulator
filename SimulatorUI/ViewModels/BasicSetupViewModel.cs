@@ -17,10 +17,17 @@ namespace SimulatorUI
         #region fields and properties
         private BoardParameters _boardParameters;
         private Simulation _miniSim;
+        private bool _miniSimIsRunning;
         
         public BoardParametersViewModel BoardParametersVM { get; private set; }  
         public SimulationParametersViewModel SimulationParametersVM { get; private set; }
-        public SimulationReportViewModel SimulationReportVM { get; private set; }        
+        public SimulationReportViewModel SimulationReportVM { get; private set; }    
+        
+        public bool MiniSimIsRunning
+        {
+            get => _miniSimIsRunning;
+            set { SetProperty(ref _miniSimIsRunning, value, "MiniSimIsRunning"); }
+        }
 
         private DebouncedHandler _debouncedHandler = new DebouncedHandler();
         #endregion
@@ -38,7 +45,7 @@ namespace SimulatorUI
             {
                 InitialCaseCount = __initialCaseCount,
                 ArrivalsPerMonth = __monthlyArrivals,
-                MiniRunLength = __miniSimulationLengthInYears,
+                MiniRunLength = __miniSimulationLengthInYears
             };
 
             BoardParametersVM.PropertyChanged += (s, e) => _runMiniSim();
@@ -47,18 +54,18 @@ namespace SimulatorUI
             SimulationParametersVM.PropertyChanged += (s, e) => _runMiniSim();
             SimulationParametersVM.PropertyChanged += (s, e) => _raisePropertyChanged();
 
+            MiniSimIsRunning = true;
             _runMiniSim();
+            MiniSimIsRunning = false;
         }
         #endregion
-
 
 
         public void Reset()
         {
             BoardParametersVM.Reset();
         }
-
-
+        
 
 
         private void _runMiniSim()
@@ -71,6 +78,7 @@ namespace SimulatorUI
 
         private void _runSim(int length)
         {
+            MiniSimIsRunning = true;
             _miniSim = Simulation.MakeSimulation(
                 length,
                 BoardParametersVM.DetailsVM.Parameters.AsSimulatorBoardParameters,  
@@ -78,6 +86,7 @@ namespace SimulatorUI
                 SimulationParametersVM.ArrivalsPerMonth);
             _miniSim.Run();
             SimulationReportVM = new SimulationReportViewModel(_miniSim.SimulationReport);
+            MiniSimIsRunning = false;
             _raisePropertyChanged();
         }
 

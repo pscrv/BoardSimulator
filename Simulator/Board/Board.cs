@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -12,6 +13,7 @@ namespace Simulator
         private List<Member> _technicals;
         private List<Member> _legals;
         private Registrar _registrar;
+        private ChairChooser _chairChooser;
 
         private Dictionary<Member, int> _allocationCount;
 
@@ -26,8 +28,9 @@ namespace Simulator
                     yield return lm;                
                 
             }
-        }                
+        }
 
+        
 
         internal List<AllocatedCase> FinishedCases
         {
@@ -42,13 +45,14 @@ namespace Simulator
             Member chair, 
             ChairType chairType, 
             List<Member> technicals, 
-            List<Member> legals)
+            List<Member> legals,
+            ChairChooser chairChooser)
         {
             _chair = chair;
             _chairType = chairType;
             _technicals = technicals;
-            _legals = legals;
-
+            _legals = legals;            
+            _chairChooser = chairChooser;
             _registrar = new Registrar();
 
             _allocationCount = new Dictionary<Member, int>();
@@ -58,6 +62,14 @@ namespace Simulator
                 _registrar.RegisterMember(member);
             }
         }
+
+
+        internal Board(
+            Member chair,
+            ChairType chairType,
+            List<Member> technicals,
+            List<Member> legals)
+            : this (chair, chairType, technicals, legals, new ChairChooser(chair)) { }
         #endregion
 
 
@@ -83,7 +95,6 @@ namespace Simulator
             return allocatedCase;
         }
 
-
         internal void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
         {
             foreach (AppealCase appealCase in appealCases)
@@ -92,7 +103,6 @@ namespace Simulator
                 _registrar.ProcessIncomingCase(currentHour, allocatedCase);
             }
         }
-
 
         internal void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour)
         {
@@ -114,8 +124,7 @@ namespace Simulator
         internal int OPScheduleCount()
         {
             return _registrar.OPScheduleCount();
-        }
-        
+        }        
 
 
 
@@ -136,41 +145,69 @@ namespace Simulator
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
         {
-            // TODO: make this choose (sometimes? when?) a different chair
-            // than the board chair
-
-            // TODO: do better than just counting allocations
+            // TODO: do better than just counting allocations?
 
             Member chair;
             Member rapporteur;
             Member other = null;
 
-            chair = _chair;
-            _allocationCount[chair]++;
-            rapporteur = _getMemberWithFewestAllocations(_technicals);
-            _allocationCount[rapporteur]++;
-            
+            chair = _allocateChair();
+            rapporteur = _allocateRapporteur(chair);
+            other = _allocateOtherMember(rapporteur, other);
+
+            return new AllocatedCase(
+                appealCase,
+                new CaseBoard(chair, rapporteur, other, _registrar),
+                currentHour);
+        }
+        
+
+
+        private Member _allocateChair()
+        {
             switch (_chairType)
             {
                 case ChairType.Technical:
-                    other = _getMemberWithFewestAllocations(_legals);
+                    if (_technicals.Count < 2)
+                        return _chair;
                     break;
                 case ChairType.Legal:
-                    List<Member> choices = _technicals.Where(x => x != rapporteur).ToList();
-                    other = _getMemberWithFewestAllocations(choices);
+                    if (_legals.Count < 1)
+                        return _chair;
                     break;
             }
-            _allocationCount[other]++;
-            
 
-            return new AllocatedCase(
-                appealCase, 
-                new CaseBoard(chair, rapporteur, other, _registrar), 
-                currentHour);
+            return _chairChooser.ChooseChair();
+        }
+        
+
+        private Member _allocateRapporteur(Member chair)
+        {
+            Member rapporteur = _getMemberWithFewestAllocations(_technicals.Where(x => x != chair));
+            _allocationCount[rapporteur]++;
+            return rapporteur;
+        }
+
+        private Member _allocateOtherMember(Member chair, Member rapporteur)
+        {
+            List<Member> choices = null;
+            switch (_chairType)
+            {
+                case ChairType.Technical:
+                    choices = _legals;
+                    break;
+                case ChairType.Legal:
+                    choices = _technicals;
+                    break;
+            }
+
+            Member other = _getMemberWithFewestAllocations(choices.Where(x => x != chair && x != rapporteur));
+            _allocationCount[other]++;
+            return other;
         }
 
 
-        private Member _getMemberWithFewestAllocations(List<Member> members)
+        private Member _getMemberWithFewestAllocations(IEnumerable<Member> members)
         {
             return members.Aggregate(
                 (currentMin, m) => _allocationCount[m] < _allocationCount[currentMin] ? m : currentMin );            
