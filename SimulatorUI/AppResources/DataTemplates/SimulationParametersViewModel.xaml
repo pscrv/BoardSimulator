@@ -30,15 +30,15 @@
                     Minimum="0"/>
             </Border>
 
-            <!--<Border Style="{StaticResource BasicBorderStyle}">
+            <Border Style="{StaticResource BasicBorderStyle}">
                 <usercontrols:Label_Int_Pair
                     Style="{StaticResource ParametersUpDownSpaciousStyle}"
-                    Label="Secondary chair %"
-                    Value="{Binding SecondaryChairPercentage, Mode=TwoWay, Delay=100}"
+                    Label="Minumum days between OP"
+                    Value="{Binding MinimumDaysBetweenOP, Mode=TwoWay, Delay=100}"
                     ValueWidth="50"
-                    Maximum="100"
+                    Maximum="20"
                     Minimum="0"/>
-            </Border>-->
+            </Border>
 
         </StackPanel>
     </DataTemplate>

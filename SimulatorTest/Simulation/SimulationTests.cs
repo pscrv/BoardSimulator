@@ -81,7 +81,7 @@ namespace Simulator.Tests
                 arrivingCases.Add(i * 171, 3);
             }
             
-            Simulation sim = new Simulation(1000, parameters, 10, arrivingCases);
+            Simulation sim = new Simulation(1000, parameters, 0, 10, arrivingCases);
             sim.Run();
         }
 
@@ -95,7 +95,7 @@ namespace Simulator.Tests
                 arrivingCases.Add(i * 160, 1);
             }
             
-            Simulation sim = new Simulation(1000, parameters, 450, arrivingCases);
+            Simulation sim = new Simulation(1000, parameters, 0, 450, arrivingCases);
             sim.Run();
         }
     }

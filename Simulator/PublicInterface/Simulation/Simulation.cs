@@ -48,12 +48,14 @@ namespace Simulator
         public static Simulation MakeSimulation(
             int years,
             BoardParameters boardParameters,
+            int minimumDaysBetweenOP,
             int initialCaseCount,
             int arrivalsPerMonth = 0)
         {
             return new Simulation(
                 years * TimeParameters.HoursPerYear,
                 boardParameters,
+                minimumDaysBetweenOP,
                 initialCaseCount,
                 arrivalsPerMonth);
         }
@@ -75,10 +77,13 @@ namespace Simulator
         internal Simulation(
             int lengthInHours, 
             BoardParameters boardParameters, 
+            int minimumDaysBetweenOP,
             int initialCaseCount,
             Dictionary<Hour, int> arriving)
         {
-            _makeBoard(boardParameters);
+            OPSchedule opSchedule = new OPSchedule(minimumDaysBetweenOP);
+            Registrar registrar = new Registrar(opSchedule);
+            _makeBoard(boardParameters, registrar);
 
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
             _reports = new HourlyReports();
@@ -90,11 +95,13 @@ namespace Simulator
         internal Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
+            int minimumDaysBetweenOP,
             int initialCaseCount,
             Dictionary<int, int> arriving)
             : this (
                   lengthInHours,
                   boardParameters,
+                  minimumDaysBetweenOP,
                   initialCaseCount,
                   __scheduleArrivals(arriving))
         { }
@@ -102,11 +109,25 @@ namespace Simulator
         public Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
+            int minimumDaysBetweenOP,
             int initialCaseCount)
             : this (
                   lengthInHours, 
-                  boardParameters, 
+                  boardParameters,
+                  minimumDaysBetweenOP,
                   initialCaseCount, 
+                  new Dictionary<Hour, int>())
+        { }
+
+        public Simulation(
+            int lengthInHours,
+            BoardParameters boardParameters,
+            int initialCaseCount)
+            : this(
+                  lengthInHours,
+                  boardParameters,
+                  0,
+                  initialCaseCount,
                   new Dictionary<Hour, int>())
         { }
 
@@ -114,11 +135,13 @@ namespace Simulator
         public Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
+            int minimumDaysBetweenOP,
             int initialCaseCount,
             int arrivalsPerMonth)
             : this (
                   lengthInHours, 
-                  boardParameters, 
+                  boardParameters,
+                  minimumDaysBetweenOP,
                   initialCaseCount, 
                   __scheduleArrivals(arrivalsPerMonth, lengthInHours))
         { }
@@ -126,7 +149,7 @@ namespace Simulator
 
 
 
-        private void _makeBoard(BoardParameters boardParameters)
+        private void _makeBoard(BoardParameters boardParameters, Registrar registrar)
         {
             Member chair = new Member(boardParameters.Chair);
             List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.xTechnicals);
@@ -138,6 +161,7 @@ namespace Simulator
                 boardParameters.ChairType,
                 technicals.Select(x => x.Item1).ToList(),
                 legals.Select(x => x.Item1).ToList(),
+                registrar,
                 chairChooser
                 );
         }

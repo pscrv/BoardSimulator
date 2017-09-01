@@ -6,6 +6,7 @@
         private int _fullRunLength;
         private int _initialCaseCount;
         private int _arrivalsPerMonth;
+        private int _minimumDaysBetweenOP;
         
 
         public int MiniRunLength
@@ -30,6 +31,12 @@
         {
             get => _arrivalsPerMonth;
             set => SetProperty(ref _arrivalsPerMonth, value, "ArrivalsPerMonth");
+        }
+
+        public int MinimumDaysBetweenOP
+        {
+            get => _minimumDaysBetweenOP;
+            set => SetProperty(ref _minimumDaysBetweenOP, value, "MinimumDaysBetweenOP");
         }
     }
 

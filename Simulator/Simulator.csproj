@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\" />
-    <Folder Include="OP\" />
     <Folder Include="__Old\" />
   </ItemGroup>
   <ItemGroup>

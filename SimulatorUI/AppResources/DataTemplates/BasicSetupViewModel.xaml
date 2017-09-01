@@ -20,7 +20,8 @@
                 <ContentControl
                     Content="{Binding SimulationReportVM }" 
                     Opacity="{Binding MiniSimIsRunning, Converter={StaticResource BooleanToOpacityConverter}}"
-                    MinWidth="300"  />
+                    MinWidth="300" />
+                
             </StackPanel>
           
 

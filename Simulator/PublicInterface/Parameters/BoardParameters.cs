@@ -30,14 +30,15 @@ namespace Simulator
 
             foreach (var t in technicals)
             {
-                xTechnicals.Add(new Tuple<MemberParameterCollection, int>(t, 0));
+                xTechnicals.Add(new Tuple<MemberParameterCollection, int>(t, t.ChairWorkPercentage));
             }
 
             foreach (var l in legals)
             {
-                xLegals.Add(new Tuple<MemberParameterCollection, int>(l, 0));
+                xLegals.Add(new Tuple<MemberParameterCollection, int>(l, l.ChairWorkPercentage));
             }
         }
+
 
         public BoardParameters(
             ChairType chairType,

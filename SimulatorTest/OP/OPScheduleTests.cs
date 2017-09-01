@@ -14,13 +14,15 @@ namespace Simulator.Tests
         private AppealCase appealCase;
         private AllocatedCase allocatedCase;
         
-        private OPSchedule schedule;
+        private OPSchedule schedule0;
+        private OPSchedule schedule1;
         
 
         [TestInitialize]
         public void Initialise()
         {
-            schedule = new OPSchedule();
+            schedule0 = new OPSchedule();
+            schedule1 = new OPSchedule(1);
 
             chair = new Member(MemberParameterCollection.DefaultCollection());
             rapporteur = new Member(MemberParameterCollection.DefaultCollection());
@@ -38,50 +40,80 @@ namespace Simulator.Tests
 
 
         [TestMethod()]
-        public void HasOPWorkTest()
+        public void HasOPWorkTest0()
         {
             Hour hour;
             Hour scheduleHour = new Hour(100);
-            schedule.Add(scheduleHour, allocatedCase);
+            schedule0.Add(scheduleHour, allocatedCase);
 
-            for (int i = 0; i < 96; i++)  // default chair has 4 hours of preparation
+            int preparationHours = chair.GetParameters(WorkerRole.Chair).HoursOPPrepration;
+            for (int i = 0; i < scheduleHour.Value - preparationHours; i++)  // default chair has 4 hours of preparation
             {
                 hour = new Hour(i);
                 Assert.IsFalse(
-                    schedule.HasOPWork(hour, allocatedCase.Board.Chair),  
+                    schedule0.HasOPWork(hour, allocatedCase.Board.Chair),  
                     "Failed at " + hour);
             }
-
-            int preparationHours = allocatedCase.Board.Chair.HoursOPPreparation;
+            
             for (int i = scheduleHour.Value - preparationHours; 
                 i < scheduleHour.Value + TimeParameters.OPDurationInHours; 
                 i++)  
             {
                 hour = new Hour(i);
-                Assert.IsTrue(schedule.HasOPWork(hour, allocatedCase.Board.Chair),
+                Assert.IsTrue(schedule0.HasOPWork(hour, allocatedCase.Board.Chair),
                     "Failed at " + hour);
             }
-
-            hour = new Hour(scheduleHour.Value + TimeParameters.OPDurationInHours);
-            Assert.IsFalse(schedule.HasOPWork(hour, allocatedCase.Board.Chair),
+            
+            hour = scheduleHour.AddHours(TimeParameters.OPDurationInHours);
+            Assert.IsFalse(schedule0.HasOPWork(hour, allocatedCase.Board.Chair),
                     "Failed at " + hour);
         }
 
         [TestMethod()]
-        public void Schedule1()
+        public void HasOPWorkTest1()
+        {
+            Hour hour;
+            Hour scheduleHour = new Hour(100);
+            schedule1.Add(scheduleHour, allocatedCase);
+
+            int preparationHours = chair.GetParameters(WorkerRole.Chair).HoursOPPrepration;
+            for (int i = 0; i < scheduleHour.Value - preparationHours; i++)  // default chair has 4 hours of preparation
+            {
+                hour = new Hour(i);
+                Assert.IsFalse(
+                    schedule1.HasOPWork(hour, allocatedCase.Board.Chair),
+                    "Failed at " + hour);
+            }
+
+            Hour endHour = scheduleHour.AddHours(TimeParameters.OPDurationInHours);
+            for (int i = scheduleHour.Value - preparationHours;
+                i < endHour.Value;
+                i++)
+            {
+                hour = new Hour(i);
+                Assert.IsTrue(schedule1.HasOPWork(hour, allocatedCase.Board.Chair),
+                    "Failed at " + hour);
+            }
+            
+            Assert.IsFalse(schedule1.HasOPWork(endHour, allocatedCase.Board.Chair),
+                    "Failed at " + endHour);
+        }
+
+        [TestMethod()]
+        public void Schedule0()
         {
             Hour hour = new Hour(0);
 
-            schedule.Schedule(hour, allocatedCase);
-            schedule.Schedule(hour, allocatedCase);
-            schedule.Schedule(hour, allocatedCase);
-            List<Hour> startHours = schedule.StartHours;
+            schedule0.Schedule(hour, allocatedCase);
+            schedule0.Schedule(hour, allocatedCase);
+            schedule0.Schedule(hour, allocatedCase);
+            List<Hour> startHours = schedule0.StartHours;
 
-            Hour hour1 = new Hour(712);
-            Hour hour2 = new Hour(728);
-            Hour hour3 = new Hour(744);
+            Hour hour1 = new Hour(704);
+            Hour hour2 = new Hour(720);
+            Hour hour3 = new Hour(736);
 
-            Assert.AreEqual(9, schedule.Count);
+            Assert.AreEqual(9, schedule0.Count);
             Assert.AreEqual(3, startHours.Count);
             Assert.IsTrue(startHours.Contains(hour1));
             Assert.IsTrue(startHours.Contains(hour2));

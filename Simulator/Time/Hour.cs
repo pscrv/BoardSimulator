@@ -4,12 +4,22 @@ namespace Simulator
 {
     internal class Hour : IEquatable<Hour>, IComparable<Hour>
     {
+        #region fields and properties
         internal readonly int Value;
 
+
+        private bool _isFirstHourOfDay { get => Value % TimeParameters.HoursPerDay == 0; }
+        private bool _isFirstHourOfWeek { get => Value % (TimeParameters.HoursPerDay * TimeParameters.DaysPerWeek) == 0; }
+        private bool _isFirstHourOfMonth { get => Value % TimeParameters.HoursPerMonth == 0; }
+        private bool _isFirstHourOfYear { get => Value % TimeParameters.HoursPerYear == 0; }
+        #endregion
+
+        #region construction
         internal Hour(int h)
         {
             Value = h;
         }
+        #endregion
 
 
         internal Hour Next()
@@ -47,6 +57,28 @@ namespace Simulator
             int hourOfUnit = Value % unit;
             return new Hour(Value + unit - hourOfUnit);
         }
+
+
+        internal Hour NextFirstHourOfDay()
+        {
+            return this._isFirstHourOfDay ? this : this.FirstHourOfNextDay();
+        }
+
+        internal Hour NextFirstHourOfWeek()
+        {
+            return this._isFirstHourOfWeek ? this : this.FirstHourOfNextWeek();
+        }
+
+        internal Hour NextFirstHourOfMonth()
+        {
+            return this._isFirstHourOfMonth ? this : this.FirstHourOfNextMonth();
+        }
+
+        internal Hour NextFirstHourOfYear()
+        {
+            return this._isFirstHourOfYear ? this : this.FirstHourOfNextYear();
+        }
+
 
 
         internal Hour AddHours(int offset)

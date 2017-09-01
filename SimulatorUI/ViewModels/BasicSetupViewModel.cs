@@ -81,7 +81,8 @@ namespace SimulatorUI
             MiniSimIsRunning = true;
             _miniSim = Simulation.MakeSimulation(
                 length,
-                BoardParametersVM.DetailsVM.Parameters.AsSimulatorBoardParameters,  
+                BoardParametersVM.DetailsVM.Parameters.AsSimulatorBoardParameters,
+                SimulationParametersVM.MinimumDaysBetweenOP,
                 SimulationParametersVM.InitialCaseCount,
                 SimulationParametersVM.ArrivalsPerMonth);
             _miniSim.Run();

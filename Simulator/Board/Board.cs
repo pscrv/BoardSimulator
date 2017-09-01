@@ -46,6 +46,7 @@ namespace Simulator
             ChairType chairType, 
             List<Member> technicals, 
             List<Member> legals,
+            Registrar registrar,
             ChairChooser chairChooser)
         {
             _chair = chair;
@@ -53,7 +54,7 @@ namespace Simulator
             _technicals = technicals;
             _legals = legals;            
             _chairChooser = chairChooser;
-            _registrar = new Registrar();
+            _registrar = registrar;
 
             _allocationCount = new Dictionary<Member, int>();
             foreach (Member member in _members)
@@ -68,8 +69,16 @@ namespace Simulator
             Member chair,
             ChairType chairType,
             List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar)
+            : this (chair, chairType, technicals, legals, registrar, new ChairChooser(chair)) { }
+
+        internal Board(
+            Member chair,
+            ChairType chairType,
+            List<Member> technicals,
             List<Member> legals)
-            : this (chair, chairType, technicals, legals, new ChairChooser(chair)) { }
+            : this(chair, chairType, technicals, legals, new Registrar(), new ChairChooser(chair)) { }
         #endregion
 
 

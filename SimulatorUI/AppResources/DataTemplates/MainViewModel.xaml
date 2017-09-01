@@ -14,21 +14,21 @@
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
 
                 <Button 
-                HorizontalAlignment="Left"
-                Margin="10"
-                Height="50"
-                Width="150"                
-                Content="Setup" 
-                Command="{Binding SetupCommand}"/>
-
+                    HorizontalAlignment="Left"
+                    Margin="10"
+                    Height="50"
+                    Width="150"                
+                    Content="Setup" 
+                    Command="{Binding SetupCommand}"/>
 
                 <Button 
-                HorizontalAlignment="Right"
-                Margin="10"
-                Height="50"
-                Width="150"                
-                Content="Full Simulation" 
-                Command="{Binding FullSimulationCommand}"/>
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    Height="50"
+                    Width="150"                
+                    Content="Full Simulation" 
+                    Command="{Binding FullSimulationCommand}"/>
+                
             </StackPanel>
 
         </DockPanel>

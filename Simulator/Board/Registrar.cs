@@ -27,8 +27,17 @@ namespace Simulator
             _opSchedule = new OPSchedule();
             _finished = new FinishedCaseList();
         }
+
+        internal Registrar(OPSchedule opSchedule)
+        {
+            _boardQueue = new BoardQueue();
+            _incoming = new IncomingCaseQueue();
+            _circulation = new CirculationQueue();
+            _opSchedule = opSchedule;
+            _finished = new FinishedCaseList();
+        }
         #endregion
-        
+
 
 
 

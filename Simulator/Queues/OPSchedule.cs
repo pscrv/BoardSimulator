@@ -7,6 +7,7 @@ namespace Simulator
     internal class OPSchedule
     {
         #region fields and properties
+        private int _minimumDaysBetweenOP;
         private Dictionary<Member, Dictionary<Hour, AllocatedCase>> _schedule = new Dictionary<Member, Dictionary<Hour, AllocatedCase>>();
        
         internal int Count
@@ -61,6 +62,17 @@ namespace Simulator
 
 
 
+        #region construction
+        internal OPSchedule(int minimumDaysBetweenOP)
+        {
+            _minimumDaysBetweenOP = minimumDaysBetweenOP;
+        }
+
+        internal OPSchedule()
+            :this (0) { }
+        #endregion
+
+
         internal void Add(Hour hour, AllocatedCase âllocatedCase)
         {
             foreach (CaseWorker worker in âllocatedCase.Board.Members)
@@ -80,29 +92,32 @@ namespace Simulator
 
         internal AllocatedCase GetOPWork(Hour hour, Member member)
         {
-            return _hasOPWorkAtHour(hour, member);
+            return _getOPWorkAtHour(hour, member);
         }
         
 
-        internal void Schedule(Hour currentHour, AllocatedCase allocateCase)
+        internal void Schedule(Hour currentHour, AllocatedCase allocatedCase)
         {
-            _setupForMemberIfNeeded(allocateCase.Board);
-
+            _setupForMemberIfNeeded(allocatedCase.Board);
 
             Hour earliestPossibleHour =
-                currentHour.AddMonths(TimeParameters.OPMinimumMonthNotice);
+                currentHour.NextFirstHourOfDay().AddMonths(TimeParameters.OPMinimumMonthNotice);
             Hour iterationHour = earliestPossibleHour;
 
             while (true)
             {
-                iterationHour = _nextFirstHourOfDayWhenAllFree(allocateCase.Board, iterationHour);
+                iterationHour = _nextFirstHourOfDayWhenAllFree(allocatedCase.Board, iterationHour);
 
-                if (_allFreeForOPDuration(iterationHour, allocateCase.Board)
-                    && _allHaveEnoughPreprationTime(iterationHour, allocateCase.Board))
+                if (_isEnoughTimeSincePreviousOP(iterationHour, allocatedCase.Board)
+                    && _allFreeForOPDuration(iterationHour, allocatedCase.Board)
+                    && _allHaveEnoughPreprationTime(iterationHour, allocatedCase.Board)
+                    && _isEnoughTimeBeforeNextOP(iterationHour, allocatedCase.Board))
                 {
-                    _scheduleForAllMembers(iterationHour, allocateCase);
+                    _scheduleForAllMembers(iterationHour, allocatedCase);
                     return;
                 }
+
+                iterationHour = iterationHour.Next();
             }
         }
 
@@ -168,7 +183,7 @@ namespace Simulator
 
         private Hour _nextFirstHourOfDayWhenAllFree(CaseBoard board, Hour startHour)
         {
-            Hour iterationHour = startHour.FirstHourOfNextDay();
+            Hour iterationHour = startHour.NextFirstHourOfDay();
             while (_someMemberIsbusyAtHour(iterationHour, board))
             {
                 iterationHour = iterationHour.FirstHourOfNextDay();
@@ -231,39 +246,11 @@ namespace Simulator
         }
 
         private bool _hasOPWorkAtHour(Hour hour, CaseWorker worker)
-        { 
-            if (worker == null)
-                throw new NullReferenceException("OPSchedule.HasOPWork: parameter <worker> is null.");
-
-            if (!_schedule.ContainsKey(worker.Member))
-                return false;
-            
-            Hour lastStartBeforeHour = 
-                 (from h in _schedule[worker.Member].Keys
-                  where h < hour
-                  select h).Max();
-
-            if (lastStartBeforeHour != null)
-            {
-                if (lastStartBeforeHour.AddHours(TimeParameters.OPDurationInHours - 1) >= hour)
-                    return true;
-            }
-
-            Hour nextStartTime =
-                (from h in _schedule[worker.Member].Keys
-                 where h >= hour
-                 select h).Min();
-            if (nextStartTime == null)
-                return false;
-
-            Hour nextWorkStartHour = nextStartTime.SubtractHours(worker.HoursOPPreparation);
-            if (nextWorkStartHour <= hour)
-                return true;
-
-            return false;
+        {
+            return _getOPWorkAtHour(hour, worker.Member) != null;
         }
 
-        private AllocatedCase _hasOPWorkAtHour(Hour hour, Member member)
+        private AllocatedCase _getOPWorkAtHour(Hour hour, Member member)
         {
             if (member == null)
                 throw new NullReferenceException("OPSchedule.HasOPWork: parameter <worker> is null.");
@@ -278,7 +265,9 @@ namespace Simulator
 
             if (lastStartBeforeHour != null)
             {
-                if (lastStartBeforeHour.AddHours(TimeParameters.OPDurationInHours - 1) >= hour)
+                Hour busyUntil = lastStartBeforeHour
+                    .AddHours(TimeParameters.OPDurationInHours - 1);
+                if (busyUntil >= hour)
                 {
                     return _schedule[member][lastStartBeforeHour];
                 }
@@ -301,5 +290,38 @@ namespace Simulator
             return null;
         }
 
+
+        private bool _isEnoughTimeBeforeNextOP(Hour hour, CaseBoard caseBoard)
+        {
+            Hour needsToBeFreeUntilHour =
+                hour.AddHours(TimeParameters.OPDurationInHours)
+                    .NextFirstHourOfDay()
+                    .AddDays(_minimumDaysBetweenOP);
+
+            SimulationTimeSpan span = new SimulationTimeSpan(hour, needsToBeFreeUntilHour);
+
+            return _allMembersFreeForSpan(caseBoard, span);
+        }
+
+        private bool _allMembersFreeForSpan(CaseBoard caseBoard, SimulationTimeSpan span)
+        {
+            foreach (CaseWorker worker in caseBoard.Members)
+            {
+                foreach (Hour h in span)
+                {
+                    if (_hasOPWorkAtHour(h, worker))
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool _isEnoughTimeSincePreviousOP(Hour hour, CaseBoard caseBoard)
+        {
+            Hour needsToBeFreeFromHour = hour.SubtractDays(_minimumDaysBetweenOP);
+            SimulationTimeSpan span = new SimulationTimeSpan(needsToBeFreeFromHour, hour);
+            return _allMembersFreeForSpan(caseBoard, span);
+        }
     }
 }

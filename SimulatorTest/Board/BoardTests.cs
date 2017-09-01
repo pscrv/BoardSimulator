@@ -7,12 +7,15 @@ namespace Simulator.Tests
     [TestClass()]
     public class BoardTests
     {
-        Board board;
+        Board board0;  // 0 day gap between OPs
+        Board board2;  // 2 day gap between OPs
 
         AppealCase appealCase1 = new AppealCase();
         AppealCase appealCase2 = new AppealCase();
-        AllocatedCase allocatedCase1;
-        AllocatedCase allocatedCase2;
+        AllocatedCase allocatedCase01;
+        AllocatedCase allocatedCase02;
+        AllocatedCase allocatedCase21;
+        AllocatedCase allocatedCase22;
 
         MemberParameters memberParameters = new MemberParameters(2, 1, 2);
         MemberParameterCollection parameterCollection;
@@ -32,12 +35,21 @@ namespace Simulator.Tests
             technicals = new List<Member> { new Member(parameterCollection) };
             legals = new List<Member> { new Member(parameterCollection) };
 
-            board = new Board(
+            board0 = new Board(
                 chair, 
                 ChairType.Technical, 
                 technicals, 
                 legals);
-            allocatedCase1 = board.ProcessNewCase(appealCase1, new Hour(0));
+
+            board2 = new Board(
+                chair,
+                ChairType.Technical,
+                technicals,
+                legals,
+                new Registrar(new OPSchedule(2)));
+
+            allocatedCase01 = board0.ProcessNewCase(appealCase1, new Hour(0));
+            allocatedCase21 = board2.ProcessNewCase(appealCase1, new Hour(0));
         }
 
 
@@ -47,209 +59,400 @@ namespace Simulator.Tests
         {            
             foreach (Hour hour in new SimulationTimeSpan(new Hour(0), new Hour(1000)))
             {                
-                board.DoWork(hour);
-                if (allocatedCase1.Stage == CaseStage.Finished)
+                board0.DoWork(hour);
+                if (allocatedCase01.Stage == CaseStage.Finished)
                     break;
             }
 
-            _case1Assertions();
+            _case01Assertions();
 
         }
 
 
         [TestMethod()]
-        public void Work_twoCases()
+        public void Work_twoCases0()
         {
-            allocatedCase2 = board.ProcessNewCase(appealCase2, new Hour(0));
+            allocatedCase02 = board0.ProcessNewCase(appealCase2, new Hour(0));
 
             foreach(Hour hour in new SimulationTimeSpan(new Hour(0), new Hour(1000)))
             {
-                board.DoWork(hour);
-                if (allocatedCase2.Stage == CaseStage.Finished)
+                board0.DoWork(hour);
+                if (allocatedCase02.Stage == CaseStage.Finished)
                     break;
             }
 
-            _case1Assertions();
-            _case2Assertions();
+            _case01Assertions();
+            _case02Assertions();
+
+        }
+
+        [TestMethod()]
+        public void Work_twoCases1()
+        {
+            allocatedCase22 = board2.ProcessNewCase(appealCase2, new Hour(0));
+
+            foreach (Hour hour in new SimulationTimeSpan(new Hour(0), new Hour(1000)))
+            {
+                board2.DoWork(hour);
+                if (allocatedCase22.Stage == CaseStage.Finished)
+                    break;
+            }
+
+            _case11Assertions();
+            _case12Assertions();
 
         }
 
 
-
-
-
-        private void _case1Assertions()
+        private void _case01Assertions()
         {
-            Assert.AreEqual(0, allocatedCase1.Record.Allocation.Value);
-            Assert.AreEqual(0, allocatedCase1.Record.RapporteurSummons.Enqueue.Value);
-            Assert.AreEqual(0, allocatedCase1.Record.RapporteurSummons.Start.Value);
-            Assert.AreEqual(1, allocatedCase1.Record.RapporteurSummons.Finish.Value);
-            Assert.AreEqual(2, allocatedCase1.Record.OtherMemberSummons.Enqueue.Value);
-            Assert.AreEqual(2, allocatedCase1.Record.OtherMemberSummons.Start.Value);
-            Assert.AreEqual(3, allocatedCase1.Record.OtherMemberSummons.Finish.Value);
-            Assert.AreEqual(4, allocatedCase1.Record.ChairSummons.Enqueue.Value);
-            Assert.AreEqual(4, allocatedCase1.Record.ChairSummons.Start.Value);
-            Assert.AreEqual(5, allocatedCase1.Record.ChairSummons.Finish.Value);
-            Assert.AreEqual(6, allocatedCase1.Record.OP.Enqueue.Value);
+            Assert.AreEqual(0, allocatedCase01.Record.Allocation.Value);
+            Assert.AreEqual(0, allocatedCase01.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(0, allocatedCase01.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(1, allocatedCase01.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(2, allocatedCase01.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(2, allocatedCase01.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(3, allocatedCase01.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(4, allocatedCase01.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(4, allocatedCase01.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(5, allocatedCase01.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(6, allocatedCase01.Record.OP.Enqueue.Value);
 
-            Assert.AreEqual(720, allocatedCase1.Record.RapporteurDecision.Enqueue.Value);
-            Assert.AreEqual(720, allocatedCase1.Record.RapporteurDecision.Start.Value);
-            Assert.AreEqual(721, allocatedCase1.Record.RapporteurDecision.Finish.Value);
-            Assert.AreEqual(722, allocatedCase1.Record.OtherMemberDecision.Enqueue.Value);
-            Assert.AreEqual(722, allocatedCase1.Record.OtherMemberDecision.Start.Value);
-            Assert.AreEqual(723, allocatedCase1.Record.OtherMemberDecision.Finish.Value);
-            Assert.AreEqual(724, allocatedCase1.Record.ChairDecision.Enqueue.Value);
-            Assert.AreEqual(724, allocatedCase1.Record.ChairDecision.Start.Value);
-            Assert.AreEqual(725, allocatedCase1.Record.ChairDecision.Finish.Value);
+            Assert.AreEqual(720, allocatedCase01.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(720, allocatedCase01.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(721, allocatedCase01.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(722, allocatedCase01.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(722, allocatedCase01.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(723, allocatedCase01.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(724, allocatedCase01.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(724, allocatedCase01.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(725, allocatedCase01.Record.ChairDecision.Finish.Value);
 
 
-            CompletedCaseReport report = new CompletedCaseReport(allocatedCase1);
-            Assert.AreEqual(report.HourOfAlloction, allocatedCase1.Record.Allocation.Value);
+            CompletedCaseReport report = new CompletedCaseReport(allocatedCase01);
+            Assert.AreEqual(report.HourOfAlloction, allocatedCase01.Record.Allocation.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.Rapporteur), 
-                allocatedCase1.Record.RapporteurSummons.Enqueue.Value);
+                allocatedCase01.Record.RapporteurSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.Rapporteur), 
-                allocatedCase1.Record.RapporteurSummons.Start.Value);
+                allocatedCase01.Record.RapporteurSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.Rapporteur),
-                allocatedCase1.Record.RapporteurSummons.Finish.Value);
+                allocatedCase01.Record.RapporteurSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.OtherMember), 
-                allocatedCase1.Record.OtherMemberSummons.Enqueue.Value);
+                allocatedCase01.Record.OtherMemberSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.OtherMember), 
-                allocatedCase1.Record.OtherMemberSummons.Start.Value);
+                allocatedCase01.Record.OtherMemberSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.OtherMember), 
-                allocatedCase1.Record.OtherMemberSummons.Finish.Value);
+                allocatedCase01.Record.OtherMemberSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairSummons.Enqueue.Value);
+                allocatedCase01.Record.ChairSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairSummons.Start.Value);
+                allocatedCase01.Record.ChairSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairSummons.Finish.Value);
+                allocatedCase01.Record.ChairSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourOPScheduled, 
-                allocatedCase1.Record.OP.Enqueue.Value);
+                allocatedCase01.Record.OP.Enqueue.Value);
 
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.Rapporteur), 
-                allocatedCase1.Record.RapporteurDecision.Enqueue.Value);
+                allocatedCase01.Record.RapporteurDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.Rapporteur), 
-                allocatedCase1.Record.RapporteurDecision.Start.Value);
+                allocatedCase01.Record.RapporteurDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.Rapporteur), 
-                allocatedCase1.Record.RapporteurDecision.Finish.Value);
+                allocatedCase01.Record.RapporteurDecision.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.OtherMember), 
-                allocatedCase1.Record.OtherMemberDecision.Enqueue.Value);
+                allocatedCase01.Record.OtherMemberDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.OtherMember) , 
-                allocatedCase1.Record.OtherMemberDecision.Start.Value);
+                allocatedCase01.Record.OtherMemberDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.OtherMember), 
-                allocatedCase1.Record.OtherMemberDecision.Finish.Value);
+                allocatedCase01.Record.OtherMemberDecision.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairDecision.Enqueue.Value);
+                allocatedCase01.Record.ChairDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairDecision.Start.Value);
+                allocatedCase01.Record.ChairDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.Chair), 
-                allocatedCase1.Record.ChairDecision.Finish.Value);
+                allocatedCase01.Record.ChairDecision.Finish.Value);
         }
 
-        private void _case2Assertions()
+        private void _case02Assertions()
         {
-            Assert.AreEqual(0, allocatedCase2.Record.Allocation.Value);
-            Assert.AreEqual(0, allocatedCase2.Record.RapporteurSummons.Enqueue.Value);
-            Assert.AreEqual(2, allocatedCase2.Record.RapporteurSummons.Start.Value);
-            Assert.AreEqual(3, allocatedCase2.Record.RapporteurSummons.Finish.Value);
-            Assert.AreEqual(4, allocatedCase2.Record.OtherMemberSummons.Enqueue.Value);
-            Assert.AreEqual(4, allocatedCase2.Record.OtherMemberSummons.Start.Value);
-            Assert.AreEqual(5, allocatedCase2.Record.OtherMemberSummons.Finish.Value);
-            Assert.AreEqual(6, allocatedCase2.Record.ChairSummons.Enqueue.Value);
-            Assert.AreEqual(6, allocatedCase2.Record.ChairSummons.Start.Value);
-            Assert.AreEqual(7, allocatedCase2.Record.ChairSummons.Finish.Value);
-            Assert.AreEqual(8, allocatedCase2.Record.OP.Enqueue.Value);
+            Assert.AreEqual(0, allocatedCase02.Record.Allocation.Value);
+            Assert.AreEqual(0, allocatedCase02.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(2, allocatedCase02.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(3, allocatedCase02.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(4, allocatedCase02.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(4, allocatedCase02.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(5, allocatedCase02.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(6, allocatedCase02.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(6, allocatedCase02.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(7, allocatedCase02.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(8, allocatedCase02.Record.OP.Enqueue.Value);
 
-            Assert.AreEqual(736, allocatedCase2.Record.RapporteurDecision.Enqueue.Value);
-            Assert.AreEqual(736, allocatedCase2.Record.RapporteurDecision.Start.Value);
-            Assert.AreEqual(737, allocatedCase2.Record.RapporteurDecision.Finish.Value);
-            Assert.AreEqual(738, allocatedCase2.Record.OtherMemberDecision.Enqueue.Value);
-            Assert.AreEqual(738, allocatedCase2.Record.OtherMemberDecision.Start.Value);
-            Assert.AreEqual(739, allocatedCase2.Record.OtherMemberDecision.Finish.Value);
-            Assert.AreEqual(740, allocatedCase2.Record.ChairDecision.Enqueue.Value);
-            Assert.AreEqual(740, allocatedCase2.Record.ChairDecision.Start.Value);
-            Assert.AreEqual(741, allocatedCase2.Record.ChairDecision.Finish.Value);
+            Assert.AreEqual(736, allocatedCase02.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(736, allocatedCase02.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(737, allocatedCase02.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(738, allocatedCase02.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(738, allocatedCase02.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(739, allocatedCase02.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(740, allocatedCase02.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(740, allocatedCase02.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(741, allocatedCase02.Record.ChairDecision.Finish.Value);
 
             
-            CompletedCaseReport report = new CompletedCaseReport(allocatedCase2);
-            Assert.AreEqual(report.HourOfAlloction, allocatedCase2.Record.Allocation.Value);
+            CompletedCaseReport report = new CompletedCaseReport(allocatedCase02);
+            Assert.AreEqual(report.HourOfAlloction, allocatedCase02.Record.Allocation.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.Rapporteur), 
-                allocatedCase2.Record.RapporteurSummons.Enqueue.Value);
+                allocatedCase02.Record.RapporteurSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.Rapporteur), 
-                allocatedCase2.Record.RapporteurSummons.Start.Value);
+                allocatedCase02.Record.RapporteurSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.Rapporteur),
-                allocatedCase2.Record.RapporteurSummons.Finish.Value);
+                allocatedCase02.Record.RapporteurSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.OtherMember), 
-                allocatedCase2.Record.OtherMemberSummons.Enqueue.Value);
+                allocatedCase02.Record.OtherMemberSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.OtherMember), 
-                allocatedCase2.Record.OtherMemberSummons.Start.Value);
+                allocatedCase02.Record.OtherMemberSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.OtherMember), 
-                allocatedCase2.Record.OtherMemberSummons.Finish.Value);
+                allocatedCase02.Record.OtherMemberSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForSummons(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairSummons.Enqueue.Value);
+                allocatedCase02.Record.ChairSummons.Enqueue.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkStarted(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairSummons.Start.Value);
+                allocatedCase02.Record.ChairSummons.Start.Value);
             Assert.AreEqual(
                 report.HourSummonsWorkFinished(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairSummons.Finish.Value);
+                allocatedCase02.Record.ChairSummons.Finish.Value);
             Assert.AreEqual(
                 report.HourOPScheduled, 
-                allocatedCase2.Record.OP.Enqueue.Value);
+                allocatedCase02.Record.OP.Enqueue.Value);
 
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.Rapporteur), 
-                allocatedCase2.Record.RapporteurDecision.Enqueue.Value);
+                allocatedCase02.Record.RapporteurDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.Rapporteur), 
-                allocatedCase2.Record.RapporteurDecision.Start.Value);
+                allocatedCase02.Record.RapporteurDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.Rapporteur), 
-                allocatedCase2.Record.RapporteurDecision.Finish.Value);
+                allocatedCase02.Record.RapporteurDecision.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.OtherMember), 
-                allocatedCase2.Record.OtherMemberDecision.Enqueue.Value);
+                allocatedCase02.Record.OtherMemberDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.OtherMember) , 
-                allocatedCase2.Record.OtherMemberDecision.Start.Value);
+                allocatedCase02.Record.OtherMemberDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.OtherMember), 
-                allocatedCase2.Record.OtherMemberDecision.Finish.Value);
+                allocatedCase02.Record.OtherMemberDecision.Finish.Value);
             Assert.AreEqual(
                 report.HourEnqueuedForDecision(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairDecision.Enqueue.Value);
+                allocatedCase02.Record.ChairDecision.Enqueue.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkStarted(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairDecision.Start.Value);
+                allocatedCase02.Record.ChairDecision.Start.Value);
             Assert.AreEqual(
                 report.HourDecisionWorkFinished(WorkerRole.Chair), 
-                allocatedCase2.Record.ChairDecision.Finish.Value);
+                allocatedCase02.Record.ChairDecision.Finish.Value);
+        }
+
+
+
+
+        private void _case11Assertions()
+        {
+            Assert.AreEqual(0, allocatedCase21.Record.Allocation.Value);
+            Assert.AreEqual(0, allocatedCase21.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(0, allocatedCase21.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(1, allocatedCase21.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(2, allocatedCase21.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(2, allocatedCase21.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(3, allocatedCase21.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(4, allocatedCase21.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(4, allocatedCase21.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(5, allocatedCase21.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(6, allocatedCase21.Record.OP.Enqueue.Value);
+
+            Assert.AreEqual(720, allocatedCase21.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(720, allocatedCase21.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(721, allocatedCase21.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(722, allocatedCase21.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(722, allocatedCase21.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(723, allocatedCase21.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(724, allocatedCase21.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(724, allocatedCase21.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(725, allocatedCase21.Record.ChairDecision.Finish.Value);
+
+
+            CompletedCaseReport report = new CompletedCaseReport(allocatedCase21);
+            Assert.AreEqual(report.HourOfAlloction, allocatedCase21.Record.Allocation.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.Chair),
+                allocatedCase21.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.Chair),
+                allocatedCase21.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.Chair),
+                allocatedCase21.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourOPScheduled,
+                allocatedCase21.Record.OP.Enqueue.Value);
+
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.Rapporteur),
+                allocatedCase21.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.OtherMember),
+                allocatedCase21.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.Chair),
+                allocatedCase21.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.Chair),
+                allocatedCase21.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.Chair),
+                allocatedCase21.Record.ChairDecision.Finish.Value);
+        }
+
+        private void _case12Assertions()
+        {
+            Assert.AreEqual(0, allocatedCase22.Record.Allocation.Value);
+            Assert.AreEqual(0, allocatedCase22.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(2, allocatedCase22.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(3, allocatedCase22.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(4, allocatedCase22.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(4, allocatedCase22.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(5, allocatedCase22.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(6, allocatedCase22.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(6, allocatedCase22.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(7, allocatedCase22.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(8, allocatedCase22.Record.OP.Enqueue.Value);
+
+            Assert.AreEqual(744, allocatedCase22.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(744, allocatedCase22.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(745, allocatedCase22.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(746, allocatedCase22.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(746, allocatedCase22.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(747, allocatedCase22.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(748, allocatedCase22.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(748, allocatedCase22.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(749, allocatedCase22.Record.ChairDecision.Finish.Value);
+
+
+            CompletedCaseReport report = new CompletedCaseReport(allocatedCase22);
+            Assert.AreEqual(report.HourOfAlloction, allocatedCase22.Record.Allocation.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForSummons(WorkerRole.Chair),
+                allocatedCase22.Record.ChairSummons.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkStarted(WorkerRole.Chair),
+                allocatedCase22.Record.ChairSummons.Start.Value);
+            Assert.AreEqual(
+                report.HourSummonsWorkFinished(WorkerRole.Chair),
+                allocatedCase22.Record.ChairSummons.Finish.Value);
+            Assert.AreEqual(
+                report.HourOPScheduled,
+                allocatedCase22.Record.OP.Enqueue.Value);
+
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.Rapporteur),
+                allocatedCase22.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.OtherMember),
+                allocatedCase22.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(
+                report.HourEnqueuedForDecision(WorkerRole.Chair),
+                allocatedCase22.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkStarted(WorkerRole.Chair),
+                allocatedCase22.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(
+                report.HourDecisionWorkFinished(WorkerRole.Chair),
+                allocatedCase22.Record.ChairDecision.Finish.Value);
         }
 
     }
