@@ -46,7 +46,7 @@ namespace Simulator.Tests
                 ChairType.Technical,
                 technicals,
                 legals,
-                new Registrar(new OPSchedule(2)));
+                new Registrar(new OPSchedule1(2)));
 
             allocatedCase01 = board0.ProcessNewCase(appealCase1, new Hour(0));
             allocatedCase21 = board2.ProcessNewCase(appealCase1, new Hour(0));

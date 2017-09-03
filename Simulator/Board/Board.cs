@@ -187,8 +187,7 @@ namespace Simulator
             }
 
             return _chairChooser.ChooseChair();
-        }
-        
+        }        
 
         private Member _allocateRapporteur(Member chair)
         {
@@ -214,7 +213,6 @@ namespace Simulator
             _allocationCount[other]++;
             return other;
         }
-
 
         private Member _getMemberWithFewestAllocations(IEnumerable<Member> members)
         {

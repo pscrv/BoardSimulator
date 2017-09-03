@@ -59,6 +59,7 @@
     <Compile Include="Board\BoardTests.cs" />
     <Compile Include="Cases\CaseLogging.cs" />
     <Compile Include="OP\OPScheduleTests.cs" />
+    <Compile Include="OP\OPScheduleTests2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation\SimulationTests.cs" />
   </ItemGroup>

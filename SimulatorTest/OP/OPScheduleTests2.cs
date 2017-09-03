@@ -4,37 +4,37 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Simulator.Tests
 {
     [TestClass()]
-    public class OPScheduleTests
+    public class OPScheduleTests2
     {
         private Member chair;
         private Member rapporteur;
         private Member other;
         private Board board;
-        
+
         private AppealCase appealCase;
         private AllocatedCase allocatedCase;
-        
-        private OPSchedule1 schedule0;
-        private OPSchedule1 schedule1;
-        
+
+        private OPSchedule schedule0;
+        private OPSchedule schedule1;
+
 
         [TestInitialize]
         public void Initialise()
         {
-            schedule0 = new OPSchedule1();
-            schedule1 = new OPSchedule1(1);
+            schedule0 = new OPSchedule2();
+            schedule1 = new OPSchedule2(1);
 
             chair = new Member(MemberParameterCollection.DefaultCollection());
             rapporteur = new Member(MemberParameterCollection.DefaultCollection());
             other = new Member(MemberParameterCollection.DefaultCollection());
             board = new Board(
-                chair, 
-                ChairType.Technical, 
-                new List<Member> { rapporteur }, 
+                chair,
+                ChairType.Technical,
+                new List<Member> { rapporteur },
                 new List<Member> { other });
 
             appealCase = new AppealCase();
-            allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));            
+            allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));
         }
 
 
@@ -51,21 +51,21 @@ namespace Simulator.Tests
             {
                 hour = new Hour(i);
                 Assert.IsFalse(
-                    schedule0.HasOPWork(hour, allocatedCase.Board.Chair),  
+                    schedule0.HasOPWork(hour, allocatedCase.Board.Chair.Member),
                     "Failed at " + hour);
             }
-            
-            for (int i = scheduleHour.Value - preparationHours; 
-                i < scheduleHour.Value + TimeParameters.OPDurationInHours; 
-                i++)  
+
+            for (int i = scheduleHour.Value - preparationHours;
+                i < scheduleHour.Value + TimeParameters.OPDurationInHours;
+                i++)
             {
                 hour = new Hour(i);
-                Assert.IsTrue(schedule0.HasOPWork(hour, allocatedCase.Board.Chair),
+                Assert.IsTrue(schedule0.HasOPWork(hour, allocatedCase.Board.Chair.Member),
                     "Failed at " + hour);
             }
-            
+
             hour = scheduleHour.AddHours(TimeParameters.OPDurationInHours);
-            Assert.IsFalse(schedule0.HasOPWork(hour, allocatedCase.Board.Chair),
+            Assert.IsFalse(schedule0.HasOPWork(hour, allocatedCase.Board.Chair.Member),
                     "Failed at " + hour);
         }
 
@@ -81,7 +81,7 @@ namespace Simulator.Tests
             {
                 hour = new Hour(i);
                 Assert.IsFalse(
-                    schedule1.HasOPWork(hour, allocatedCase.Board.Chair),
+                    schedule1.HasOPWork(hour, allocatedCase.Board.Chair.Member),
                     "Failed at " + hour);
             }
 
@@ -91,13 +91,55 @@ namespace Simulator.Tests
                 i++)
             {
                 hour = new Hour(i);
-                Assert.IsTrue(schedule1.HasOPWork(hour, allocatedCase.Board.Chair),
+                Assert.IsTrue(schedule1.HasOPWork(hour, allocatedCase.Board.Chair.Member),
                     "Failed at " + hour);
             }
-            
-            Assert.IsFalse(schedule1.HasOPWork(endHour, allocatedCase.Board.Chair),
+
+            Assert.IsFalse(schedule1.HasOPWork(endHour, allocatedCase.Board.Chair.Member),
                     "Failed at " + endHour);
         }
+
+        [TestMethod()]
+        public void GetOPWorkTest0()
+        {
+            Hour scheduleHour = new Hour(100);
+            Hour endHour = scheduleHour.AddHours(TimeParameters.OPDurationInHours);
+            int preparationHours = chair.GetParameters(WorkerRole.Chair).HoursOPPrepration;
+
+            schedule0.Add(scheduleHour, allocatedCase);
+            
+            foreach (Hour hour in 
+                new SimulationTimeSpan(
+                    new Hour(0),
+                    scheduleHour.SubtractHours(preparationHours).Previous()))
+            {
+                Assert.IsNull(
+                    schedule0.GetOPWork(hour, allocatedCase.Board.Chair.Member),
+                    "Failed at " + hour);
+            }
+
+            foreach (Hour hour in
+                new SimulationTimeSpan(
+                    scheduleHour.SubtractHours(preparationHours),
+                    endHour.Previous()))
+            {
+                Assert.AreEqual(
+                    schedule0.GetOPWork(hour, allocatedCase.Board.Chair.Member),
+                    allocatedCase,
+                    "Failed at " + hour);
+            }
+
+            Assert.IsNull(schedule0.GetOPWork(endHour, allocatedCase.Board.Chair.Member),
+                    "Failed at " + endHour);
+
+
+
+        }
+
+
+
+
+
 
         [TestMethod()]
         public void Schedule0()
@@ -118,6 +160,6 @@ namespace Simulator.Tests
             Assert.IsTrue(startHours.Contains(hour1));
             Assert.IsTrue(startHours.Contains(hour2));
             Assert.IsTrue(startHours.Contains(hour3));
-        }        
+        }
     }
 }

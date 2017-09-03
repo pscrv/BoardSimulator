@@ -4,13 +4,25 @@ using System.Linq;
 
 namespace Simulator
 {
-    internal class OPSchedule
+    internal abstract class OPSchedule
+    {
+        internal abstract int Count { get; }
+        internal abstract List<Hour> StartHours { get; }
+        internal abstract void Add(Hour hour, AllocatedCase allocatedCase);
+        internal abstract bool HasOPWork(Hour hour, Member member);
+        internal abstract AllocatedCase GetOPWork(Hour hour, Member member);
+        internal abstract void Schedule(Hour currentHour, AllocatedCase allocatedCase);
+        internal abstract List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour);
+    }
+
+
+    internal class OPSchedule1 : OPSchedule
     {
         #region fields and properties
         private int _minimumDaysBetweenOP;
         private Dictionary<Member, Dictionary<Hour, AllocatedCase>> _schedule = new Dictionary<Member, Dictionary<Hour, AllocatedCase>>();
        
-        internal int Count
+        internal override int Count
         {
             get
             {
@@ -24,7 +36,7 @@ namespace Simulator
         }
 
 
-        internal List<Hour> StartHours
+        internal override List<Hour> StartHours
         {
             get
             {
@@ -63,19 +75,20 @@ namespace Simulator
 
 
         #region construction
-        internal OPSchedule(int minimumDaysBetweenOP)
+        internal OPSchedule1(int minimumDaysBetweenOP)
         {
             _minimumDaysBetweenOP = minimumDaysBetweenOP;
         }
 
-        internal OPSchedule()
+        internal OPSchedule1()
             :this (0) { }
         #endregion
 
 
-        internal void Add(Hour hour, AllocatedCase âllocatedCase)
+        #region overrides
+        internal override void Add(Hour hour, AllocatedCase âllocatedCase)
         {
-            foreach (CaseWorker worker in âllocatedCase.Board.Members)
+            foreach (CaseWorker worker in âllocatedCase.Board.MembersAsCaseWorkers)
             {
                 if (!_schedule.ContainsKey(worker.Member))
                     _schedule[worker.Member] = new Dictionary<Hour, AllocatedCase>();
@@ -85,18 +98,17 @@ namespace Simulator
         }
 
 
-        internal bool HasOPWork(Hour hour, CaseWorker worker)
+        internal override bool HasOPWork(Hour hour, Member member)
         {
-            return _hasOPWorkAtHour(hour, worker);
+            throw new NotImplementedException();
         }
 
-        internal AllocatedCase GetOPWork(Hour hour, Member member)
+        internal override AllocatedCase GetOPWork(Hour hour, Member member)
         {
             return _getOPWorkAtHour(hour, member);
         }
-        
 
-        internal void Schedule(Hour currentHour, AllocatedCase allocatedCase)
+        internal override void Schedule(Hour currentHour, AllocatedCase allocatedCase)
         {
             _setupForMemberIfNeeded(allocatedCase.Board);
 
@@ -120,9 +132,8 @@ namespace Simulator
                 iterationHour = iterationHour.Next();
             }
         }
-
-
-        internal List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour)
+        
+        internal override List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour)
         {
             HashSet<AllocatedCase> startedCases = new HashSet<AllocatedCase>();
             HashSet<AllocatedCase> finishedCases = new HashSet<AllocatedCase>();
@@ -166,15 +177,19 @@ namespace Simulator
 
             return finishedList;
         }
+        #endregion
+
+        internal bool HasOPWork(Hour hour, CaseWorker worker)
+        {
+            return _hasOPWorkAtHour(hour, worker);
+        }
 
 
-
-
-
+        
 
         private void _setupForMemberIfNeeded(CaseBoard board)
         {
-            foreach (CaseWorker worker in board.Members)
+            foreach (CaseWorker worker in board.MembersAsCaseWorkers)
             {
                 if (!_schedule.ContainsKey(worker.Member))
                     _schedule[worker.Member] = new Dictionary<Hour, AllocatedCase>();
@@ -201,7 +216,7 @@ namespace Simulator
 
         private void _scheduleForAllMembers(Hour startHour, AllocatedCase allocatedCase)
         {
-            foreach (CaseWorker worker in allocatedCase.Board.Members)
+            foreach (CaseWorker worker in allocatedCase.Board.MembersAsCaseWorkers)
             {
                 _schedule[worker.Member].Add(startHour, allocatedCase);
             }
@@ -210,7 +225,7 @@ namespace Simulator
         private bool _allFreeForOPDuration(Hour startHour, CaseBoard caseBoard)
         {
             SimulationTimeSpan opDurationSpan = new SimulationTimeSpan(startHour, startHour.AddHours(TimeParameters.OPDurationInHours));
-            foreach (CaseWorker worker in caseBoard.Members)
+            foreach (CaseWorker worker in caseBoard.MembersAsCaseWorkers)
             {
                 foreach (Hour hour in opDurationSpan)
                 {
@@ -226,7 +241,7 @@ namespace Simulator
 
         private bool _allHaveEnoughPreprationTime(Hour startHour, CaseBoard caseBoard)
         {
-            foreach (CaseWorker worker in caseBoard.Members)
+            foreach (CaseWorker worker in caseBoard.MembersAsCaseWorkers)
             {
                 SimulationTimeSpan preparationSpan = 
                     new SimulationTimeSpan(
@@ -305,7 +320,8 @@ namespace Simulator
 
         private bool _allMembersFreeForSpan(CaseBoard caseBoard, SimulationTimeSpan span)
         {
-            foreach (CaseWorker worker in caseBoard.Members)
+            // TODO: speed this up
+            foreach (CaseWorker worker in caseBoard.MembersAsCaseWorkers)
             {
                 foreach (Hour h in span)
                 {
@@ -323,5 +339,160 @@ namespace Simulator
             SimulationTimeSpan span = new SimulationTimeSpan(needsToBeFreeFromHour, hour);
             return _allMembersFreeForSpan(caseBoard, span);
         }
+    }
+
+
+
+    internal class OPSchedule2 : OPSchedule
+    {
+        #region fields and properties
+        private Dictionary<Hour, OPData> _opSchedule;
+        private Dictionary<Hour, HashSet<Member>> _blockedSchedule;
+
+        private int _minimumDaysBetweenOP;
+        #endregion
+
+
+
+        #region construction
+        internal OPSchedule2(int minimumDaysBetweenOP)
+        {
+            _opSchedule = new Dictionary<Hour, OPData>();
+            _minimumDaysBetweenOP = minimumDaysBetweenOP;
+            _blockedSchedule = new Dictionary<Hour, HashSet<Member>>();            
+        }
+
+        internal OPSchedule2()
+            :this (0) { }
+        #endregion
+
+
+        #region overrides
+        internal override void Add(Hour startHour, AllocatedCase allocatedCase)
+        {
+            Hour endHour = startHour.AddHours(TimeParameters.OPDurationInHours - 1);
+
+            _recordForMember(startHour, endHour, allocatedCase, WorkerRole.Chair);
+            _recordForMember(startHour, endHour, allocatedCase, WorkerRole.Rapporteur);
+            _recordForMember(startHour, endHour, allocatedCase, WorkerRole.OtherMember);
+
+            _blockForMember(endHour, allocatedCase.GetMemberByRole(WorkerRole.Chair));
+            _blockForMember(endHour, allocatedCase.GetMemberByRole(WorkerRole.Rapporteur));
+            _blockForMember(endHour, allocatedCase.GetMemberByRole(WorkerRole.OtherMember));
+        }
+
+        internal override bool HasOPWork(Hour hour, Member member)
+        {
+            bool result = false;
+            if (_opSchedule.ContainsKey(hour))
+            {
+                WorkerRole role = _opSchedule[hour].AllocatedCase.Board.GetRole(member);
+                result = _opSchedule[hour].IsRoleWorking(role);
+            }
+            
+            return result;
+        }
+
+
+        internal override AllocatedCase GetOPWork(Hour hour, Member member)
+        {
+            if (_opSchedule.ContainsKey(hour))
+            {
+                WorkerRole role = _opSchedule[hour].AllocatedCase.Board.GetRole(member);
+                if (_opSchedule[hour].IsRoleWorking(role))
+                    return _opSchedule[hour].AllocatedCase;
+            }
+
+            return null;
+        }
+
+
+
+
+        internal override int Count => throw new NotImplementedException();
+
+        internal override List<Hour> StartHours => throw new NotImplementedException();
+
+        internal override void Schedule(Hour currentHour, AllocatedCase allocatedCase)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+
+
+
+
+        #region private methods
+
+        private void _recordForMember(Hour startHour, Hour endHour, AllocatedCase allocatedCase, WorkerRole role)
+        {
+            // TODO: if we keep this, then sort out deep dots...
+            Hour preparationStart = startHour.SubtractHours(allocatedCase.GetMemberByRole(role).GetParameters(role).HoursOPPrepration);
+            SimulationTimeSpan opSpan = new SimulationTimeSpan(preparationStart, endHour);
+
+            foreach (Hour hour in opSpan)
+            {
+                if (_blockedSchedule.ContainsKey(hour) && _blockedSchedule[hour].Contains(allocatedCase.GetMemberByRole(role)))
+                    throw new InvalidOperationException(
+                        string.Format("OPSchedule2.Add: attempt to schedule but member is blocked for {0}", hour));
+                
+                _addOPScheduleForRole(hour, allocatedCase, role);
+            }
+        }
+
+        // working here
+        private void _addOPScheduleForRole(Hour hour, AllocatedCase allocatedCase, WorkerRole role)
+        {
+            if (_opSchedule.ContainsKey(hour))
+            {
+                if (_opSchedule[hour].IsRoleWorking(role))
+                    throw new InvalidOperationException(
+                        string.Format("OPSchedule2._testAddOPDataScheduleForMember: member has already present for {0}", hour));
+
+                _opSchedule[hour].MarkAsActive(role);
+            }
+            else
+            {
+                _opSchedule[hour] = new OPData(allocatedCase, role);
+            }
+        }
+
+
+        private void _blockForMember(Hour currentHour, Member member)
+        {
+            Hour blockStart = currentHour.Next();
+            Hour blockEnd = blockStart.NextFirstHourOfDay().AddDays(_minimumDaysBetweenOP);
+            SimulationTimeSpan blockSpan = new SimulationTimeSpan(blockStart, blockEnd);
+
+            foreach (Hour hour in blockSpan)
+            {
+                _blockHourForMember(member, hour);
+            }
+        }
+
+
+        private void _blockHourForMember(Member member, Hour hour)
+        {
+            if (_blockedSchedule.ContainsKey(hour))
+            {
+                if (_blockedSchedule[hour].Contains(member))
+                    throw new InvalidOperationException(
+                        string.Format("OPSchedule2.Add: member has already present for {0}", hour));
+
+                _blockedSchedule[hour].Add(member);
+            }
+            else
+            {
+                _blockedSchedule[hour] = new HashSet<Member> { member };
+            }
+        }
+
+        #endregion
     }
 }

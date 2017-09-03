@@ -24,11 +24,12 @@ namespace Simulator
             ID = __instanceCounter;
             __instanceCounter++;
 
-            _parameters = new Dictionary<WorkerRole, MemberParameters>();
-            _parameters[WorkerRole.Chair] = parameters.ChairWorkParameters;
-            _parameters[WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters;
-            _parameters[WorkerRole.OtherMember] = parameters.OtherWorkParameters;
-
+            _parameters = new Dictionary<WorkerRole, MemberParameters>
+            {
+                [WorkerRole.Chair] = parameters.ChairWorkParameters,
+                [WorkerRole.Rapporteur] = parameters.RapporteurWorkParameters,
+                [WorkerRole.OtherMember] = parameters.OtherWorkParameters
+            };
         }
         #endregion
 

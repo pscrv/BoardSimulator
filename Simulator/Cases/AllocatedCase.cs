@@ -13,6 +13,9 @@ namespace Simulator
         internal readonly CaseBoard Board;
         internal readonly CaseRecord Record;
 
+
+        internal IEnumerable<Member> Members { get => Board.Members; }
+
         internal CaseStage Stage
         {
             get

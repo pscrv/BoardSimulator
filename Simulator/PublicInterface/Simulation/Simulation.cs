@@ -81,7 +81,7 @@ namespace Simulator
             int initialCaseCount,
             Dictionary<Hour, int> arriving)
         {
-            OPSchedule opSchedule = new OPSchedule(minimumDaysBetweenOP);
+            OPSchedule opSchedule = new OPSchedule1(minimumDaysBetweenOP);
             Registrar registrar = new Registrar(opSchedule);
             _makeBoard(boardParameters, registrar);
 

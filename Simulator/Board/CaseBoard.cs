@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulator
 {
@@ -18,7 +19,7 @@ namespace Simulator
         internal Queue<CaseWorker> DecisionQueue { get { return _workerQueues[WorkType.Decision]; } }
 
 
-        internal IEnumerable<CaseWorker> Members
+        internal IEnumerable<CaseWorker> MembersAsCaseWorkers
         {
             get
             {
@@ -27,6 +28,8 @@ namespace Simulator
                 yield return Chair;
             }
         }
+
+        internal IEnumerable<Member> Members { get => MembersAsCaseWorkers.Select(x => x.Member); }
         #endregion
 
 
@@ -41,11 +44,11 @@ namespace Simulator
             Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur);
             OtherMember = new CaseWorker(om, WorkerRole.OtherMember);
 
-            _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>();
-            _workerQueues[WorkType.Summons] = _makeQueue();
-            _workerQueues[WorkType.Decision] = _makeQueue();
-            
-
+            _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>
+            {
+                [WorkType.Summons] = _makeQueue(),
+                [WorkType.Decision] = _makeQueue()
+            };
             _registrar = registrar;
         }
 
