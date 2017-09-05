@@ -27,9 +27,9 @@ namespace Simulator
         {
             if (start == null)
                 throw new InvalidOperationException("Cannot consctruct SimulationTimeSpan with start time == null.");
-
-            Start = start;
-            End = end;
+            
+            Start = start ?? Hour.MinHour;
+            End = end ?? Hour.MaxHour;
         }
         #endregion
 
@@ -55,6 +55,19 @@ namespace Simulator
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        #endregion
+
+
+
+        #region static operators
+        internal static SimulationTimeSpan Intersection(SimulationTimeSpan a, SimulationTimeSpan b)
+        {
+            Hour start = Hour.Max(a.Start, b.Start);
+            Hour end = Hour.Min(a.End, b.End);
+            if (start > end)
+                return null;
+            return new SimulationTimeSpan(start, end);
         }
         #endregion
 

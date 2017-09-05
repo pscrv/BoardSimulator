@@ -134,7 +134,12 @@ namespace Simulator
                     throw new InvalidOperationException("AllocatedCase.Recordwork: there is no work to do.");
             }
         }
+        
 
+        internal CaseWorker GetCaseWorkerByRole(WorkerRole role)
+        {
+            return Board.GetCaseWorkerByRole(role);
+        }
 
         internal Member GetMemberByRole(WorkerRole role)
         {

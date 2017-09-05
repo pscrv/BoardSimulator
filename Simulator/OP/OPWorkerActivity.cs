@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Simulator
 {
-    internal class OPData
+    internal class OPWorkerActivity
     {
         private Dictionary<WorkerRole, bool> _isMemberWorking;
         internal AllocatedCase AllocatedCase { get; private set; }   
         
 
-        internal OPData(AllocatedCase ac, WorkerRole role)
+        internal OPWorkerActivity(AllocatedCase ac, WorkerRole role)
         {
             AllocatedCase = ac;
             _isMemberWorking = new Dictionary<WorkerRole, bool>

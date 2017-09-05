@@ -63,21 +63,24 @@ namespace Simulator
         }
         #endregion
 
-
-
-        internal Member GetMemberByRole(WorkerRole role)
+        internal CaseWorker GetCaseWorkerByRole(WorkerRole role)
         {
             switch (role)
             {
                 case WorkerRole.Rapporteur:
-                    return Rapporteur.Member;
+                    return Rapporteur;
                 case WorkerRole.Chair:
-                    return Chair.Member;
+                    return Chair;
                 case WorkerRole.OtherMember:
-                    return OtherMember.Member;
+                    return OtherMember;
                 default:
                     throw new InvalidOperationException("CaseBoard.GetMemberByRole: something very odd happened.");
             }
+        }
+
+        internal Member GetMemberByRole(WorkerRole role)
+        {
+            return GetCaseWorkerByRole(role).Member;
         }
 
         internal bool IsInCaseBoard(Member member)

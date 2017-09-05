@@ -155,7 +155,7 @@ namespace Simulator.Tests
             Hour hour2 = new Hour(720);
             Hour hour3 = new Hour(736);
 
-            Assert.AreEqual(9, schedule0.Count);
+            Assert.AreEqual(3, schedule0.Count);
             Assert.AreEqual(3, startHours.Count);
             Assert.IsTrue(startHours.Contains(hour1));
             Assert.IsTrue(startHours.Contains(hour2));

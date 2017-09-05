@@ -24,7 +24,8 @@ namespace Simulator
             _boardQueue = new BoardQueue();
             _incoming = new IncomingCaseQueue();
             _circulation = new CirculationQueue();
-            _opSchedule = new OPSchedule1();
+            //_opSchedule = new OPSchedule1();
+            _opSchedule = new OPSchedule2();
             _finished = new FinishedCaseList();
         }
 

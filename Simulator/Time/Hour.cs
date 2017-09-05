@@ -4,6 +4,15 @@ namespace Simulator
 {
     internal class Hour : IEquatable<Hour>, IComparable<Hour>
     {
+        #region static
+        private static Hour _max;
+        private static Hour _min;
+
+        public static Hour MaxHour { get { if (_max == null) _max = new Hour(int.MaxValue); return _max; } }
+        public static Hour MinHour { get { if (_min == null) _min = new Hour(int.MinValue); return _min; } }
+        #endregion
+
+
         #region fields and properties
         internal readonly int Value;
 
@@ -13,6 +22,7 @@ namespace Simulator
         private bool _isFirstHourOfMonth { get => Value % TimeParameters.HoursPerMonth == 0; }
         private bool _isFirstHourOfYear { get => Value % TimeParameters.HoursPerYear == 0; }
         #endregion
+
 
         #region construction
         internal Hour(int h)
@@ -57,6 +67,7 @@ namespace Simulator
             int hourOfUnit = Value % unit;
             return new Hour(Value + unit - hourOfUnit);
         }
+
 
 
         internal Hour NextFirstHourOfDay()
@@ -112,11 +123,13 @@ namespace Simulator
             return SubtractHours(offset * TimeParameters.HoursPerDay * TimeParameters.DaysPerMonth);
         }
 
+
+        #region overrides
         public override string ToString()
         {
             return string.Format("Hour <{0}>", Value);
         }
-
+        #endregion
 
         #region IEquatable
         public override bool Equals(object obj)
@@ -154,7 +167,7 @@ namespace Simulator
         #endregion
 
 
-        #region operators
+        #region operators etc
         public static bool operator < (Hour a, Hour b)
         {
             return a.Value < b.Value;
@@ -185,6 +198,20 @@ namespace Simulator
         public static bool operator != (Hour a, Hour b)
         {
             return ! (a == b);
+        }
+
+        internal static Hour Max(Hour a, Hour b)
+        {
+            if (a.Value > b.Value)
+                return a;
+            return b;
+        }
+
+        internal static Hour Min(Hour a, Hour b)
+        {
+            if (a.Value < b.Value)
+                return a;
+            return b;
         }
 
         #endregion

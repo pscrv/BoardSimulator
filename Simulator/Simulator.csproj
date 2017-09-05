@@ -47,7 +47,7 @@
     <Compile Include="Board\Board.cs" />
     <Compile Include="Board\ChairChooser.cs" />
     <Compile Include="Board\Registrar.cs" />
-    <Compile Include="OP\OPData.cs" />
+    <Compile Include="OP\OPWorkerActivity.cs" />
     <Compile Include="PublicInterface\Logging\CompletedCaseReport.cs" />
     <Compile Include="PublicInterface\Logging\BoardReport.cs" />
     <Compile Include="Board\MemberCaseQueue.cs" />
