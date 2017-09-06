@@ -9,6 +9,7 @@ namespace Simulator.Tests
         private Member chair;
         private Member rapporteur;
         private Member other;
+        private Registrar registar;
         private Board board;
 
         private AppealCase appealCase;
@@ -27,11 +28,14 @@ namespace Simulator.Tests
             chair = new Member(MemberParameterCollection.DefaultCollection());
             rapporteur = new Member(MemberParameterCollection.DefaultCollection());
             other = new Member(MemberParameterCollection.DefaultCollection());
+            registar = new Registrar(new OPSchedule2());
             board = new Board(
                 chair,
                 ChairType.Technical,
                 new List<Member> { rapporteur },
-                new List<Member> { other });
+                new List<Member> { other },
+                registar,
+                new ChairChooser(chair));
 
             appealCase = new AppealCase();
             allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));
@@ -136,11 +140,7 @@ namespace Simulator.Tests
 
         }
 
-
-
-
-
-
+        
         [TestMethod()]
         public void Schedule0()
         {
@@ -149,17 +149,38 @@ namespace Simulator.Tests
             schedule0.Schedule(hour, allocatedCase);
             schedule0.Schedule(hour, allocatedCase);
             schedule0.Schedule(hour, allocatedCase);
-            List<Hour> startHours = schedule0.StartHours;
 
             Hour hour1 = new Hour(704);
             Hour hour2 = new Hour(720);
             Hour hour3 = new Hour(736);
+            List<Hour> startHours = schedule0.StartHours;
 
             Assert.AreEqual(3, schedule0.Count);
             Assert.AreEqual(3, startHours.Count);
             Assert.IsTrue(startHours.Contains(hour1));
             Assert.IsTrue(startHours.Contains(hour2));
             Assert.IsTrue(startHours.Contains(hour3));
+        }
+
+        [TestMethod()]
+        public void UpdateScheduleAndGetFinishedCases0()
+        {
+            Hour hour = new Hour(0);
+            allocatedCase.Record.SetOPEnqueue(hour);
+
+            schedule0.Schedule(hour, allocatedCase);
+            
+            schedule0.UpdateScheduleAndGetFinishedCases(new Hour(704));
+            List<AllocatedCase> runningCases = (schedule0 as OPSchedule2).RunningCases;
+            Assert.AreEqual(1, runningCases.Count);  //TODO: change this when RunningCases is in the base class
+            Assert.IsTrue(runningCases.Contains(allocatedCase));
+            Assert.AreEqual(0, schedule0.Count);
+            Assert.AreEqual(0, schedule0.StartHours.Count);
+
+            schedule0.UpdateScheduleAndGetFinishedCases(new Hour(712));
+            runningCases = (schedule0 as OPSchedule2).RunningCases;
+            Assert.AreEqual(0, runningCases.Count);  //TODO: change this when RunningCases is in the base class
+            
         }
     }
 }

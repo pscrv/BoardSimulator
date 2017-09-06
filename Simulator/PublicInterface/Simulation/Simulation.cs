@@ -153,8 +153,8 @@ namespace Simulator
         private void _makeBoard(BoardParameters boardParameters, Registrar registrar)
         {
             Member chair = new Member(boardParameters.Chair);
-            List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.xTechnicals);
-            List<Tuple<Member, int>> legals = _assembleMemberList(boardParameters.xLegals);
+            List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.Technicals);
+            List<Tuple<Member, int>> legals = _assembleMemberList(boardParameters.Legals);
             ChairChooser chairChooser = _makeChairChooser(chair, technicals, legals);
 
             _board = new Board(

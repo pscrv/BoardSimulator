@@ -53,8 +53,8 @@ namespace Simulator
             _chairType = chairType;
             _technicals = technicals;
             _legals = legals;            
-            _chairChooser = chairChooser;
             _registrar = registrar;
+            _chairChooser = chairChooser;
 
             _allocationCount = new Dictionary<Member, int>();
             foreach (Member member in _members)
@@ -63,22 +63,6 @@ namespace Simulator
                 _registrar.RegisterMember(member);
             }
         }
-
-
-        internal Board(
-            Member chair,
-            ChairType chairType,
-            List<Member> technicals,
-            List<Member> legals,
-            Registrar registrar)
-            : this (chair, chairType, technicals, legals, registrar, new ChairChooser(chair)) { }
-
-        internal Board(
-            Member chair,
-            ChairType chairType,
-            List<Member> technicals,
-            List<Member> legals)
-            : this(chair, chairType, technicals, legals, new Registrar(), new ChairChooser(chair)) { }
         #endregion
 
 
@@ -158,11 +142,11 @@ namespace Simulator
 
             Member chair;
             Member rapporteur;
-            Member other = null;
+            Member other;
 
             chair = _allocateChair();
             rapporteur = _allocateRapporteur(chair);
-            other = _allocateOtherMember(rapporteur, other);
+            other = _allocateOtherMember(chair, rapporteur);
 
             return new AllocatedCase(
                 appealCase,
@@ -198,21 +182,21 @@ namespace Simulator
 
         private Member _allocateOtherMember(Member chair, Member rapporteur)
         {
-            List<Member> choices = null;
-            switch (_chairType)
-            {
-                case ChairType.Technical:
-                    choices = _legals;
-                    break;
-                case ChairType.Legal:
-                    choices = _technicals;
-                    break;
-            }
-
+            List<Member> choices = _isTechnicalMember(chair) ? _legals : _technicals;
             Member other = _getMemberWithFewestAllocations(choices.Where(x => x != chair && x != rapporteur));
             _allocationCount[other]++;
             return other;
         }
+
+
+        private bool _isTechnicalMember(Member member)
+        {
+            if (member == _chair)
+                return _chairType == ChairType.Technical;
+            else
+                return _technicals.Contains(member);
+        }
+
 
         private Member _getMemberWithFewestAllocations(IEnumerable<Member> members)
         {

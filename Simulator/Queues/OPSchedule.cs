@@ -420,6 +420,14 @@ namespace Simulator
 
         internal override List<Hour> StartHours => _startHours.Keys.ToList();
 
+
+        internal List<AllocatedCase> RunningCases
+        {
+            get => _endHours.Values.Aggregate(
+                new List<AllocatedCase>(), 
+                (a, b) => a.Concat(b).ToList());
+        }
+
         internal override void Schedule(Hour currentHour, AllocatedCase allocatedCase)
         {
             Hour firstPossibleHour = currentHour.AddMonths(TimeParameters.OPMinimumMonthNotice);

@@ -9,6 +9,7 @@ namespace Simulator.Tests
         private Member chair;
         private Member rapporteur;
         private Member other;
+        private Registrar registar;
         private Board board;
         
         private AppealCase appealCase;
@@ -27,11 +28,14 @@ namespace Simulator.Tests
             chair = new Member(MemberParameterCollection.DefaultCollection());
             rapporteur = new Member(MemberParameterCollection.DefaultCollection());
             other = new Member(MemberParameterCollection.DefaultCollection());
+            registar = new Registrar(new OPSchedule1());
             board = new Board(
                 chair, 
                 ChairType.Technical, 
                 new List<Member> { rapporteur }, 
-                new List<Member> { other });
+                new List<Member> { other },
+                registar,
+                new ChairChooser(chair));
 
             appealCase = new AppealCase();
             allocatedCase = board.ProcessNewCase(appealCase, new Hour(0));            

@@ -23,6 +23,7 @@ namespace Simulator.Tests
         Member chair;
         List<Member> technicals;
         List<Member> legals;
+        Registrar registrar;
  
 
 
@@ -34,19 +35,23 @@ namespace Simulator.Tests
             chair = new Member(parameterCollection);
             technicals = new List<Member> { new Member(parameterCollection) };
             legals = new List<Member> { new Member(parameterCollection) };
+            registrar = new Registrar(new OPSchedule1());
 
             board0 = new Board(
                 chair, 
                 ChairType.Technical, 
                 technicals, 
-                legals);
+                legals,
+                registrar,
+                new ChairChooser(chair));
 
             board2 = new Board(
                 chair,
                 ChairType.Technical,
                 technicals,
                 legals,
-                new Registrar(new OPSchedule1(2)));
+                new Registrar(new OPSchedule1(2)),
+                new ChairChooser(chair));
 
             allocatedCase01 = board0.ProcessNewCase(appealCase1, new Hour(0));
             allocatedCase21 = board2.ProcessNewCase(appealCase1, new Hour(0));

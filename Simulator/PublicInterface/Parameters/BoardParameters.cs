@@ -7,11 +7,9 @@ namespace Simulator
     {
         internal readonly ChairType ChairType;
         internal readonly MemberParameterCollection Chair;
-        //internal readonly List<MemberParameterCollection> Technicals;
-        //internal readonly List<MemberParameterCollection> Legals;
 
-        internal readonly List<Tuple<MemberParameterCollection, int>> xTechnicals;
-        internal readonly List<Tuple<MemberParameterCollection, int>> xLegals;
+        internal readonly List<Tuple<MemberParameterCollection, int>> Technicals;
+        internal readonly List<Tuple<MemberParameterCollection, int>> Legals;
 
 
         public BoardParameters(
@@ -22,20 +20,18 @@ namespace Simulator
         {
             ChairType = chairType;
             Chair = chair;
-            //Technicals = technicals;
-            //Legals = legals;
 
-            xTechnicals = new List<Tuple<MemberParameterCollection, int>>();
-            xLegals = new List<Tuple<MemberParameterCollection, int>>();
+            Technicals = new List<Tuple<MemberParameterCollection, int>>();
+            Legals = new List<Tuple<MemberParameterCollection, int>>();
 
             foreach (var t in technicals)
             {
-                xTechnicals.Add(new Tuple<MemberParameterCollection, int>(t, t.ChairWorkPercentage));
+                Technicals.Add(new Tuple<MemberParameterCollection, int>(t, t.ChairWorkPercentage));
             }
 
             foreach (var l in legals)
             {
-                xLegals.Add(new Tuple<MemberParameterCollection, int>(l, l.ChairWorkPercentage));
+                Legals.Add(new Tuple<MemberParameterCollection, int>(l, l.ChairWorkPercentage));
             }
         }
 
@@ -48,8 +44,8 @@ namespace Simulator
         {
             ChairType = chairType;
             Chair = chair;
-            xTechnicals = xtechnicals;
-            xLegals = xlegals;
+            Technicals = xtechnicals;
+            Legals = xlegals;
         }
     }
 }
