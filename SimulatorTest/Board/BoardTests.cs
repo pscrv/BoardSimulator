@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Simulator.Tests
@@ -9,6 +10,7 @@ namespace Simulator.Tests
     {
         Board board0;  // 0 day gap between OPs
         Board board2;  // 2 day gap between OPs
+        Board boardL;  // Board with legally qualified chair
 
         AppealCase appealCase1 = new AppealCase();
         AppealCase appealCase2 = new AppealCase();
@@ -22,9 +24,7 @@ namespace Simulator.Tests
         
         Member chair;
         List<Member> technicals;
-        List<Member> legals;
-        Registrar registrar;
- 
+        List<Member> legals; 
 
 
         [TestInitialize]
@@ -35,14 +35,13 @@ namespace Simulator.Tests
             chair = new Member(parameterCollection);
             technicals = new List<Member> { new Member(parameterCollection) };
             legals = new List<Member> { new Member(parameterCollection) };
-            registrar = new Registrar(new OPSchedule1());
 
             board0 = new Board(
                 chair, 
                 ChairType.Technical, 
                 technicals, 
                 legals,
-                registrar,
+                new Registrar(new SimpleOPScheduler()),
                 new ChairChooser(chair));
 
             board2 = new Board(
@@ -50,11 +49,80 @@ namespace Simulator.Tests
                 ChairType.Technical,
                 technicals,
                 legals,
-                new Registrar(new OPSchedule1(2)),
+                new Registrar(new SimpleOPScheduler(2)),
+                new ChairChooser(chair));
+
+            boardL = new Board(
+                chair,
+                ChairType.Legal,
+                new List<Member>
+                {
+                    new Member(parameterCollection),
+                    new Member(parameterCollection)
+                },
+                legals,
+                new Registrar(new SimpleOPScheduler()),
                 new ChairChooser(chair));
 
             allocatedCase01 = board0.ProcessNewCase(appealCase1, new Hour(0));
             allocatedCase21 = board2.ProcessNewCase(appealCase1, new Hour(0));
+        }
+
+
+        [TestMethod()]
+        public void InvalidConfigurationThrowsException()
+        {
+            try
+            {
+                Board invalidBoard = new Board(
+                    chair,
+                    ChairType.Technical,
+                    technicals,
+                    new List<Member>(),
+                    new Registrar(),
+                    new ChairChooser(chair)
+                    );
+
+                Assert.Fail("Board constructor for ChairType.Technical failed to throw an exception when there are no legal members.");
+            }
+            catch (ArgumentException)
+            { }
+
+            try
+            {
+                Board invalidBoard = new Board(
+                    chair,
+                    ChairType.Legal,
+                    new List<Member>(),
+                    legals,
+                    new Registrar(),
+                    new ChairChooser(chair)
+                    );
+
+                Assert.Fail("Board constructor for ChairType.Legal failed to throw an exception when there are not at least two technical members.");
+            }
+            catch (ArgumentException)
+            { }
+        }
+
+        [TestMethod()]
+        public void ProcessNewCase_LegalChair()
+        {
+            AllocatedCase allocatedCase = boardL.ProcessNewCase(appealCase1, new Hour(0));
+
+            Assert.AreEqual(boardL.Chair, allocatedCase.Board.Chair.Member);
+            Assert.IsTrue(boardL.Technicals.Contains(allocatedCase.Board.Rapporteur.Member));
+            Assert.IsTrue(boardL.Technicals.Contains(allocatedCase.Board.OtherMember.Member));
+        }
+
+        [TestMethod()]
+        public void ProcessNewCase_TechnicalChair()
+        {
+            AllocatedCase allocatedCase = board0.ProcessNewCase(appealCase1, new Hour(0));
+
+            Assert.AreEqual(board0.Chair, allocatedCase.Board.Chair.Member);
+            Assert.IsTrue(board0.Technicals.Contains(allocatedCase.Board.Rapporteur.Member));
+            Assert.IsTrue(board0.Legals.Contains(allocatedCase.Board.OtherMember.Member));
         }
 
 
@@ -107,6 +175,11 @@ namespace Simulator.Tests
             _case12Assertions();
 
         }
+
+
+
+
+
 
 
         private void _case01Assertions()
@@ -387,15 +460,15 @@ namespace Simulator.Tests
             Assert.AreEqual(7, allocatedCase22.Record.ChairSummons.Finish.Value);
             Assert.AreEqual(8, allocatedCase22.Record.OP.Enqueue.Value);
 
-            Assert.AreEqual(744, allocatedCase22.Record.RapporteurDecision.Enqueue.Value);
-            Assert.AreEqual(744, allocatedCase22.Record.RapporteurDecision.Start.Value);
-            Assert.AreEqual(745, allocatedCase22.Record.RapporteurDecision.Finish.Value);
-            Assert.AreEqual(746, allocatedCase22.Record.OtherMemberDecision.Enqueue.Value);
-            Assert.AreEqual(746, allocatedCase22.Record.OtherMemberDecision.Start.Value);
-            Assert.AreEqual(747, allocatedCase22.Record.OtherMemberDecision.Finish.Value);
-            Assert.AreEqual(748, allocatedCase22.Record.ChairDecision.Enqueue.Value);
-            Assert.AreEqual(748, allocatedCase22.Record.ChairDecision.Start.Value);
-            Assert.AreEqual(749, allocatedCase22.Record.ChairDecision.Finish.Value);
+            Assert.AreEqual(752, allocatedCase22.Record.RapporteurDecision.Enqueue.Value);
+            Assert.AreEqual(752, allocatedCase22.Record.RapporteurDecision.Start.Value);
+            Assert.AreEqual(753, allocatedCase22.Record.RapporteurDecision.Finish.Value);
+            Assert.AreEqual(754, allocatedCase22.Record.OtherMemberDecision.Enqueue.Value);
+            Assert.AreEqual(754, allocatedCase22.Record.OtherMemberDecision.Start.Value);
+            Assert.AreEqual(755, allocatedCase22.Record.OtherMemberDecision.Finish.Value);
+            Assert.AreEqual(756, allocatedCase22.Record.ChairDecision.Enqueue.Value);
+            Assert.AreEqual(756, allocatedCase22.Record.ChairDecision.Start.Value);
+            Assert.AreEqual(757, allocatedCase22.Record.ChairDecision.Finish.Value);
 
 
             CompletedCaseReport report = new CompletedCaseReport(allocatedCase22);

@@ -19,6 +19,19 @@ namespace Simulator
                 return End.Value - Start.Value;
             }
         }
+
+        internal IEnumerable<Hour> FirstHoursOfDays
+        {
+            get
+            {
+                Hour hour = Start.NextFirstHourOfDay();
+                while (hour <= End)
+                {
+                    yield return hour;
+                    hour = hour.AddDays(1);
+                }
+            }
+        }
         #endregion
 
 

@@ -8,10 +8,11 @@ namespace Simulator
     internal class Board
     {
         #region fields and properties
-        private Member _chair;
+        internal readonly Member Chair;
+        internal readonly ReadOnlyCollection<Member> Technicals;
+        internal readonly ReadOnlyCollection<Member> Legals;
+
         private ChairType _chairType;
-        private List<Member> _technicals;
-        private List<Member> _legals;
         private Registrar _registrar;
         private ChairChooser _chairChooser;
 
@@ -21,17 +22,16 @@ namespace Simulator
         {
             get
             {
-                yield return _chair;
-                foreach (Member tm in _technicals)
+                yield return Chair;
+                foreach (Member tm in Technicals)
                     yield return tm;
-                foreach (Member lm in _legals)
+                foreach (Member lm in Legals)
                     yield return lm;                
                 
             }
         }
 
         
-
         internal List<AllocatedCase> FinishedCases
         {
             get { return _registrar.FinishedCases; }
@@ -49,10 +49,12 @@ namespace Simulator
             Registrar registrar,
             ChairChooser chairChooser)
         {
-            _chair = chair;
+            _checkConfiguration(chairType, technicals, legals);
+
+            Chair = chair;
             _chairType = chairType;
-            _technicals = technicals;
-            _legals = legals;            
+            Technicals = technicals.AsReadOnly();
+            Legals = legals.AsReadOnly();            
             _registrar = registrar;
             _chairChooser = chairChooser;
 
@@ -61,6 +63,26 @@ namespace Simulator
             {
                 _allocationCount[member] = 0;
                 _registrar.RegisterMember(member);
+            }
+        }
+
+        private void _checkConfiguration(
+            ChairType chairType, 
+            List<Member> technicals, 
+            List<Member> legals)
+        {
+            switch (chairType)
+            {
+                case ChairType.Technical:
+                    if (technicals.Count < 1)
+                        throw new ArgumentException("A technically-qualified chair requires at least one technically qualified member.");
+                    if (legals.Count < 1)
+                        throw new ArgumentException("A technically-qualified chair requires at least one legally qualified member.");
+                    break;
+                case ChairType.Legal:
+                    if (technicals.Count < 2)
+                        throw new ArgumentException("A technically-qualified chair requires at least two technically qualified members.");
+                    break;
             }
         }
         #endregion
@@ -161,12 +183,12 @@ namespace Simulator
             switch (_chairType)
             {
                 case ChairType.Technical:
-                    if (_technicals.Count < 2)
-                        return _chair;
+                    if (Technicals.Count < 2)
+                        return Chair;
                     break;
                 case ChairType.Legal:
-                    if (_legals.Count < 1)
-                        return _chair;
+                    if (Legals.Count < 1)
+                        return Chair;
                     break;
             }
 
@@ -175,14 +197,14 @@ namespace Simulator
 
         private Member _allocateRapporteur(Member chair)
         {
-            Member rapporteur = _getMemberWithFewestAllocations(_technicals.Where(x => x != chair));
+            Member rapporteur = _getMemberWithFewestAllocations(Technicals.Where(x => x != chair));
             _allocationCount[rapporteur]++;
             return rapporteur;
         }
 
         private Member _allocateOtherMember(Member chair, Member rapporteur)
         {
-            List<Member> choices = _isTechnicalMember(chair) ? _legals : _technicals;
+            ReadOnlyCollection<Member> choices = _isTechnicalMember(chair) ? Legals : Technicals;
             Member other = _getMemberWithFewestAllocations(choices.Where(x => x != chair && x != rapporteur));
             _allocationCount[other]++;
             return other;
@@ -191,10 +213,8 @@ namespace Simulator
 
         private bool _isTechnicalMember(Member member)
         {
-            if (member == _chair)
-                return _chairType == ChairType.Technical;
-            else
-                return _technicals.Contains(member);
+            return (member == Chair) ? 
+                _chairType == ChairType.Technical : Technicals.Contains(member);            
         }
 
 

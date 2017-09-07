@@ -25,7 +25,7 @@ namespace Simulator.Tests
             chair =  new Member(parameterCollection);
             rapporteur = new Member(parameterCollection);
             other = new Member(parameterCollection);
-            registrar = new Registrar(new OPSchedule1());
+            registrar = new Registrar(new SimpleOPScheduler());
             board = new Board(
                 chair, 
                 ChairType.Technical, 
@@ -137,7 +137,7 @@ namespace Simulator.Tests
 
             Assert.AreEqual(hour6, allocatedCase.Record.OP.Enqueue, "Enqueue");
             Assert.AreEqual(0, board.CirculationQueueCount());
-            Assert.AreEqual(3, board.OPScheduleCount());
+            Assert.AreEqual(1, board.OPScheduleCount());
         }
         
 

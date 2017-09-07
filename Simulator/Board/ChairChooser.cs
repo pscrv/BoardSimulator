@@ -10,7 +10,7 @@ namespace Simulator
         private Member _boardChair;
         private List<Member> _secondaryChairs = new List<Member>();
         private List<int> _secondaryPercentages = new List<int>();
-        private Random _randomSource = new Random();
+        //private Random _randomSource = new Random();
 
 
         private int _totalSecondaryPercentage => _secondaryPercentages.Sum();
@@ -44,7 +44,10 @@ namespace Simulator
         {
             // TODO: consider whether it would be better to implement with
             // arrays rather than lists.
-            int randomPercentage = _randomSource.Next(100);
+
+            // random initialised here so as always to produce the same sequence
+            Random randomSource = new Random(1);
+            int randomPercentage = randomSource.Next(100);
 
             int index = 0;
             int sum = 0;

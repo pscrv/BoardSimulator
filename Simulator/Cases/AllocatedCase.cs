@@ -141,6 +141,7 @@ namespace Simulator
             return Board.GetCaseWorkerByRole(role);
         }
 
+
         internal Member GetMemberByRole(WorkerRole role)
         {
             return Board.GetMemberByRole(role);
@@ -177,6 +178,14 @@ namespace Simulator
 
 
 
+        private bool _isReadyForOP
+        { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }
+
+
+        private bool _isFinished
+        { get { return Record.ChairDecision.Finish != null; } }
+
+
         private void _setNewWorker(CaseWorker worker, Hour currentHour)
         {
             _currentWorker = worker.Member;
@@ -199,12 +208,6 @@ namespace Simulator
                     throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
             }        
         }
-
-        private bool _isReadyForOP
-        { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }
-
-        private bool _isFinished
-        { get { return Record.ChairDecision.Finish != null; } }
 
 
 
