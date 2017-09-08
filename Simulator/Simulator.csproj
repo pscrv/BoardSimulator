@@ -60,7 +60,6 @@
     <Compile Include="PublicInterface\Simulation\Simulation.cs" />
     <Compile Include="Queues\BoardQueue.cs" />
     <Compile Include="Queues\CaseBuffer.cs" />
-    <Compile Include="Queues\WorkQueues.cs" />
     <Compile Include="Cases\MemberActionRecord.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Queues\CaseQueue.cs" />

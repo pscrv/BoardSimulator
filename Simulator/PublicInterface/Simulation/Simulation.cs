@@ -155,8 +155,8 @@ namespace Simulator
             List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.Technicals);
             List<Tuple<Member, int>> legals = _assembleMemberList(boardParameters.Legals);
             ChairChooser chairChooser = _makeChairChooser(chair, technicals, legals);
-
-            _board = new Board(
+            
+            _board = Board.MakeBoard(
                 chair,
                 boardParameters.ChairType,
                 technicals.Select(x => x.Item1).ToList(),

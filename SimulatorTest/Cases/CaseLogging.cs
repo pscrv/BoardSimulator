@@ -26,7 +26,7 @@ namespace Simulator.Tests
             rapporteur = new Member(parameterCollection);
             other = new Member(parameterCollection);
             registrar = new Registrar(new SimpleOPScheduler());
-            board = new Board(
+            board = Board.MakeBoard(
                 chair, 
                 ChairType.Technical, 
                 new List<Member> { rapporteur }, 

@@ -36,7 +36,7 @@ namespace Simulator.Tests
             technicals = new List<Member> { new Member(parameterCollection) };
             legals = new List<Member> { new Member(parameterCollection) };
 
-            board0 = new Board(
+            board0 = Board.MakeBoard(
                 chair, 
                 ChairType.Technical, 
                 technicals, 
@@ -44,7 +44,7 @@ namespace Simulator.Tests
                 new Registrar(new SimpleOPScheduler()),
                 new ChairChooser(chair));
 
-            board2 = new Board(
+            board2 = Board.MakeBoard(
                 chair,
                 ChairType.Technical,
                 technicals,
@@ -52,7 +52,7 @@ namespace Simulator.Tests
                 new Registrar(new SimpleOPScheduler(2)),
                 new ChairChooser(chair));
 
-            boardL = new Board(
+            boardL = Board.MakeBoard(
                 chair,
                 ChairType.Legal,
                 new List<Member>
@@ -74,7 +74,7 @@ namespace Simulator.Tests
         {
             try
             {
-                Board invalidBoard = new Board(
+                Board invalidBoard = Board.MakeBoard(
                     chair,
                     ChairType.Technical,
                     technicals,
@@ -90,7 +90,7 @@ namespace Simulator.Tests
 
             try
             {
-                Board invalidBoard = new Board(
+                Board invalidBoard = Board.MakeBoard(
                     chair,
                     ChairType.Legal,
                     new List<Member>(),

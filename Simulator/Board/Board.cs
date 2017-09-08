@@ -5,56 +5,84 @@ using System.Linq;
 
 namespace Simulator
 {
-    internal class Board
+    internal abstract class BoardBase
     {
-        #region fields and properties
+        #region temporary stuff
+        protected ChairType _chairType;
+
+        public BoardBase(
+            Member chair,
+            ChairType type,
+            List<Member> technicals,
+            List<Member> legals)
+        {
+            _chairType = type;
+            if (_configurationIsInvalid(technicals, legals))
+                throw new ArgumentException("Invalid board configuration.");
+
+            Chair = chair;
+            Technicals = technicals.AsReadOnly();
+            Legals = legals.AsReadOnly();
+
+        }
+        #endregion
+
+
+        #region fields
         internal readonly Member Chair;
         internal readonly ReadOnlyCollection<Member> Technicals;
         internal readonly ReadOnlyCollection<Member> Legals;
+        #endregion
 
-        private ChairType _chairType;
-        private Registrar _registrar;
-        private ChairChooser _chairChooser;
 
-        private Dictionary<Member, int> _allocationCount;
+        #region abstract
+        protected abstract bool _configurationIsInvalid(List<Member> technicals, List<Member> legals);
 
-        private IEnumerable<Member> _members
-        {
-            get
-            {
-                yield return Chair;
-                foreach (Member tm in Technicals)
-                    yield return tm;
-                foreach (Member lm in Legals)
-                    yield return lm;                
-                
-            }
-        }
-
+        internal abstract List<AllocatedCase> FinishedCases { get; }
         
-        internal List<AllocatedCase> FinishedCases
-        {
-            get { return _registrar.FinishedCases; }
-        }
+        internal abstract AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour);
+        internal abstract void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour);
+        
+        internal abstract BoardReport DoWork(Hour currentHour);
+        internal abstract void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour);
+        internal abstract int MemberQueueCount(Member member);
+        internal abstract int CirculationQueueCount();
+        internal abstract int OPScheduleCount();
         #endregion
 
 
 
         #region construction
-        internal Board(
+        public BoardBase(
             Member chair, 
-            ChairType chairType, 
             List<Member> technicals, 
+            List<Member> legals)
+        {
+            if (_configurationIsInvalid(technicals, legals))
+                throw new ArgumentException("Invalid board configuration.");
+
+            Chair = chair;
+            Technicals = technicals.AsReadOnly();
+            Legals = legals.AsReadOnly();
+        }
+
+        #endregion
+}
+
+
+
+    internal class Board : BoardBase
+    {
+        #region temporary
+        public Board(
+            Member chair,
+            ChairType type,
+            List<Member> technicals,
             List<Member> legals,
             Registrar registrar,
             ChairChooser chairChooser)
+            : base(chair, type, technicals, legals)
         {
-            _checkConfiguration(chairType, technicals, legals);
-
-            Chair = chair;
-            _chairType = chairType;
-            Technicals = technicals.AsReadOnly();
-            Legals = legals.AsReadOnly();            
             _registrar = registrar;
             _chairChooser = chairChooser;
 
@@ -65,10 +93,161 @@ namespace Simulator
                 _registrar.RegisterMember(member);
             }
         }
+        #endregion
+
+
+
+        internal static Board MakeBoard(
+            Member chair,
+            ChairType type,
+            List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar,
+            ChairChooser chairChooser)
+        {
+            Board newBoard = null;
+
+            switch (type)
+            {
+                case ChairType.Technical:
+                    newBoard =  new TechnicalBoard(chair, technicals, legals, registrar, chairChooser);
+                    break;
+                case ChairType.Legal:
+                    newBoard = new LegalBoard(chair, technicals, legals, registrar, chairChooser);
+                    break;
+                default:
+                    throw new ArgumentException("Invalid chair type.");
+            }
+
+            return newBoard;
+        }
+
+
+
+        #region fields
+        protected Registrar _registrar;
+        protected ChairChooser _chairChooser;
+        protected Dictionary<Member, int> _allocationCount;
+        #endregion
+
+
+        #region private properties
+        protected IEnumerable<Member> _members
+        {
+            get
+            {
+                yield return Chair;
+                foreach (Member tm in Technicals)
+                    yield return tm;
+                foreach (Member lm in Legals)
+                    yield return lm;
+
+            }
+        }
+        #endregion
+
+
+        #region BoardBase overrides
+        internal override List<AllocatedCase> FinishedCases
+        {
+            get { return _registrar.FinishedCases; }
+        }
+
+        internal override BoardReport DoWork(Hour currentHour)
+        {
+            BoardReport boardReport = new BoardReport(_members);
+
+            _registrar.DoWork(currentHour);
+
+            foreach (Member member in _members)
+            {
+                boardReport.Add(member, _memberWork(currentHour, member));
+            }
+
+            return boardReport;
+        }
+
+        internal override void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour)
+        {
+            _registrar.AddToCirculation(currentHour, allocatedCase);
+        }
+
+        internal override int MemberQueueCount(Member member)
+        {
+            return _registrar.MemberQueueCount(member);
+        }
+
+        internal override int CirculationQueueCount()
+        {
+            return _registrar.CirculationQueueCount();
+        }
+
+        internal override int OPScheduleCount()
+        {
+            return _registrar.OPScheduleCount();
+        }
+
+
+
+        internal override void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
+        {
+            foreach (AppealCase appealCase in appealCases)
+            {
+                AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
+                _registrar.ProcessIncomingCase(currentHour, allocatedCase);
+            }
+        }
+        
+
+
+        internal override AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
+        {
+            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
+            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
+            return allocatedCase;
+        }
+        #endregion
+
+
+        #region construction
+        public Board(
+            Member chair,
+            List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar,
+            ChairChooser chairChooser)
+            : base(chair, technicals, legals)
+        {
+            _registrar = registrar;
+            _chairChooser = chairChooser;
+
+            _allocationCount = new Dictionary<Member, int>();
+            foreach (Member member in _members)
+            {
+                _allocationCount[member] = 0;
+                _registrar.RegisterMember(member);
+            }
+        }
+        #endregion
+
+
+        #region private methods
+        protected override bool _configurationIsInvalid(List<Member> technicals, List<Member> legals)
+        {
+            try
+            {
+                _checkConfiguration(_chairType, technicals, legals);
+                return false;
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
+        }
 
         private void _checkConfiguration(
-            ChairType chairType, 
-            List<Member> technicals, 
+            ChairType chairType,
+            List<Member> technicals,
             List<Member> legals)
         {
             switch (chairType)
@@ -84,62 +263,9 @@ namespace Simulator
                         throw new ArgumentException("A technically-qualified chair requires at least two technically qualified members.");
                     break;
             }
+
+
         }
-        #endregion
-
-
-
-        internal BoardReport DoWork(Hour currentHour)
-        {
-            BoardReport boardReport = new BoardReport(_members);
-
-            _registrar.DoWork(currentHour);
-
-            foreach (Member member in _members)
-            {
-                boardReport.Add(member, _memberWork(currentHour, member));
-            }
-
-            return boardReport;
-        }
-
-        internal AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
-        {
-            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
-            return allocatedCase;
-        }
-
-        internal void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
-        {
-            foreach (AppealCase appealCase in appealCases)
-            {
-                AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-                _registrar.ProcessIncomingCase(currentHour, allocatedCase);
-            }
-        }
-
-        internal void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour)
-        {
-            _registrar.AddToCirculation(currentHour, allocatedCase);
-        }
-
-
-
-        internal int MemberQueueCount(Member member)
-        {
-            return _registrar.MemberQueueCount(member);
-        }
-
-        internal int CirculationQueueCount()
-        {
-            return _registrar.CirculationQueueCount();
-        }
-
-        internal int OPScheduleCount()
-        {
-            return _registrar.OPScheduleCount();
-        }        
 
 
 
@@ -156,6 +282,7 @@ namespace Simulator
 
             return report;
         }
+
 
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
@@ -175,8 +302,6 @@ namespace Simulator
                 new CaseBoard(chair, rapporteur, other, _registrar),
                 currentHour);
         }
-        
-
 
         private Member _allocateChair()
         {
@@ -193,7 +318,7 @@ namespace Simulator
             }
 
             return _chairChooser.ChooseChair();
-        }        
+        }
 
         private Member _allocateRapporteur(Member chair)
         {
@@ -210,18 +335,50 @@ namespace Simulator
             return other;
         }
 
-
-        private bool _isTechnicalMember(Member member)
-        {
-            return (member == Chair) ? 
-                _chairType == ChairType.Technical : Technicals.Contains(member);            
-        }
-
-
         private Member _getMemberWithFewestAllocations(IEnumerable<Member> members)
         {
             return members.Aggregate(
-                (currentMin, m) => _allocationCount[m] < _allocationCount[currentMin] ? m : currentMin );            
+                (currentMin, m) => _allocationCount[m] < _allocationCount[currentMin] ? m : currentMin);
         }
+
+        private bool _isTechnicalMember(Member member)
+        {
+            return (member == Chair) ?
+                _chairType == ChairType.Technical : Technicals.Contains(member);
+        }
+
+
+        #endregion
     }
+
+    
+
+
+    internal class TechnicalBoard : Board
+    {
+
+        internal TechnicalBoard(
+            Member chair,
+            List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar,
+            ChairChooser chairChooser)
+            : base(chair, ChairType.Technical, technicals, legals, registrar, chairChooser)
+        { }
+    }
+
+
+    internal class LegalBoard : Board
+    {
+
+        internal LegalBoard(
+            Member chair,
+            List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar,
+            ChairChooser chairChooser)
+            : base(chair, ChairType.Legal, technicals, legals, registrar, chairChooser)
+        { }
+    }
+
 }
