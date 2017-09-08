@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Simulator
 {
@@ -83,7 +81,7 @@ namespace Simulator
         {
             OPSchedule opSchedule = new SimpleOPScheduler(minimumDaysBetweenOP);
             Registrar registrar = new Registrar(opSchedule);
-            _makeBoard(boardParameters, registrar);
+            _board = boardParameters.MakeBoard(registrar);
 
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
             _reports = new HourlyReports();
@@ -146,61 +144,6 @@ namespace Simulator
                   __scheduleArrivals(arrivalsPerMonth, lengthInHours))
         { }
 
-
-
-
-        private void _makeBoard(BoardParameters boardParameters, Registrar registrar)
-        {
-            Member chair = new Member(boardParameters.Chair);
-            List<Tuple<Member, int>> technicals = _assembleMemberList(boardParameters.Technicals);
-            List<Tuple<Member, int>> legals = _assembleMemberList(boardParameters.Legals);
-            ChairChooser chairChooser = _makeChairChooser(chair, technicals, legals);
-
-            // TODO: refactor BoardParameters to get rid of this switch
-            switch (boardParameters.ChairType)
-            {
-                case ChairType.Technical:
-                    _board = Board.MakeTechnicalBoard(
-                        chair,
-                        technicals.Select(x => x.Item1).ToList(),
-                        legals.Select(x => x.Item1).ToList(),
-                        registrar,
-                        chairChooser
-                        );
-                    break;
-                case ChairType.Legal:
-                    _board = Board.MakeLegalBoard(
-                        chair,
-                        technicals.Select(x => x.Item1).ToList(),
-                        legals.Select(x => x.Item1).ToList(),
-                        registrar,
-                        chairChooser
-                        );
-                    break;
-            }
-        }
-
-
-        private ChairChooser _makeChairChooser(
-            Member chair, 
-            IEnumerable<Tuple<Member, int>> technicals,
-            IEnumerable<Tuple<Member, int>> legals)
-        {
-            ChairChooser chooser = new ChairChooser(chair);
-            foreach (var technical in technicals)
-            {
-                if (technical.Item2 > 0)
-                    chooser.AddSecondaryChair(technical.Item1, technical.Item2);
-            }
-            foreach (var legal in legals)
-            {
-                if (legal.Item2 > 0)
-                    chooser.AddSecondaryChair(legal.Item1, legal.Item2);
-            }
-
-            return chooser;
-        }
-
         #endregion
 
 
@@ -241,31 +184,6 @@ namespace Simulator
                     new AppealCase(),
                     _timeSpan.Start);
             }
-        }
-
-
-
-
-        private static List<Member> _assembleMemberList(IEnumerable<MemberParameterCollection> parameterList)
-        {
-            List<Member> memberList = new List<Member>();
-            foreach (MemberParameterCollection parameters in parameterList)
-            {
-                memberList.Add(new Member(parameters));
-            }
-
-            return memberList;
-        }
-
-        private static List<Tuple<Member, int>> _assembleMemberList(IEnumerable<Tuple<MemberParameterCollection, int>> parameterList)
-        {
-            List<Tuple<Member, int>> memberList = new List<Tuple<Member, int>>();
-            foreach (Tuple<MemberParameterCollection, int> parameters in parameterList)
-            {
-                memberList.Add(new Tuple<Member, int>(new Member(parameters.Item1), parameters.Item2));
-            }
-
-            return memberList;
-        }
+        }  
     }
 }

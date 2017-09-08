@@ -1,24 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulator
 {
-    public class BoardParameters
+    public abstract class BoardParameters
     {
-        internal readonly ChairType ChairType;
+        #region abstract
+        internal abstract Board MakeBoard(Registrar registrar);
+        #endregion
+
+
+        #region fields
         internal readonly MemberParameterCollection Chair;
 
         internal readonly List<Tuple<MemberParameterCollection, int>> Technicals;
         internal readonly List<Tuple<MemberParameterCollection, int>> Legals;
 
+        private Member _chairMember;
+        private List<Tuple<Member, int>> _technicalMembers;
+        private List<Tuple<Member, int>> _legalMembers;
+        private ChairChooser _chairChooser;
+        #endregion
 
-        public BoardParameters(
-            ChairType chairType, 
+
+
+        #region properties
+        internal Member ChairMember
+        {
+            get 
+            {
+                if (_chairMember == null)
+                    _chairMember = new Member(Chair);
+                return _chairMember;
+            }
+        }
+
+        internal List<Member> TechnicalMembers
+        {
+            get
+            {
+                if (_technicalMembers == null)
+                    _technicalMembers = _assembleMemberList(Technicals);
+                return _technicalMembers.Select(x => x.Item1).ToList();
+            }
+        }
+
+        internal List<Member> LegalMembers
+        {
+            get
+            {
+                if (_legalMembers == null)
+                    _legalMembers = _assembleMemberList(Legals);
+                return _legalMembers.Select(x => x.Item1).ToList();
+            }
+        }
+
+        internal ChairChooser ChairChooser
+        {
+            get
+            {
+                if (_chairChooser == null)
+                    _chairChooser = _makeChairChooser();
+                return _chairChooser;
+            }
+        }
+        #endregion
+
+
+        #region construction
+        protected BoardParameters(
             MemberParameterCollection chair, 
             List<MemberParameterCollection> technicals,
             List<MemberParameterCollection> legals)
         {
-            ChairType = chairType;
             Chair = chair;
 
             Technicals = new List<Tuple<MemberParameterCollection, int>>();
@@ -36,16 +91,111 @@ namespace Simulator
         }
 
 
-        public BoardParameters(
-            ChairType chairType,
+        protected BoardParameters(
             MemberParameterCollection chair,
-            List<Tuple<MemberParameterCollection, int>> xtechnicals,
-            List<Tuple<MemberParameterCollection, int>> xlegals)
+            List<Tuple<MemberParameterCollection, int>> technicals,
+            List<Tuple<MemberParameterCollection, int>> legals)
         {
-            ChairType = chairType;
             Chair = chair;
-            Technicals = xtechnicals;
-            Legals = xlegals;
+            Technicals = technicals;
+            Legals = legals;
+        }
+        #endregion
+
+
+        #region private methods
+        private static List<Tuple<Member, int>> _assembleMemberList(IEnumerable<Tuple<MemberParameterCollection, int>> parameterList)
+        {
+            List<Tuple<Member, int>> memberList = new List<Tuple<Member, int>>();
+            foreach (Tuple<MemberParameterCollection, int> parameters in parameterList)
+            {
+                memberList.Add(new Tuple<Member, int>(new Member(parameters.Item1), parameters.Item2));
+            }
+
+            return memberList;
+        }
+
+        private ChairChooser _makeChairChooser()
+        {
+            ChairChooser chooser = new ChairChooser(ChairMember);
+            foreach (var technical in _technicalMembers)
+            {
+                if (technical.Item2 > 0)
+                    chooser.AddSecondaryChair(technical.Item1, technical.Item2);
+            }
+            foreach (var legal in _legalMembers)
+            {
+                if (legal.Item2 > 0)
+                    chooser.AddSecondaryChair(legal.Item1, legal.Item2);
+            }
+
+            return chooser;
+        }
+        #endregion
+    }
+
+
+
+    public class TechnicalBoardParameters : BoardParameters
+    {
+        public TechnicalBoardParameters(
+            MemberParameterCollection chair,
+            List<MemberParameterCollection> technicals,
+            List<MemberParameterCollection> legals)
+            : base(chair, technicals, legals)
+        { }
+
+        public TechnicalBoardParameters(
+            MemberParameterCollection chair,
+            List<Tuple<MemberParameterCollection, int>> technicals,
+            List<Tuple<MemberParameterCollection, int>> legals)
+            : base(chair, technicals, legals)
+        { }
+
+
+        #region overrides
+        internal override Board MakeBoard(Registrar registrar)
+        {
+
+            return Board.MakeTechnicalBoard(
+                ChairMember,
+                TechnicalMembers,
+                LegalMembers,
+                registrar,
+                ChairChooser);
+        }
+        #endregion
+    }
+
+
+
+    public class LegalBoardParameters : BoardParameters
+    {
+        public LegalBoardParameters(
+            MemberParameterCollection chair,
+            List<MemberParameterCollection> technicals,
+            List<MemberParameterCollection> legals)
+            : base(chair, technicals, legals)
+        { }
+
+        public LegalBoardParameters(
+            MemberParameterCollection chair,
+            List<Tuple<MemberParameterCollection, int>> technicals,
+            List<Tuple<MemberParameterCollection, int>> legals)
+            : base(chair, technicals, legals)
+        { }
+
+
+        internal override Board MakeBoard(Registrar registrar)
+        {
+            return Board.MakeLegalBoard(
+                ChairMember,
+                TechnicalMembers,
+                LegalMembers,
+                registrar,
+                ChairChooser);
         }
     }
+
+
 }

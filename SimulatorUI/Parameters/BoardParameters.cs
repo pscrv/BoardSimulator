@@ -87,11 +87,23 @@ namespace SimulatorUI
         {
             get
             {
-                return new Simulator.BoardParameters(
-                    ChairType, 
-                    Chair.AsSimulatorParameters, 
-                    _asSimulatorParameters(Technicals), 
-                    _asSimulatorParameters(Legals));
+                // TODO: refactor to get rid of this switch
+                switch (ChairType)
+                {
+                    case ChairType.Technical:
+                        return new Simulator.TechnicalBoardParameters(
+                            Chair.AsSimulatorParameters, 
+                            _asSimulatorParameters(Technicals), 
+                            _asSimulatorParameters(Legals));
+                    case ChairType.Legal:
+                        return new Simulator.LegalBoardParameters(
+                            Chair.AsSimulatorParameters,
+                            _asSimulatorParameters(Technicals),
+                            _asSimulatorParameters(Legals));
+                    default:
+                        throw new ArgumentException("ChairType must be Technical or Legal.");
+                }
+
             }
         }
 

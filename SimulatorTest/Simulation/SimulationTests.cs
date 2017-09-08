@@ -12,7 +12,6 @@ namespace Simulator.Tests
         [TestInitialize]
         public void Initialise()
         {
-            ChairType type = ChairType.Technical;
             MemberParameterCollection chair = new MemberParameterCollection(
                 new MemberParameters(6, 6, 12),
                 new MemberParameters(40, 8, 24),
@@ -49,8 +48,7 @@ namespace Simulator.Tests
                     new MemberParameters(6, 7, 11))
             };
 
-            parameters = new BoardParameters(
-                type,
+            parameters = new TechnicalBoardParameters(
                 chair,
                 technicals,
                 legals);          
