@@ -89,17 +89,6 @@ namespace Simulator
                 Legals.Add(new Tuple<MemberParameterCollection, int>(l, l.ChairWorkPercentage));
             }
         }
-
-
-        protected BoardParameters(
-            MemberParameterCollection chair,
-            List<Tuple<MemberParameterCollection, int>> technicals,
-            List<Tuple<MemberParameterCollection, int>> legals)
-        {
-            Chair = chair;
-            Technicals = technicals;
-            Legals = legals;
-        }
         #endregion
 
 
@@ -144,13 +133,7 @@ namespace Simulator
             List<MemberParameterCollection> legals)
             : base(chair, technicals, legals)
         { }
-
-        public TechnicalBoardParameters(
-            MemberParameterCollection chair,
-            List<Tuple<MemberParameterCollection, int>> technicals,
-            List<Tuple<MemberParameterCollection, int>> legals)
-            : base(chair, technicals, legals)
-        { }
+        
 
 
         #region overrides
@@ -177,14 +160,7 @@ namespace Simulator
             List<MemberParameterCollection> legals)
             : base(chair, technicals, legals)
         { }
-
-        public LegalBoardParameters(
-            MemberParameterCollection chair,
-            List<Tuple<MemberParameterCollection, int>> technicals,
-            List<Tuple<MemberParameterCollection, int>> legals)
-            : base(chair, technicals, legals)
-        { }
-
+        
 
         internal override Board MakeBoard(Registrar registrar)
         {

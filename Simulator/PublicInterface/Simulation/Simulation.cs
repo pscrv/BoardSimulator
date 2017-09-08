@@ -82,7 +82,6 @@ namespace Simulator
             OPSchedule opSchedule = new SimpleOPScheduler(minimumDaysBetweenOP);
             Registrar registrar = new Registrar(opSchedule);
             _board = boardParameters.MakeBoard(registrar);
-
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
             _reports = new HourlyReports();
             _arrivingCases = arriving;
