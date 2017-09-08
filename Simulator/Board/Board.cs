@@ -7,27 +7,6 @@ namespace Simulator
 {
     internal abstract class BoardBase
     {
-        #region temporary stuff
-        protected ChairType _chairType;
-
-        public BoardBase(
-            Member chair,
-            ChairType type,
-            List<Member> technicals,
-            List<Member> legals)
-        {
-            _chairType = type;
-            if (_configurationIsInvalid(technicals, legals))
-                throw new ArgumentException("Invalid board configuration.");
-
-            Chair = chair;
-            Technicals = technicals.AsReadOnly();
-            Legals = legals.AsReadOnly();
-
-        }
-        #endregion
-
-
         #region fields
         internal readonly Member Chair;
         internal readonly ReadOnlyCollection<Member> Technicals;
@@ -53,7 +32,7 @@ namespace Simulator
 
 
         #region construction
-        public BoardBase(
+        protected BoardBase(
             Member chair, 
             List<Member> technicals, 
             List<Member> legals)
@@ -71,56 +50,61 @@ namespace Simulator
 
 
 
-    internal class Board : BoardBase
+    internal abstract class Board : BoardBase
     {
-        #region temporary
-        public Board(
+        #region static factory
+        //internal static Board MakeBoard(
+        //    Member chair,
+        //    ChairType type,
+        //    List<Member> technicals,
+        //    List<Member> legals,
+        //    Registrar registrar,
+        //    ChairChooser chairChooser)
+        //{
+        //    Board newBoard = null;
+
+        //    switch (type)
+        //    {
+        //        case ChairType.Technical:
+        //            newBoard =  new TechnicalBoard(chair, technicals, legals, registrar, chairChooser);
+        //            break;
+        //        case ChairType.Legal:
+        //            newBoard = new LegalBoard(chair, technicals, legals, registrar, chairChooser);
+        //            break;
+        //        default:
+        //            throw new ArgumentException("Invalid chair type.");
+        //    }
+
+        //    return newBoard;
+        //}
+
+        internal static Board MakeTechnicalBoard(
             Member chair,
-            ChairType type,
             List<Member> technicals,
             List<Member> legals,
             Registrar registrar,
             ChairChooser chairChooser)
-            : base(chair, type, technicals, legals)
         {
-            _registrar = registrar;
-            _chairChooser = chairChooser;
-
-            _allocationCount = new Dictionary<Member, int>();
-            foreach (Member member in _members)
-            {
-                _allocationCount[member] = 0;
-                _registrar.RegisterMember(member);
-            }
+            return new TechnicalBoard(chair, technicals, legals, registrar, chairChooser);
         }
+
+        internal static Board MakeLegalBoard(
+            Member chair,
+            List<Member> technicals,
+            List<Member> legals,
+            Registrar registrar,
+            ChairChooser chairChooser)
+        {
+            return new LegalBoard(chair, technicals, legals, registrar, chairChooser);
+        }
+
         #endregion
 
 
-
-        internal static Board MakeBoard(
-            Member chair,
-            ChairType type,
-            List<Member> technicals,
-            List<Member> legals,
-            Registrar registrar,
-            ChairChooser chairChooser)
-        {
-            Board newBoard = null;
-
-            switch (type)
-            {
-                case ChairType.Technical:
-                    newBoard =  new TechnicalBoard(chair, technicals, legals, registrar, chairChooser);
-                    break;
-                case ChairType.Legal:
-                    newBoard = new LegalBoard(chair, technicals, legals, registrar, chairChooser);
-                    break;
-                default:
-                    throw new ArgumentException("Invalid chair type.");
-            }
-
-            return newBoard;
-        }
+        #region abstract
+        protected abstract bool _boardChairMustBeCaseChair();
+        protected abstract bool _chairIsTechnical();
+        #endregion
 
 
 
@@ -186,9 +170,15 @@ namespace Simulator
         {
             return _registrar.OPScheduleCount();
         }
+        
 
-
-
+        internal override AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
+        {
+            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
+            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
+            return allocatedCase;
+        }
+    
         internal override void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
         {
             foreach (AppealCase appealCase in appealCases)
@@ -196,15 +186,6 @@ namespace Simulator
                 AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
                 _registrar.ProcessIncomingCase(currentHour, allocatedCase);
             }
-        }
-        
-
-
-        internal override AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
-        {
-            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
-            return allocatedCase;
         }
         #endregion
 
@@ -230,45 +211,9 @@ namespace Simulator
         }
         #endregion
 
+        
 
         #region private methods
-        protected override bool _configurationIsInvalid(List<Member> technicals, List<Member> legals)
-        {
-            try
-            {
-                _checkConfiguration(_chairType, technicals, legals);
-                return false;
-            }
-            catch (ArgumentException)
-            {
-                return true;
-            }
-        }
-
-        private void _checkConfiguration(
-            ChairType chairType,
-            List<Member> technicals,
-            List<Member> legals)
-        {
-            switch (chairType)
-            {
-                case ChairType.Technical:
-                    if (technicals.Count < 1)
-                        throw new ArgumentException("A technically-qualified chair requires at least one technically qualified member.");
-                    if (legals.Count < 1)
-                        throw new ArgumentException("A technically-qualified chair requires at least one legally qualified member.");
-                    break;
-                case ChairType.Legal:
-                    if (technicals.Count < 2)
-                        throw new ArgumentException("A technically-qualified chair requires at least two technically qualified members.");
-                    break;
-            }
-
-
-        }
-
-
-
         private WorkReport _memberWork(Hour currentHour, Member member)
         {
             WorkReport report;
@@ -282,13 +227,10 @@ namespace Simulator
 
             return report;
         }
-
-
+        
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
         {
-            // TODO: do better than just counting allocations?
-
             Member chair;
             Member rapporteur;
             Member other;
@@ -302,22 +244,10 @@ namespace Simulator
                 new CaseBoard(chair, rapporteur, other, _registrar),
                 currentHour);
         }
-
+        
         private Member _allocateChair()
         {
-            switch (_chairType)
-            {
-                case ChairType.Technical:
-                    if (Technicals.Count < 2)
-                        return Chair;
-                    break;
-                case ChairType.Legal:
-                    if (Legals.Count < 1)
-                        return Chair;
-                    break;
-            }
-
-            return _chairChooser.ChooseChair();
+            return _boardChairMustBeCaseChair() ? Chair : _chairChooser.ChooseChair();
         }
 
         private Member _allocateRapporteur(Member chair)
@@ -344,11 +274,11 @@ namespace Simulator
         private bool _isTechnicalMember(Member member)
         {
             return (member == Chair) ?
-                _chairType == ChairType.Technical : Technicals.Contains(member);
+                _chairIsTechnical() : Technicals.Contains(member);
         }
 
 
-        #endregion
+        #endregion 
     }
 
     
@@ -363,8 +293,26 @@ namespace Simulator
             List<Member> legals,
             Registrar registrar,
             ChairChooser chairChooser)
-            : base(chair, ChairType.Technical, technicals, legals, registrar, chairChooser)
+            : base(chair, technicals, legals, registrar, chairChooser)
         { }
+
+
+        #region BoardBase overrides
+        protected override bool _configurationIsInvalid(List<Member> technicals, List<Member> legals)
+        {
+            return technicals.Count < 1 || legals.Count < 1;
+        }
+
+        protected override bool _boardChairMustBeCaseChair()
+        {
+            return Technicals.Count < 2;
+        }
+
+        protected override bool _chairIsTechnical()
+        {
+            return true;
+        }
+        #endregion
     }
 
 
@@ -377,8 +325,26 @@ namespace Simulator
             List<Member> legals,
             Registrar registrar,
             ChairChooser chairChooser)
-            : base(chair, ChairType.Legal, technicals, legals, registrar, chairChooser)
+            : base(chair, technicals, legals, registrar, chairChooser)
         { }
+
+
+        #region BoardBase overrides
+        protected override bool _configurationIsInvalid(List<Member> technicals, List<Member> legals)
+        {
+            return technicals.Count < 2;
+        }
+
+        protected override bool _boardChairMustBeCaseChair()
+        {
+            return Legals.Count < 1;
+        }
+
+        protected override bool _chairIsTechnical()
+        {
+            return false;
+        }
+        #endregion
     }
 
 }
