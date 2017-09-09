@@ -20,10 +20,9 @@ namespace Simulator
         internal abstract List<AllocatedCase> FinishedCases { get; }
         
         internal abstract AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour);
-        internal abstract void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour);
-        
         internal abstract BoardReport DoWork(Hour currentHour);
         internal abstract void AddToCirculationQueue(AllocatedCase allocatedCase, Hour currentHour);
+
         internal abstract int MemberQueueCount(Member member);
         internal abstract int CirculationQueueCount();
         internal abstract int OPScheduleCount();
@@ -49,35 +48,9 @@ namespace Simulator
 }
 
 
-
     internal abstract class Board : BoardBase
     {
-        #region static factory
-        //internal static Board MakeBoard(
-        //    Member chair,
-        //    ChairType type,
-        //    List<Member> technicals,
-        //    List<Member> legals,
-        //    Registrar registrar,
-        //    ChairChooser chairChooser)
-        //{
-        //    Board newBoard = null;
-
-        //    switch (type)
-        //    {
-        //        case ChairType.Technical:
-        //            newBoard =  new TechnicalBoard(chair, technicals, legals, registrar, chairChooser);
-        //            break;
-        //        case ChairType.Legal:
-        //            newBoard = new LegalBoard(chair, technicals, legals, registrar, chairChooser);
-        //            break;
-        //        default:
-        //            throw new ArgumentException("Invalid chair type.");
-        //    }
-
-        //    return newBoard;
-        //}
-
+        #region static factory methods
         internal static Board MakeTechnicalBoard(
             Member chair,
             List<Member> technicals,
@@ -109,14 +82,14 @@ namespace Simulator
 
 
         #region fields
-        protected Registrar _registrar;
-        protected ChairChooser _chairChooser;
-        protected Dictionary<Member, int> _allocationCount;
+        private Registrar _registrar;
+        private ChairChooser _chairChooser;
+        private Dictionary<Member, int> _allocationCount;
         #endregion
 
 
         #region private properties
-        protected IEnumerable<Member> _members
+        private IEnumerable<Member> _members
         {
             get
             {
@@ -132,11 +105,18 @@ namespace Simulator
 
 
         #region BoardBase overrides
+        internal override AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
+        {
+            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
+            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
+            return allocatedCase;
+        }
+
         internal override List<AllocatedCase> FinishedCases
         {
             get { return _registrar.FinishedCases; }
         }
-
+        
         internal override BoardReport DoWork(Hour currentHour)
         {
             BoardReport boardReport = new BoardReport(_members);
@@ -169,29 +149,12 @@ namespace Simulator
         internal override int OPScheduleCount()
         {
             return _registrar.OPScheduleCount();
-        }
-        
-
-        internal override AllocatedCase ProcessNewCase(AppealCase appealCase, Hour currentHour)
-        {
-            AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-            _registrar.ProcessIncomingCase(currentHour, allocatedCase);
-            return allocatedCase;
-        }
-    
-        internal override void ProcessNewCaseList(List<AppealCase> appealCases, Hour currentHour)
-        {
-            foreach (AppealCase appealCase in appealCases)
-            {
-                AllocatedCase allocatedCase = _allocateCase(appealCase, currentHour);
-                _registrar.ProcessIncomingCase(currentHour, allocatedCase);
-            }
-        }
+        }           
         #endregion
 
 
         #region construction
-        public Board(
+        protected Board(
             Member chair,
             List<Member> technicals,
             List<Member> legals,
@@ -276,8 +239,6 @@ namespace Simulator
             return (member == Chair) ?
                 _chairIsTechnical() : Technicals.Contains(member);
         }
-
-
         #endregion 
     }
 

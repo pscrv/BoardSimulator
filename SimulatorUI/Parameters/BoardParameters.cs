@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Simulator;
 
 namespace SimulatorUI
@@ -87,7 +88,6 @@ namespace SimulatorUI
         {
             get
             {
-                // TODO: refactor to get rid of this switch
                 switch (ChairType)
                 {
                     case ChairType.Technical:
@@ -123,15 +123,11 @@ namespace SimulatorUI
 
 
 
-        private List<Simulator.MemberParameterCollection> _asSimulatorParameters(List<MemberParameterCollection> collectionList)
+        private List<Simulator.MemberParameterCollection> _asSimulatorParameters(
+            List<MemberParameterCollection> collectionList)
         {
-            List<Simulator.MemberParameterCollection> result = new List<Simulator.MemberParameterCollection>();
-            foreach (MemberParameterCollection parameterCollection in collectionList)
-            {
-                result.Add(parameterCollection.AsSimulatorParameters);
-            }
-            return result;
-        }
-        
+            return collectionList.Select(x => x.AsSimulatorParameters).ToList();
+        }        
     }
+
 }

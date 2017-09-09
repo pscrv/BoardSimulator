@@ -103,20 +103,8 @@ namespace Simulator
                   __scheduleArrivals(arriving))
         { }
 
-        public Simulation(
-            int lengthInHours,
-            BoardParameters boardParameters,
-            int minimumDaysBetweenOP,
-            int initialCaseCount)
-            : this (
-                  lengthInHours, 
-                  boardParameters,
-                  minimumDaysBetweenOP,
-                  initialCaseCount, 
-                  new Dictionary<Hour, int>())
-        { }
 
-        public Simulation(
+        internal Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
             int initialCaseCount)
@@ -129,7 +117,7 @@ namespace Simulator
         { }
 
 
-        public Simulation(
+        internal Simulation(
             int lengthInHours,
             BoardParameters boardParameters,
             int minimumDaysBetweenOP,
