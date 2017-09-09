@@ -9,13 +9,30 @@ namespace Simulator
         private Member _currentWorker = null;
         private int _workCounter = 0;
 
+        private WorkType WorkType
+        {
+            get
+            {
+                switch (Stage)
+                {
+                    case CaseStage.Summons:
+                        return WorkType.Summons;
+                    case CaseStage.Decision:
+                        return WorkType.Decision;
+
+                    case CaseStage.OP:
+                    case CaseStage.Finished:
+                        break;
+                }
+                return WorkType.None;
+            }
+        }
+
+
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
         internal readonly CaseRecord Record;
-
-
-        internal IEnumerable<Member> Members { get => Board.Members; }
-
+        
         internal CaseStage Stage
         {
             get
@@ -34,25 +51,6 @@ namespace Simulator
                     return CaseStage.Decision;
 
                 return CaseStage.Finished;
-            }
-        }
-
-        internal WorkType WorkType
-        {
-            get
-            {
-                switch (Stage)
-                {
-                    case CaseStage.Summons:
-                        return WorkType.Summons;
-                    case CaseStage.Decision:
-                        return WorkType.Decision;
-
-                    case CaseStage.OP:
-                    case CaseStage.Finished:
-                        break;
-                }
-                return WorkType.None;
             }
         }
         #endregion
@@ -74,29 +72,26 @@ namespace Simulator
 
 
 
-
-        internal WorkState DoWork(CaseWorker worker, Hour currentHour)
+        #region internal methods
+        internal WorkReport DoWorkAndMakeReport(Member member, Hour currentHour)
         {
-            if (worker == null)
-                throw new InvalidOperationException("AllocatedCase.Dowork: worker is null.");
-
-            if (_currentWorker == null)
+            CaseWorker worker = Board.GetMemberAsCaseWorker(member);
+            if (Stage == CaseStage.OP)
             {
-                _setNewWorker(worker, currentHour);
+                return WorkReport.MakeOPReport(Case, worker.Role);
             }
 
-            if (worker.Member != _currentWorker)
-                throw new InvalidOperationException("AllocatedCase.Dowork: previous member has not yet finished.");
-
-            _workCounter--;
-
-            if (_workCounter == 0)
+            WorkState workState = _doWork(worker, currentHour);
+            if (workState == WorkState.Finished)
             {
-                _currentWorker = null;
-                return WorkState.Finished;
+                RecordFinishedWork(worker.Role, currentHour);
             }
 
-            return WorkState.Ongoing;
+            return WorkReport.MakeReport(
+                Case,
+                WorkType,
+                worker.Role,
+                workState);
         }
 
 
@@ -118,9 +113,8 @@ namespace Simulator
         }
 
 
-        internal void RecordFinishedWork(CaseWorker caseWorker, Hour currentHour)
+        internal void RecordFinishedWork(WorkerRole role, Hour currentHour)
         {
-            WorkerRole role = caseWorker.Role;
             switch (WorkType)
             {
                 case WorkType.Summons:
@@ -135,6 +129,12 @@ namespace Simulator
             }
         }
         
+
+        internal WorkerRole GetRole(Member member)
+        {
+            return Board.GetRole(member);
+        }
+
 
         internal CaseWorker GetCaseWorkerByRole(WorkerRole role)
         {
@@ -175,6 +175,35 @@ namespace Simulator
             }
         }
 
+        #endregion
+
+
+        #region private methods
+
+        private WorkState _doWork(CaseWorker worker, Hour currentHour)
+        {
+            if (worker == null)
+                throw new InvalidOperationException("AllocatedCase.Dowork: worker is null.");
+
+            if (_currentWorker == null)
+            {
+                _setNewWorker(worker, currentHour);
+            }
+
+            if (worker.Member != _currentWorker)
+                throw new InvalidOperationException("AllocatedCase.Dowork: previous member has not yet finished.");
+
+            _workCounter--;
+
+            if (_workCounter == 0)
+            {
+                _currentWorker = null;
+                return WorkState.Finished;
+            }
+
+            return WorkState.Ongoing;
+        }
+
 
 
 
@@ -209,6 +238,7 @@ namespace Simulator
             }        
         }
 
+        #endregion
 
 
 

@@ -45,37 +45,9 @@ namespace Simulator
             if (currentCase == null)
                 return WorkReport.MakeNullReport();
 
-            CaseWorker thisAsCaseWorker = currentCase.Board.GetMemberAsCaseWorker(this);
-            if (currentCase.Stage == CaseStage.OP)
-            {
-                return WorkReport.MakeOPReport(currentCase.Case, thisAsCaseWorker.Role);
-            }
-
-            WorkState workState = currentCase.DoWork(thisAsCaseWorker, currentHour);
-            if (workState == WorkState.Finished)
-            {
-                currentCase.RecordFinishedWork(thisAsCaseWorker, currentHour);               
-            }
-
-            return WorkReport.MakeReport(
-                currentCase.Case,
-                currentCase.WorkType,
-                thisAsCaseWorker.Role,
-                workState);
+            return currentCase.DoWorkAndMakeReport(this, currentHour);
         }
-
-
-        internal WorkReport OPWork(AllocatedCase currentCase)
-        {
-            if (currentCase == null)
-                throw new InvalidOperationException("Member.OPWork: currentCase is null.");
-
-            return WorkReport.MakeOPReport(
-                currentCase.Case,
-                currentCase.Board.GetMemberAsCaseWorker(this).Role);
-        }
-
-
+        
 
 
         #region overrides

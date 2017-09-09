@@ -19,17 +19,17 @@ namespace Simulator
         internal Queue<CaseWorker> DecisionQueue { get { return _workerQueues[WorkType.Decision]; } }
 
 
-        internal IEnumerable<CaseWorker> MembersAsCaseWorkers
-        {
-            get
-            {
-                yield return Rapporteur;
-                yield return OtherMember;
-                yield return Chair;
-            }
-        }
+        //private IEnumerable<CaseWorker> _membersAsCaseWorkers
+        //{
+        //    get
+        //    {
+        //        yield return Rapporteur;
+        //        yield return OtherMember;
+        //        yield return Chair;
+        //    }
+        //}
 
-        internal IEnumerable<Member> Members { get => MembersAsCaseWorkers.Select(x => x.Member); }
+        //internal IEnumerable<Member> Members { get => _membersAsCaseWorkers.Select(x => x.Member); }
         #endregion
 
 
@@ -83,13 +83,13 @@ namespace Simulator
             return GetCaseWorkerByRole(role).Member;
         }
 
-        internal bool IsInCaseBoard(Member member)
-        {
-            return
-                member == Chair.Member
-                || member == Rapporteur.Member
-                || member == OtherMember.Member;
-        }
+        //internal bool IsInCaseBoard(Member member)
+        //{
+        //    return
+        //        member == Chair.Member
+        //        || member == Rapporteur.Member
+        //        || member == OtherMember.Member;
+        //}
 
         internal CaseWorker GetMemberAsCaseWorker(Member member)
         {
