@@ -13,6 +13,25 @@
             HoursOPPrepration = opPreparationHours;
             HoursForDecision = decisionHours;
         }
+
+
+        internal int GetParameterForStage(CaseStage stage)
+        {
+            switch (stage)
+            {
+                case CaseStage.Summons:
+                    return HoursForSummons;
+                case CaseStage.OP:
+                    return HoursOPPrepration;
+                case CaseStage.Decision:
+                    return HoursForDecision;
+
+                case CaseStage.Finished:
+                case CaseStage.Undefined:
+                default:
+                    return 0;
+            }
+        }
     }
 
 

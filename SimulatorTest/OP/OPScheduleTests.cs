@@ -169,14 +169,14 @@ namespace Simulator.Tests
 
             schedule0.Schedule(hour, allocatedCase);
             
-            schedule0.UpdateScheduleAndGetFinishedCases(new Hour(704));
+            schedule0.UpdateSchedule(new Hour(704));
             List<AllocatedCase> runningCases = schedule0.RunningCases;
             Assert.AreEqual(1, runningCases.Count);  //TODO: change this when RunningCases is in the base class
             Assert.IsTrue(runningCases.Contains(allocatedCase));
             Assert.AreEqual(0, schedule0.Count);
             Assert.AreEqual(0, schedule0.StartHours.Count);
 
-            schedule0.UpdateScheduleAndGetFinishedCases(new Hour(712));
+            schedule0.UpdateSchedule(new Hour(712));
             runningCases = schedule0.RunningCases;
             Assert.AreEqual(0, runningCases.Count);  //TODO: change this when RunningCases is in the base class
             

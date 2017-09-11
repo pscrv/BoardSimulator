@@ -22,6 +22,25 @@ namespace Simulator
             Member = member;
             Role = role;
         }
-        #endregion     
+
+        internal int HourForStage(CaseStage stage)
+        {
+            switch (stage)
+            {
+                case CaseStage.Summons:
+                    return HoursForSummons;
+                case CaseStage.OP:
+                    return HoursOPPreparation;
+                case CaseStage.Decision:
+                    return HoursForDecision;
+
+                case CaseStage.Finished:
+                case CaseStage.Undefined:
+                default:
+                    return 0;
+            }
+        }
+        
+        #endregion
     }
 }

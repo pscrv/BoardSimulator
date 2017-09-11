@@ -50,9 +50,22 @@ namespace Simulator
         internal void DoWork(Hour currentHour)
         {
             _incoming.EnqueueForNextStage(currentHour);
-            
-            foreach (AllocatedCase finishedCase in _opSchedule.UpdateScheduleAndGetFinishedCases(currentHour))
+
+            //foreach (AllocatedCase finishedCase in _opSchedule.UpdateScheduleAndGetFinishedCases(currentHour))
+            //{
+            //    //finishedCase.RecordOPFinished(currentHour);
+            //    //finishedCase.EnqueueForWork(currentHour);
+            //}
+            _opSchedule.UpdateSchedule(currentHour);
+
+            foreach (AllocatedCase startedCase in _opSchedule.StartedCases)
             {
+                startedCase.RecordOPStart(currentHour);
+            }
+
+            foreach (AllocatedCase finishedCase in  _opSchedule.FinishedCases)
+            {
+                finishedCase.RecordOPFinished(currentHour);
                 finishedCase.EnqueueForWork(currentHour);
             }
 

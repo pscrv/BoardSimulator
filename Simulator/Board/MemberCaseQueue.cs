@@ -37,6 +37,7 @@ namespace Simulator
                     break;
                 case CaseStage.OP:
                 case CaseStage.Finished:
+                case CaseStage.Undefined:
                     throw new InvalidOperationException("Can only enqueue for member during summons or decision stage.");
             }
         }

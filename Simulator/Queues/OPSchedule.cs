@@ -9,15 +9,17 @@ namespace Simulator
         internal abstract int Count { get; }
         internal abstract List<Hour> StartHours { get; }
         internal abstract List<AllocatedCase> RunningCases { get; }
+        internal abstract List<AllocatedCase> StartedCases { get; }
+        internal abstract List<AllocatedCase> FinishedCases { get; }
 
         internal abstract void Add(Hour hour, AllocatedCase allocatedCase);
         internal abstract bool HasOPWork(Hour hour, Member member);
         internal abstract AllocatedCase GetOPWork(Hour hour, Member member);
         internal abstract void Schedule(Hour currentHour, AllocatedCase allocatedCase);
-        internal abstract List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour);
+        internal abstract void UpdateSchedule(Hour currentHour);
         internal abstract bool IsBlocked(Hour hour, Member member);
     }
-    
+
 
     internal class SimpleOPScheduler : OPSchedule
     {
@@ -26,7 +28,13 @@ namespace Simulator
         private Dictionary<Hour, Dictionary<Member, AllocatedCase>> _memberSchedule;
         private Dictionary<Hour, HashSet<Member>> _blockedSchedule;
         private Dictionary<Hour, List<AllocatedCase>> _startHours;
-        private Dictionary<Hour, List<AllocatedCase>> _endHours;        
+        private Dictionary<Hour, List<AllocatedCase>> _endHours;
+        
+        Hour _lastUpdateHour;
+        private List<AllocatedCase> _startedCases;
+        private List<AllocatedCase> _finishedCases;
+        internal override List<AllocatedCase> StartedCases { get => _startedCases; }
+        internal override List<AllocatedCase> FinishedCases { get => _finishedCases; }
         #endregion
 
 
@@ -40,6 +48,10 @@ namespace Simulator
             _blockedSchedule = new Dictionary<Hour, HashSet<Member>>();
             _startHours = new Dictionary<Hour, List<AllocatedCase>>();
             _endHours = new Dictionary<Hour, List<AllocatedCase>>();
+
+            _lastUpdateHour = null;
+            _startedCases = new List<AllocatedCase>();
+            _finishedCases = new List<AllocatedCase>();
         }
 
         internal SimpleOPScheduler()
@@ -129,12 +141,14 @@ namespace Simulator
             throw new InvalidOperationException("Could not schedule OP.");
         }
 
-        internal override List<AllocatedCase> UpdateScheduleAndGetFinishedCases(Hour currentHour)
+
+        internal override void UpdateSchedule(Hour currentHour)
         {
+            _lastUpdateHour = currentHour;
             _processStartingCases(currentHour);
             _removeEntries(_memberSchedule, _memberSchedule.Keys.Where(x => x <= currentHour).ToList());
             _removeEntries(_blockedSchedule, _blockedSchedule.Keys.Where(x => x <= currentHour).ToList());
-            return _processAndGetFinishedCases(currentHour);
+            _processFinishedCases(currentHour);
         }
         #endregion
 
@@ -149,7 +163,7 @@ namespace Simulator
             _recordForMember(startHour, endHour, allocatedCase, WorkerRole.Rapporteur);
             _recordForMember(startHour, endHour, allocatedCase, WorkerRole.OtherMember);
         }
-
+        
         private void _recordForMember(Hour startHour, Hour endHour, AllocatedCase allocatedCase, WorkerRole role)
         {
             Member member = allocatedCase.GetMemberByRole(role);
@@ -194,7 +208,7 @@ namespace Simulator
             _blockSpanForOneMember(endHour, allocatedCase.GetMemberByRole(WorkerRole.Rapporteur));
             _blockSpanForOneMember(endHour, allocatedCase.GetMemberByRole(WorkerRole.OtherMember));
         }
-
+        
         private void _blockSpanForOneMember(Hour currentHour, Member member)
         {
             if (_minimumDaysBetweenOP == 0)
@@ -307,42 +321,28 @@ namespace Simulator
 
         private void _processStartingCases(Hour currentHour)
         {
+            _startedCases.Clear();
             if (_startHours.ContainsKey(currentHour))
             {
-                _recordOPStarts(currentHour);
+                foreach (var x in _startHours[currentHour])
+                {
+                    _startedCases.Add(x);
+                }
                 _scheduleEndHours(currentHour);
                 _startHours.Remove(currentHour);
             }
-        }
+        }       
 
-        private List<AllocatedCase> _processAndGetFinishedCases(Hour currentHour)
+        private void _processFinishedCases(Hour currentHour)
         {
-            List<AllocatedCase> finishedCases = new List<AllocatedCase>();
+            _finishedCases.Clear();
             if (_endHours.ContainsKey(currentHour))
             {
-                _recodOPFinishes(currentHour);
-                finishedCases = _endHours[currentHour];
+                _finishedCases = _endHours[currentHour];
                 _endHours.Remove(currentHour);
             }
-
-            return finishedCases;
         }
 
-        private void _recordOPStarts(Hour currentHour)
-        {
-            foreach (AllocatedCase ac in _startHours[currentHour])
-            {
-                ac.Record.SetOPStart(currentHour);
-            }
-        }
-
-        private void _recodOPFinishes(Hour currentHour)
-        {
-            foreach (AllocatedCase ac in _endHours[currentHour])
-            {
-                ac.Record.SetOPFinished(currentHour);
-            }
-        }
 
         private void _scheduleEndHours(Hour currentHour)
         {
@@ -353,10 +353,7 @@ namespace Simulator
 
         private void _removeEntries<S, T>(Dictionary<S, T> dictionary,  List<S> toRemove)
         {
-            foreach (S s in toRemove)
-            {
-                dictionary.Remove(s);
-            }
+            toRemove.ForEach(x => dictionary.Remove(x));
         }
         #endregion
     }

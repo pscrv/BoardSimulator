@@ -37,6 +37,7 @@ namespace Simulator
                     break;
                 case CaseStage.OP:
                 case CaseStage.Finished:
+                case CaseStage.Undefined:
                     throw new InvalidOperationException("Appeal is not in Summons or Decision stage.");
             }
         }

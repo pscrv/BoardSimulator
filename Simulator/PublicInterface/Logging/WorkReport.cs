@@ -3,36 +3,36 @@
     public class WorkReport
     {
         #region static constructors
-        internal static WorkReport MakeReport(AppealCase ac, WorkType type, WorkerRole role, WorkState state)
+        internal static WorkReport MakeReport(AppealCase ac, CaseStage stage, WorkerRole role, WorkState state)
         {
-            return new WorkReport(ac, type, role, state);
+            return new WorkReport(ac, stage, role, state);
         }
 
         internal static WorkReport MakeNullReport()
         {
-            return new WorkReport(null, WorkType.None, WorkerRole.None, WorkState.None);
+            return new WorkReport(null, CaseStage.Undefined, WorkerRole.None, WorkState.None);
         }
 
         internal static WorkReport MakeOPReport(AppealCase ac, WorkerRole role)
         {
-            return new WorkReport(ac, WorkType.OP, role, WorkState.None);
+            return new WorkReport(ac, CaseStage.OP, role, WorkState.None);
         }
         #endregion
 
 
         #region internal properties
         internal readonly AppealCase Case;
-        internal readonly WorkType Type;
+        internal readonly CaseStage Stage;
         internal readonly WorkerRole Role;
         internal readonly WorkState State;
         #endregion
 
 
         #region constructors
-        private WorkReport(AppealCase ac, WorkType type, WorkerRole role, WorkState state)
+        private WorkReport(AppealCase ac, CaseStage stage, WorkerRole role, WorkState state)
         {
             Case = ac;
-            Type = type;
+            Stage = stage;
             Role = role;
             State = state;
         }
@@ -42,7 +42,7 @@
 
         #region public interface
         public int AppealCase { get { return Case.ID; } }
-        public WorkType WorkType { get { return Type; } }
+        public CaseStage CaseStage { get { return Stage; } }
         public WorkerRole WorkerRole { get { return Role; } }
         public WorkState WorkState { get { return State; } }
         #endregion

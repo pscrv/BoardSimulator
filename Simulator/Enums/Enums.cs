@@ -6,11 +6,10 @@ namespace Simulator
     public enum ChairType { Technical, Legal }
 
     // Cases
-    public enum CaseStage { Summons, OP, Decision, Finished }
+    public enum CaseStage { Undefined, Summons, OP, Decision, Finished }
 
     
     // Work
-    public enum WorkType { Summons, Decision, OP, None }
     public enum WorkState { Ongoing, Finished, None }
 
 

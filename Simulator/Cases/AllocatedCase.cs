@@ -6,60 +6,24 @@ namespace Simulator
     internal class AllocatedCase
     {
         #region fields and properties
-        private Member _currentWorker = null;
+        private Member _currentWorkingMember = null;
         private int _workCounter = 0;
-
-        private WorkType WorkType
-        {
-            get
-            {
-                switch (Stage)
-                {
-                    case CaseStage.Summons:
-                        return WorkType.Summons;
-                    case CaseStage.Decision:
-                        return WorkType.Decision;
-
-                    case CaseStage.OP:
-                    case CaseStage.Finished:
-                        break;
-                }
-                return WorkType.None;
-            }
-        }
-
+               
 
         internal readonly AppealCase Case;
         internal readonly CaseBoard Board;
         internal readonly CaseRecord Record;
-        
-        internal CaseStage Stage
-        {
-            get
-            {
-                if (Record.RapporteurSummons.Finish == null
-                    || Record.OtherMemberSummons.Finish == null
-                    || Record.ChairSummons.Finish == null)
-                    return CaseStage.Summons;
 
-                if (Record.OP.Finish == null)
-                    return CaseStage.OP;
-
-                if (Record.RapporteurDecision.Finish == null
-                    || Record.OtherMemberDecision.Finish == null
-                    || Record.ChairDecision.Finish == null)
-                    return CaseStage.Decision;
-
-                return CaseStage.Finished;
-            }
-        }
+        //TODO: fix
+        internal CaseStage Stage { get => Record.Stage; }
+        internal CStage CStage { get; private set; }
         #endregion
 
 
         #region construction
         internal AllocatedCase(
-            AppealCase ac, 
-            CaseBoard bd, 
+            AppealCase ac,
+            CaseBoard bd,
             Hour currentHour)
         {
             Case = ac;
@@ -67,6 +31,9 @@ namespace Simulator
 
             Record = new CaseRecord(ac);
             Record.SetAllocation(currentHour);
+
+
+            CStage = new CStageMachine().Current;
         }
         #endregion
 
@@ -76,103 +43,107 @@ namespace Simulator
         internal WorkReport DoWorkAndMakeReport(Member member, Hour currentHour)
         {
             CaseWorker worker = Board.GetMemberAsCaseWorker(member);
-            if (Stage == CaseStage.OP)
+            if (Record.Stage == CaseStage.OP)
             {
                 return WorkReport.MakeOPReport(Case, worker.Role);
+            }
+
+            //working
+            if (CStage.Stage == CaseStage.OP)
+            {
+                if (Record.OP.Finish != null)
+                    CStage = CStage.Next();
             }
 
             WorkState workState = _doWork(worker, currentHour);
             if (workState == WorkState.Finished)
             {
-                RecordFinishedWork(worker.Role, currentHour);
+                Record.RecordFinishedWork(worker.Role, currentHour);
+
+                //working
+                if (worker.Role == WorkerRole.Chair)
+                    CStage = CStage.Next();
             }
 
             return WorkReport.MakeReport(
                 Case,
-                WorkType,
+                Stage,
                 worker.Role,
                 workState);
         }
 
 
+        //unused
         internal void RecordStartOfWork(CaseWorker caseWorker, Hour currentHour)
         {
-            WorkerRole role = caseWorker.Role;
-            switch (WorkType)
-            {
-                case WorkType.Summons:
-                    Record.SetSummonsStart(role, currentHour);
-                    break;
-                case WorkType.Decision:
-                    Record.SetDecisionStart(role, currentHour);
-                    break;
-
-                case WorkType.None:
-                    throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
-            }
+            Record.RecordStartOfWork(caseWorker.Role, currentHour);
         }
 
-
+        //unused
         internal void RecordFinishedWork(WorkerRole role, Hour currentHour)
         {
-            switch (WorkType)
-            {
-                case WorkType.Summons:
-                    Record.SetSummonsFinish(role, currentHour);
-                    break;
-                case WorkType.Decision:
-                    Record.SetDecisionFinish(role, currentHour);
-                    break;
-
-                case WorkType.None:
-                    throw new InvalidOperationException("AllocatedCase.Recordwork: there is no work to do.");
-            }
+            Record.RecordFinishedWork(role, currentHour);
         }
-        
 
+        //unused
+        internal void RecordOPEnqueued(Hour currentHour)
+        {
+            Record.SetOPEnqueue(currentHour);
+        }
+
+        // used in OPSchedule
+        internal void RecordOPStart(Hour currentHour)
+        {
+            Record.SetOPStart(currentHour);
+        }
+
+        // used in OPSchedule
+        internal void RecordOPFinished(Hour currentHour)
+        {
+            Record.SetOPFinished(currentHour);
+        }
+
+        //unused
         internal WorkerRole GetRole(Member member)
         {
             return Board.GetRole(member);
         }
 
-
+        // used in OPSchedule
         internal CaseWorker GetCaseWorkerByRole(WorkerRole role)
         {
             return Board.GetCaseWorkerByRole(role);
         }
 
-
+        // used in OPSchedule
         internal Member GetMemberByRole(WorkerRole role)
         {
             return Board.GetMemberByRole(role);
         }
 
-
+        // used in Registrar and CaseBuffer
         internal void EnqueueForWork(Hour currentHour)
         {
-            if (_isFinished)
-                return;
+            WorkerRole role = WorkerRole.None;
 
-            if (_isReadyForOP)
+            switch (Record.Stage)
             {
-                Board.ScheduleOP(currentHour, this);
-                Record.SetOPEnqueue(currentHour);
-                return;
-            }
-        
-            WorkerRole role = Board.EnqueueForNextWorker(currentHour, this);
-            switch (WorkType)
-            {
-                case WorkType.Summons:
-                    Record.SetSummonsEnqueue(role, currentHour);
+                case CaseStage.Undefined:
+                case CaseStage.Finished:
+                    return;
+
+                case CaseStage.OP:
+                    Board.ScheduleOP(currentHour, this);
                     break;
-                case WorkType.Decision:
-                    Record.SetDecisionEnqueue(role, currentHour);
+
+                case CaseStage.Summons:
+                case CaseStage.Decision:
+                    role = Board.EnqueueForNextWorker(currentHour, this);
                     break;
-                case WorkType.None:
-                    throw new InvalidOperationException("AllocatedCase.EnqueueForWork: Case is not in Summons or Decision stage.");
-            
+
             }
+
+            Record.RecordEnqueuedForWork(role, currentHour);
         }
 
         #endregion
@@ -185,57 +156,32 @@ namespace Simulator
             if (worker == null)
                 throw new InvalidOperationException("AllocatedCase.Dowork: worker is null.");
 
-            if (_currentWorker == null)
+            if (_currentWorkingMember == null)
             {
                 _setNewWorker(worker, currentHour);
             }
 
-            if (worker.Member != _currentWorker)
+            if (worker.Member != _currentWorkingMember)
                 throw new InvalidOperationException("AllocatedCase.Dowork: previous member has not yet finished.");
 
             _workCounter--;
 
             if (_workCounter == 0)
             {
-                _currentWorker = null;
+                _currentWorkingMember = null;
                 return WorkState.Finished;
             }
 
             return WorkState.Ongoing;
         }
 
-
-
-
-        private bool _isReadyForOP
-        { get { return Record.ChairSummons.Finish != null && Record.OP.Enqueue == null; } }
-
-
-        private bool _isFinished
-        { get { return Record.ChairDecision.Finish != null; } }
-
-
+        
+        //TODO: consider whether this should be in CaseWorker
         private void _setNewWorker(CaseWorker worker, Hour currentHour)
         {
-            _currentWorker = worker.Member;
-
-            WorkerRole role = Board.GetRole(_currentWorker);
-            MemberParameters parameters = _currentWorker.GetParameters(role);
-            
-            switch (WorkType)
-            {
-                case WorkType.Summons:
-                    Record.SetSummonsStart(role, currentHour);
-                    _workCounter = parameters.HoursForSummons;
-                    break;
-                case WorkType.Decision:
-                    Record.SetDecisionStart(role, currentHour);
-                    _workCounter = parameters.HoursForDecision;
-                    break;
-
-                case WorkType.None:
-                    throw new InvalidOperationException("AllocatedCase.RecordStartOfWork: no summons or decision work to start.");
-            }        
+            _currentWorkingMember = worker.Member;
+            _workCounter = worker.HourForStage(Record.Stage);
+            Record.RecordStartOfWork(worker.Role, currentHour);
         }
 
         #endregion
@@ -247,6 +193,7 @@ namespace Simulator
         {
             return string.Format("Allocated <{0}>", Case.ToString());
         }
+
         #endregion
     }
 }

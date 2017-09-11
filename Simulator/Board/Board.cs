@@ -125,7 +125,12 @@ namespace Simulator
 
             foreach (Member member in _members)
             {
-                boardReport.Add(member, _memberWork(currentHour, member));
+                //working
+                AllocatedCase currentCase = _registrar.GetCurrentCase(currentHour, member);
+                WorkReport report = _memberWork(currentHour, currentCase, member);
+                boardReport.Add(member, report);
+
+                //boardReport.Add(member, _memberWork(currentHour, member));
             }
 
             return boardReport;
@@ -190,7 +195,21 @@ namespace Simulator
 
             return report;
         }
-        
+
+        //working
+        private WorkReport _memberWork(Hour currentHour, AllocatedCase currentCase, Member member)
+        {
+            WorkReport report;
+
+            report = member.Work(currentHour, currentCase);
+            if (report.State == WorkState.Finished)
+            {
+                _registrar.ProcessFinishedWork(currentHour, currentCase, member);
+            }
+
+            return report;
+        }
+
 
         private AllocatedCase _allocateCase(AppealCase appealCase, Hour currentHour)
         {

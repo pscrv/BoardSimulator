@@ -7,7 +7,7 @@ namespace Simulator
     internal class CaseBoard
     {
         #region fields and properties
-        private Dictionary<WorkType, Queue<CaseWorker>> _workerQueues;
+        private Dictionary<CaseStage, Queue<CaseWorker>> _workerQueues;
 
         private Registrar _registrar;
 
@@ -15,8 +15,8 @@ namespace Simulator
         internal readonly CaseWorker Rapporteur;
         internal readonly CaseWorker OtherMember;
         
-        internal Queue<CaseWorker> SummonsQueue { get { return _workerQueues[WorkType.Summons]; } }
-        internal Queue<CaseWorker> DecisionQueue { get { return _workerQueues[WorkType.Decision]; } }
+        internal Queue<CaseWorker> SummonsQueue { get { return _workerQueues[CaseStage.Summons]; } }
+        internal Queue<CaseWorker> DecisionQueue { get { return _workerQueues[CaseStage.Decision]; } }
 
 
         //private IEnumerable<CaseWorker> _membersAsCaseWorkers
@@ -44,10 +44,10 @@ namespace Simulator
             Rapporteur = new CaseWorker(rp, WorkerRole.Rapporteur);
             OtherMember = new CaseWorker(om, WorkerRole.OtherMember);
 
-            _workerQueues = new Dictionary<WorkType, Queue<CaseWorker>>
+            _workerQueues = new Dictionary<CaseStage, Queue<CaseWorker>>
             {
-                [WorkType.Summons] = _makeQueue(),
-                [WorkType.Decision] = _makeQueue()
+                [CaseStage.Summons] = _makeQueue(),
+                [CaseStage.Decision] = _makeQueue()
             };
             _registrar = registrar;
         }
@@ -117,10 +117,10 @@ namespace Simulator
         {
             CaseWorker nextWorker = null;
 
-            if (_workerQueues[WorkType.Summons].Count > 0)
-                nextWorker = _workerQueues[WorkType.Summons].Dequeue();
-            else if (_workerQueues[WorkType.Decision].Count > 0)
-                nextWorker = _workerQueues[WorkType.Decision].Dequeue();
+            if (_workerQueues[CaseStage.Summons].Count > 0)
+                nextWorker = _workerQueues[CaseStage.Summons].Dequeue();
+            else if (_workerQueues[CaseStage.Decision].Count > 0)
+                nextWorker = _workerQueues[CaseStage.Decision].Dequeue();
 
             if (nextWorker == null)
                 return WorkerRole.None;
