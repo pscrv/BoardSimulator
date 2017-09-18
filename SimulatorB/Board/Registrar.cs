@@ -4,7 +4,26 @@ using System.Collections.Generic;
 
 namespace SimulatorB
 {
-    internal class Registrar
+    internal abstract class Registrar
+    {
+        internal abstract int CirculatingSummonsCount { get; }
+        internal abstract int CirculatingDecisionsCount { get; }
+        internal abstract int PendingOPCount { get; }
+        internal abstract int RunningOPCount { get; }
+        internal abstract int FinishedCaseCount { get; }
+
+        internal abstract void AddToSummonsCirculation(WorkCase summonsCase);
+        internal abstract void AddToDecisionCirculation(WorkCase decisionCase);
+        internal abstract void AddToFinishedCaseList(AppealCase finishedCase);
+        internal abstract WorkCase GetMemberWork(Member member);
+        internal abstract void DoWork(Hour currentHour);
+        internal abstract void ProcessCirculatingCases();
+        internal abstract void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers);
+        internal abstract bool MemberHasOP(Hour currentHour, Member member);
+    }
+
+
+    internal class BasicRegistrar : Registrar
     {
         #region fields
         private Queue<WorkCase> _circulatingSummonses;
@@ -12,22 +31,22 @@ namespace SimulatorB
         private Dictionary<Member, Queue<WorkCase>> _summonsQueues;
         private Dictionary<Member, Queue<WorkCase>> _decisionQueues;
         private OPSchedule _opSchedule;
-        private List<AppealCase> _finishedCases;  // will need some other form, this for now
+        private List<AppealCase> _finishedCases;  
         #endregion
 
 
         #region properties
-        internal int CirculatingSummonsCount => _circulatingSummonses.Count;
-        internal int CirculatingDecisionsCount => _circulatingDecisions.Count;
-        internal int PendingOPCount => _opSchedule.Count;
-        internal int RunningOPCount => _opSchedule.RunningCases.Count;
-        internal int FinishedCaseCount => _finishedCases.Count;
+        internal override int CirculatingSummonsCount => _circulatingSummonses.Count;
+        internal override int CirculatingDecisionsCount => _circulatingDecisions.Count;
+        internal override int PendingOPCount => _opSchedule.Count;
+        internal override int RunningOPCount => _opSchedule.RunningCases.Count;
+        internal override int FinishedCaseCount => _finishedCases.Count;
         #endregion
 
 
 
         #region construction
-        public Registrar(IEnumerable<Member> members)
+        internal BasicRegistrar(IEnumerable<Member> members)
         {
             _circulatingSummonses = new Queue<WorkCase>();
             _circulatingDecisions = new Queue<WorkCase>();
@@ -45,24 +64,24 @@ namespace SimulatorB
 
 
 
-        #region internal methods
-        internal void AddToSummonsCirculation(WorkCase summonsCase)
+        #region internal override methods
+        internal override void AddToSummonsCirculation(WorkCase summonsCase)
         {
             _circulatingSummonses.Enqueue(summonsCase);
         }
 
-        internal void AddToDecisionCirculation(WorkCase decisionCase)
+        internal override void AddToDecisionCirculation(WorkCase decisionCase)
         {
             _circulatingDecisions.Enqueue(decisionCase);
         }
 
-        internal void AddToFinishedCaseList(AppealCase finishedCase)
+        internal override void AddToFinishedCaseList(AppealCase finishedCase)
         {
             _finishedCases.Add(finishedCase);
         }
 
 
-        internal WorkCase GetMemberWork(Member member)
+        internal override WorkCase GetMemberWork(Member member)
         {
             if (_decisionQueues[member].Count > 0)
                 return _decisionQueues[member].Dequeue();
@@ -74,7 +93,7 @@ namespace SimulatorB
         }
 
 
-        internal void DoWork(Hour currentHour)
+        internal override void DoWork(Hour currentHour)
         {
             ProcessCirculatingCases();
             _opSchedule.UpdateSchedule(currentHour);
@@ -85,7 +104,7 @@ namespace SimulatorB
         }
 
 
-        internal void ProcessCirculatingCases()
+        internal override void ProcessCirculatingCases()
         {
             _circulateFromQueue(_circulatingSummonses, _summonsQueues);
             _circulateFromQueue(_circulatingDecisions, _decisionQueues);
@@ -94,13 +113,13 @@ namespace SimulatorB
 
 
 
-        internal void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers)
+        internal override void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers)
         {
             _opSchedule.Schedule(currentHour, appealCase, workers);
         }
 
 
-        internal bool MemberHasOP(Hour currentHour, Member member)
+        internal override bool MemberHasOP(Hour currentHour, Member member)
         {
             return _opSchedule.HasOPWork(currentHour, member);
         }

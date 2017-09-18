@@ -14,12 +14,9 @@ namespace SimulatorB
 
         internal abstract void Add(Hour hour, WorkCase WorkCase);
         internal abstract bool HasOPWork(Hour hour, Member member);
-        internal abstract WorkCase GetOPWork(Hour hour, Member member);
         internal abstract void Schedule(Hour startHour, AppealCase appealCase, CaseBoard caseBoard);
         internal abstract void UpdateSchedule(Hour currentHour);
-        internal abstract bool IsBlocked(Hour hour, Member member);
-
-
+        //internal abstract bool IsBlocked(Hour hour, Member member);
     }
 
 
@@ -83,26 +80,9 @@ namespace SimulatorB
             
             return false;
         }
-
-        internal override WorkCase GetOPWork(Hour hour, Member member)
-        {
-            if (_memberSchedule.ContainsKey(hour)
-                && _memberSchedule[hour].ContainsKey(member))
-                return _memberSchedule[hour][member];
-
-            return null;
-        }
         
 
-        internal override bool IsBlocked(Hour hour, Member member)
-        {
-            if (_blockedSchedule.ContainsKey(hour)
-                && _blockedSchedule[hour].Contains(member))
-                return true;
-
-            return false;
-        }
-
+        
         internal override int Count => _startHours.Sum(x => x.Value.Count);
 
         internal override List<Hour> StartHours => _startHours.Keys.ToList();
@@ -266,11 +246,20 @@ namespace SimulatorB
 
             foreach (Hour hour in span)
             {
-                if (HasOPWork(hour, worker.Member) || IsBlocked(hour, worker.Member))
+                if (HasOPWork(hour, worker.Member) || _isBlocked(hour, worker.Member))
                     return false;
             }
 
             return true;
+        }
+
+        private bool _isBlocked(Hour hour, Member member)
+        {
+            if (_blockedSchedule.ContainsKey(hour)
+                && _blockedSchedule[hour].Contains(member))
+                return true;
+
+            return false;
         }
 
 

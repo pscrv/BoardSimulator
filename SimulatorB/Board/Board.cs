@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimulatorB
 {
-    internal abstract class BoardBase
+    internal abstract class Board
     {
         #region fields
         internal readonly Member Chair;
@@ -33,7 +33,7 @@ namespace SimulatorB
 
 
         #region construction
-        protected BoardBase(
+        protected Board(
             Member chair, 
             List<Member> technicals, 
             List<Member> legals)
@@ -66,12 +66,12 @@ namespace SimulatorB
     }
 
 
-    internal abstract class Board : BoardBase
+    internal abstract class BoardCommon : Board
     {
 
         #region abstract
         protected abstract bool _boardChairMustBeCaseChair();
-        protected abstract bool _chairIsTechnical();
+        protected abstract IEnumerable<Member> _getSecondMemberChoices();
         #endregion
 
 
@@ -84,14 +84,14 @@ namespace SimulatorB
 
 
         #region construction
-        protected Board(
+        protected BoardCommon(
             Member chair,
             List<Member> technicals,
             List<Member> legals
             )
             : base(chair, technicals, legals)
         {
-            _registrar = new Registrar(_members);
+            _registrar = new BasicRegistrar(_members);
             _allocator = new Allocator(_members);
 
 
@@ -100,7 +100,7 @@ namespace SimulatorB
         #endregion
 
 
-        #region BoardBase property overrides
+        #region property overrides
         internal override int CirculatingSummonsCount => _registrar.CirculatingSummonsCount;
         internal override int CirculatingDecisionsCount => _registrar.CirculatingDecisionsCount;
         internal override int PendingOPCount => _registrar.PendingOPCount;
@@ -109,20 +109,19 @@ namespace SimulatorB
         #endregion
 
 
-        #region BoardBase method overrides
+        #region method overrides
         internal override void ProcessNewCase(AppealCase appealCase)
         {
             var allocation = 
                 _allocator.GetAllocation(
                     appealCase, 
                     Chair, 
-                    _getRapporteurChoices(), 
+                    Technicals, 
                     _getSecondMemberChoices());
 
             var summonsCase = new SummonsCase(appealCase, allocation);
             _registrar.AddToSummonsCirculation(summonsCase);
         }
-
 
         internal override void DoWork(Hour currentHour)
         {
@@ -140,27 +139,11 @@ namespace SimulatorB
         }
         #endregion
 
-
-        #region private methods
-        private IEnumerable<Member> _getRapporteurChoices()
-        {
-            return Technicals;
-        }
-
-        private IEnumerable<Member> _getSecondMemberChoices()
-        {
-            return _chairIsTechnical() ? Legals : Technicals;
-        }        
-        #endregion
-
-
-
+      
     }
 
 
-
-
-    internal class TechnicalBoard : Board
+    internal class TechnicalBoard : BoardCommon
     {
 
         internal TechnicalBoard(
@@ -183,15 +166,15 @@ namespace SimulatorB
             return Technicals.Count < 2;
         }
 
-        protected override bool _chairIsTechnical()
+        protected override IEnumerable<Member> _getSecondMemberChoices()
         {
-            return true;
+            return Legals;
         }
         #endregion
     }
 
 
-    internal class LegalBoard : Board
+    internal class LegalBoard : BoardCommon
     {
 
         internal LegalBoard(
@@ -203,7 +186,7 @@ namespace SimulatorB
         { }
 
 
-        #region BoardBase overrides
+        #region overrides
         protected override bool _configurationIsInvalid(List<Member> technicals, List<Member> legals)
         {
             return technicals.Count < 2;
@@ -214,9 +197,9 @@ namespace SimulatorB
             return Legals.Count < 1;
         }
 
-        protected override bool _chairIsTechnical()
+        protected override IEnumerable<Member> _getSecondMemberChoices()
         {
-            return false;
+            return Technicals;
         }
         #endregion
     }

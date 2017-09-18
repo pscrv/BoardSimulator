@@ -6,24 +6,40 @@ namespace SimulatorB
 {
     internal abstract class WorkCase
     {
+        internal abstract CaseWorker Chair { get; }
+        internal abstract CaseWorker Rapporteur { get; }
+        internal abstract CaseWorker SecondWorker { get; }
+
+        internal abstract bool CurrentWorkerIsFinished { get; }
+        internal abstract bool AllWorkersAreFinished { get; }
+
+        internal abstract Member GetNextMember();
+        internal abstract void WorkAndPassToRegistrar(Hour currentHour, Registrar registrar);
+        internal abstract void ProcessFinishedCase(Hour currentHour, Registrar registrar);
+    }
+
+
+
+    internal abstract class WorkCaseCommon : WorkCase
+    {
         #region abstract
         protected abstract int _getWorkHours(CaseWorker worker);
-
-        internal abstract void ProcessFinishedCase(Hour currentHour, Registrar registrar);
-        internal abstract void Circulate(Registrar registrar);
+        protected abstract void _processFinishedCase(Hour currentHour, Registrar registrar);
+        protected abstract void _circulate(Registrar registrar);
         #endregion
 
 
         #region fields
         protected AppealCase _case;
         protected CaseBoard _workers;
+
         private Queue<CaseWorker> _workerQueue;
         private Work _work;
         #endregion
 
 
         #region construction
-        internal WorkCase(AppealCase appealCase, CaseBoard workers)
+        internal WorkCaseCommon(AppealCase appealCase, CaseBoard workers)
         {
             _case = appealCase;
             _workers = workers;
@@ -42,16 +58,16 @@ namespace SimulatorB
 
 
         #region internal properties and methods
-        internal CaseWorker Chair => _workers.Chair;
-        internal CaseWorker Rapporteur => _workers.Rapporteur;
-        internal CaseWorker SecondWorker => _workers.SecondWorker;
+        internal override CaseWorker Chair => _workers.Chair;
+        internal override CaseWorker Rapporteur => _workers.Rapporteur;
+        internal override CaseWorker SecondWorker => _workers.SecondWorker;
 
 
-        internal bool CurrentWorkerIsFinished => _work.IsFinished;
-        internal bool AllWorkersAreFinished => _workerQueue.Count < 1;
-        internal Member GetNextMember() => _workerQueue.FirstOrDefault()?.Member;
+        internal override bool CurrentWorkerIsFinished => _work.IsFinished;
+        internal override bool AllWorkersAreFinished => _workerQueue.Count < 1;
+        internal override Member GetNextMember() => _workerQueue.FirstOrDefault()?.Member;
 
-        internal void WorkAndPassToRegistrar(Hour currentHour, Registrar registrar)
+        internal override void WorkAndPassToRegistrar(Hour currentHour, Registrar registrar)
         {
             if (_workerQueue.Count < 1)
                 throw new InvalidOperationException("No worker queued to do work.");
@@ -65,14 +81,19 @@ namespace SimulatorB
 
                 if (AllWorkersAreFinished)
                 {
-                    ProcessFinishedCase(currentHour, registrar);
+                    _processFinishedCase(currentHour, registrar);
                 }
                 else
                 {
-                    Circulate(registrar);
+                    _circulate(registrar);
                     _work = new Work(_getWorkHoursForNextMember());
                 }
             }
+        }
+
+        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
+        { 
+            _processFinishedCase(currentHour, registrar);
         }
         #endregion
 
@@ -86,7 +107,7 @@ namespace SimulatorB
 
 
 
-    internal class SummonsCase : WorkCase
+    internal class SummonsCase : WorkCaseCommon
     {
 
         internal SummonsCase(AppealCase appealCase, CaseBoard workers)
@@ -99,19 +120,19 @@ namespace SimulatorB
             return worker.HoursForSummons;
         }
 
-        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
+        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
         {
             registrar.ScheduleOP(currentHour, _case, _workers);
         }
 
-        internal override void Circulate(Registrar registrar)
+        protected override void _circulate(Registrar registrar)
         {
             registrar.AddToSummonsCirculation(this);
         }
     }
 
 
-    internal class DecisionCase : WorkCase
+    internal class DecisionCase : WorkCaseCommon
     {
         public DecisionCase(AppealCase appealCase, CaseBoard workers) 
             : base(appealCase, workers)
@@ -122,12 +143,12 @@ namespace SimulatorB
             return worker.HoursForDecision;
         }
 
-        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
+        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
         {
             registrar.AddToFinishedCaseList(_case);
         }
 
-        internal override void Circulate(Registrar registrar)
+        protected override void _circulate(Registrar registrar)
         {
             registrar.AddToDecisionCirculation(this);
         }
@@ -135,7 +156,7 @@ namespace SimulatorB
 
 
 
-    internal class OPCase : WorkCase
+    internal class OPCase : WorkCaseCommon
     {
         public OPCase(AppealCase appealCase, CaseBoard workers) 
             : base(appealCase, workers)
@@ -146,12 +167,12 @@ namespace SimulatorB
             return worker.HoursOPPreparation;
         }
 
-        internal override void Circulate(Registrar registrar)
+        protected override void _circulate(Registrar registrar)
         {
             throw new NotImplementedException();
         }
 
-        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
+        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
         {
             WorkCase decisionCase = new DecisionCase(_case, _workers);
             registrar.AddToDecisionCirculation(decisionCase);
