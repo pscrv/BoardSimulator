@@ -49,10 +49,8 @@
     <Compile Include="Board\Registrar.cs" />
     <Compile Include="Cases\CaseState.cs" />
     <Compile Include="Cases\CStage.cs" />
-    <Compile Include="OP\OPActivities.cs" />
     <Compile Include="PublicInterface\Logging\CompletedCaseReport.cs" />
     <Compile Include="PublicInterface\Logging\BoardReport.cs" />
-    <Compile Include="Board\MemberCaseQueue.cs" />
     <Compile Include="Board\CaseWorker.cs" />
     <Compile Include="PublicInterface\Parameters\MemberParameters.cs" />
     <Compile Include="PublicInterface\Logging\HourlyReports.cs" />
@@ -80,6 +78,7 @@
     <Compile Include="PublicInterface\Logging\WorkReport.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="OP\" />
     <Folder Include="__Old\" />
   </ItemGroup>
   <ItemGroup>

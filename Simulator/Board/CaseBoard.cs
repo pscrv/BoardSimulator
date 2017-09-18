@@ -125,7 +125,7 @@ namespace Simulator
             if (nextWorker == null)
                 return WorkerRole.None;
             
-            _registrar.EnqueueForMember(currentHour, nextWorker, allocatedCase);
+            _registrar.EnqueueForWorker(currentHour, nextWorker, allocatedCase);
             return nextWorker.Role;
         }
 

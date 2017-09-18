@@ -50,12 +50,6 @@ namespace Simulator
         internal void DoWork(Hour currentHour)
         {
             _incoming.EnqueueForNextStage(currentHour);
-
-            //foreach (AllocatedCase finishedCase in _opSchedule.UpdateScheduleAndGetFinishedCases(currentHour))
-            //{
-            //    //finishedCase.RecordOPFinished(currentHour);
-            //    //finishedCase.EnqueueForWork(currentHour);
-            //}
             _opSchedule.UpdateSchedule(currentHour);
 
             foreach (AllocatedCase startedCase in _opSchedule.StartedCases)
@@ -83,7 +77,7 @@ namespace Simulator
         {
             _circulation.Enqueue(currentHour, allocatedCase);
             _boardQueue.Dequeue(member);
-            if (allocatedCase.Stage == CaseStage.Finished)
+            if (allocatedCase.IsFinished)
             {
                 _finished.Add(allocatedCase);
             }
@@ -102,7 +96,7 @@ namespace Simulator
         }
 
 
-        internal void EnqueueForMember(Hour currentHour, CaseWorker nextWorker, AllocatedCase allocatedCase)
+        internal void EnqueueForWorker(Hour currentHour, CaseWorker nextWorker, AllocatedCase allocatedCase)
         {
             _boardQueue.EnqueueForMember(currentHour, nextWorker, allocatedCase);
         }

@@ -1,0 +1,5 @@
+﻿namespace SimulatorB
+{
+    class WorkReport
+    { }
+}

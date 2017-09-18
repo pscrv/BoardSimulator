@@ -17,6 +17,7 @@ namespace Simulator
         //TODO: fix
         internal CaseStage Stage { get => Record.Stage; }
         internal CStage CStage { get; private set; }
+        internal bool IsFinished { get => Stage == CaseStage.Finished; }
         #endregion
 
 
