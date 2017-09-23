@@ -9,7 +9,7 @@
 
         #region internal fields and properties
         internal readonly int ID;
-        internal readonly Hour CreationHour;
+        internal readonly CaseLog Log;
         #endregion
 
 
@@ -18,6 +18,7 @@
         {
             ID = __instanceCounter;
             __instanceCounter++;
+            Log = new CaseLog();
         }
         #endregion
 

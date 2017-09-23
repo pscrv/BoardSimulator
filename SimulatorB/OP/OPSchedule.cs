@@ -14,9 +14,9 @@ namespace SimulatorB
 
         internal abstract void Add(Hour hour, WorkCase WorkCase);
         internal abstract bool HasOPWork(Hour hour, Member member);
+        internal abstract WorkCase GetOPWork(Hour hour, Member member);
         internal abstract void Schedule(Hour startHour, AppealCase appealCase, CaseBoard caseBoard);
         internal abstract void UpdateSchedule(Hour currentHour);
-        //internal abstract bool IsBlocked(Hour hour, Member member);
     }
 
 
@@ -80,9 +80,24 @@ namespace SimulatorB
             
             return false;
         }
-        
 
-        
+
+        internal override WorkCase GetOPWork(Hour hour, Member member)
+        {
+            if (_memberSchedule.ContainsKey(hour))
+            {
+                if (_memberSchedule[hour].ContainsKey(member))
+                {
+                    return _memberSchedule[hour][member];
+                }
+
+                throw new InvalidOperationException($"No OP for {member} at {hour}.");
+            }
+
+            throw new InvalidOperationException($"No OP scheduled for {hour}.");
+        }
+
+
         internal override int Count => _startHours.Sum(x => x.Value.Count);
 
         internal override List<Hour> StartHours => _startHours.Keys.ToList();
@@ -135,7 +150,9 @@ namespace SimulatorB
         {
             _checkIsValidUpdateHour(currentHour);
 
-            if (_lastUpdateHour != null && StartHours.Min() != null && currentHour > StartHours.Min())
+            if (_lastUpdateHour != null 
+                && StartHours.Min() != null 
+                && currentHour > StartHours.Min())
                 throw new InvalidOperationException($"Update out of sequence. Expected <= {StartHours.Min()} but got {currentHour}");
 
             _lastUpdateHour = currentHour;
@@ -161,7 +178,7 @@ namespace SimulatorB
         private void _recordForMember(
             Hour startHour, 
             Hour endHour, 
-            WorkCase WorkCase, 
+            WorkCase workCase, 
             CaseWorker worker)
         {
             Hour preparationStart = startHour.SubtractHours(worker.HoursOPPreparation);
@@ -173,7 +190,7 @@ namespace SimulatorB
                     throw new InvalidOperationException(
                         string.Format("OPSchedule2.Add: attempt to schedule but member is blocked for {0}", hour));
 
-                _addOPScheduleForWorker(hour, WorkCase, worker);
+                _addOPScheduleForWorker(hour, workCase, worker);
             }
         }
        
@@ -338,6 +355,7 @@ namespace SimulatorB
             }
         }       
 
+        // TODO: is this still needed?
         private void _processFinishedCases(Hour currentHour)
         {
             _finishedCases.Clear();
@@ -373,19 +391,39 @@ namespace SimulatorB
                 throw new InvalidOperationException($"Attempt to update out of sequence. Expected > {_lastUpdateHour} but got {currentHour}");
 
             Hour firstStartHour = StartHours.Min();
-            if (firstStartHour == null)
-                return;
-
-            if (currentHour > firstStartHour)
-                throw new InvalidOperationException($"Expected <= first start time: {firstStartHour} but got {currentHour}");
-
             Hour firstEndHour = _endHours.Keys.Min();
-            if (firstEndHour == null)
-                return;
+            
+            // start or end hours exist
+            // if start exists
+            if (firstStartHour != null)
+            {
+                if (currentHour > firstStartHour)
+                {
+                    throw new InvalidOperationException($"Expected <= first start time: {firstStartHour} but got {currentHour}");
+                }
+                else
+                {
+                    return;
+                }
+            }
 
-            if (currentHour > firstEndHour)
-                throw new InvalidOperationException($"Expected <= first end time: {firstEndHour} but got {currentHour}");
+            // no start hours here
+            // if end hours exis
+            if (firstEndHour != null)
+            {
+                if (currentHour > firstEndHour)
+                {
+                    throw new InvalidOperationException($"Expected <= first end time: {firstEndHour} but got {currentHour}.");
+                }
+                else
+                {
+                    return;
+                }
+            }
 
+            // no start or end hours here
+            return;
+            
         }
         #endregion
     }

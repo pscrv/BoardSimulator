@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace SimulatorB
 {
@@ -26,7 +25,7 @@ namespace SimulatorB
         #region abstract methods
         protected abstract bool _configurationIsInvalid(List<Member> technicals, List<Member> legals);
 
-        internal abstract void ProcessNewCase(AppealCase appealCase);
+        internal abstract void ProcessNewCase(AppealCase appealCase, Hour currentHour);
         internal abstract void DoWork(Hour currentHour);
         #endregion
 
@@ -110,36 +109,39 @@ namespace SimulatorB
 
 
         #region method overrides
-        internal override void ProcessNewCase(AppealCase appealCase)
+        internal override void ProcessNewCase(AppealCase appealCase, Hour currentHour)
         {
-            var allocation = 
+            CaseBoard allocation = 
                 _allocator.GetAllocation(
                     appealCase, 
                     Chair, 
                     Technicals, 
                     _getSecondMemberChoices());
-
-            var summonsCase = new SummonsCase(appealCase, allocation);
+            
+            WorkCase summonsCase = new SummonsCase(appealCase, allocation);
             _registrar.AddToSummonsCirculation(summonsCase);
         }
 
         internal override void DoWork(Hour currentHour)
         {
-            _registrar.DoWork(currentHour);
-            
+            _registrar.CirculateCases(currentHour);
+            _passWorkToMembers(currentHour);
+            _registrar.UpdateOPSchedule(currentHour);
+        }
+
+        private void _passWorkToMembers(Hour currentHour)
+        {
             WorkCase workCase;
             foreach (Member member in _members)
             {
-                if (_registrar.MemberHasOP(currentHour, member))
-                    continue;
-                
-                workCase = _registrar.GetMemberWork(member);
-                workCase?.WorkAndPassToRegistrar(currentHour, _registrar);
+                workCase = _registrar.GetMemberWork(currentHour, member);
+                workCase?.Work(currentHour, member);
+                workCase?.PassToRegistrarIfFinished(currentHour, member, _registrar);
             }
         }
         #endregion
 
-      
+
     }
 
 

@@ -10,6 +10,7 @@ namespace SimulatorB
         internal abstract int HoursForSummons { get; }
         internal abstract int HoursOPPreparation { get; }
         internal abstract int HoursForDecision { get; }
+        
         #endregion
 
 
@@ -43,6 +44,10 @@ namespace SimulatorB
 
 
         protected override string _workerType => "Chair";
+
+
+        
+
     }
 
     internal class RapporteurWorker : CaseWorker
@@ -57,6 +62,9 @@ namespace SimulatorB
 
 
         protected override string _workerType => "Rapporteur";
+
+
+        
     }
 
     internal class SecondWorker : CaseWorker
@@ -71,6 +79,8 @@ namespace SimulatorB
 
 
         protected override string _workerType => "Second member";
+
+        
     }
 
 }

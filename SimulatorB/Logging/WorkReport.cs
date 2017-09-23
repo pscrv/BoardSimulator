@@ -1,5 +1,0 @@
-﻿namespace SimulatorB
-{
-    class WorkReport
-    { }
-}

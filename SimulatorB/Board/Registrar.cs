@@ -15,9 +15,9 @@ namespace SimulatorB
         internal abstract void AddToSummonsCirculation(WorkCase summonsCase);
         internal abstract void AddToDecisionCirculation(WorkCase decisionCase);
         internal abstract void AddToFinishedCaseList(AppealCase finishedCase);
-        internal abstract WorkCase GetMemberWork(Member member);
-        internal abstract void DoWork(Hour currentHour);
-        internal abstract void ProcessCirculatingCases();
+        internal abstract WorkCase GetMemberWork(Hour currentHour, Member member);
+        internal abstract void CirculateCases(Hour currentHour);
+        internal abstract void UpdateOPSchedule(Hour currentHour);
         internal abstract void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers);
         internal abstract bool MemberHasOP(Hour currentHour, Member member);
     }
@@ -35,7 +35,7 @@ namespace SimulatorB
         #endregion
 
 
-        #region properties
+        #region property overrides
         internal override int CirculatingSummonsCount => _circulatingSummonses.Count;
         internal override int CirculatingDecisionsCount => _circulatingDecisions.Count;
         internal override int PendingOPCount => _opSchedule.Count;
@@ -81,8 +81,11 @@ namespace SimulatorB
         }
 
 
-        internal override WorkCase GetMemberWork(Member member)
+        internal override WorkCase GetMemberWork(Hour currentHour, Member member)
         {
+            if (MemberHasOP(currentHour, member))
+                return _opSchedule.GetOPWork(currentHour, member);
+
             if (_decisionQueues[member].Count > 0)
                 return _decisionQueues[member].Dequeue();
 
@@ -93,30 +96,26 @@ namespace SimulatorB
         }
 
 
-        internal override void DoWork(Hour currentHour)
+        internal override void CirculateCases(Hour currentHour)
         {
-            ProcessCirculatingCases();
-            _opSchedule.UpdateSchedule(currentHour);
-            foreach (WorkCase workCase in _opSchedule.FinishedCases)
-            {
-                workCase.ProcessFinishedCase(currentHour, this);
-            }
-        }
-
-
-        internal override void ProcessCirculatingCases()
-        {
-            _circulateFromQueue(_circulatingSummonses, _summonsQueues);
-            _circulateFromQueue(_circulatingDecisions, _decisionQueues);
+            _circulateFromQueue(_circulatingSummonses, _summonsQueues, currentHour);
+            _circulateFromQueue(_circulatingDecisions, _decisionQueues, currentHour);
             // new cases too
         }
 
+        internal override void UpdateOPSchedule(Hour currentHour)
+        {
+            _opSchedule.UpdateSchedule(currentHour);    
+        }
 
 
         internal override void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers)
         {
+            WorkCase opCase = new OPCase(appealCase, workers);
+            opCase.LogEnqueued(currentHour);
             _opSchedule.Schedule(currentHour, appealCase, workers);
         }
+        
 
 
         internal override bool MemberHasOP(Hour currentHour, Member member)
@@ -126,13 +125,18 @@ namespace SimulatorB
         #endregion        
 
 
-        private void _circulateFromQueue(Queue<WorkCase> inqueue, Dictionary<Member, Queue<WorkCase>> outqueues)
+
+        private void _circulateFromQueue(
+            Queue<WorkCase> inqueue, 
+            Dictionary<Member, Queue<WorkCase>> outqueues,
+            Hour currentHour)
         {
             while (inqueue.Count > 0)
             {
                 var workCase = inqueue.Dequeue();
-                var workingMember = workCase.GetNextMember();
+                var workingMember = workCase.GetCurrentMember();
                 outqueues[workingMember].Enqueue(workCase);
+                workCase.LogEnqueued(currentHour);
             }
         }
         
