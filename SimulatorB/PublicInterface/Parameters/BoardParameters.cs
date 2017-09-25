@@ -7,7 +7,7 @@ namespace SimulatorB
     public abstract class BoardParameters
     {
         #region abstract
-        //internal abstract Board MakeBoard(Registrar registrar);
+        internal abstract Board MakeBoard();
         #endregion
 
 
@@ -133,20 +133,19 @@ namespace SimulatorB
             List<MemberParameterCollection> legals)
             : base(chair, technicals, legals)
         { }
-        
+
 
 
         #region overrides
-        //internal override Board MakeBoard(Registrar registrar)
-        //{
+        internal override Board MakeBoard()
+        {
 
-        //    return Board.MakeTechnicalBoard(
-        //        ChairMember,
-        //        TechnicalMembers,
-        //        LegalMembers,
-        //        registrar,
-        //        ChairChooser);
-        //}
+            return new TechnicalBoard(
+                ChairMember,
+                TechnicalMembers,
+                LegalMembers
+                );
+        }
         #endregion
     }
 
@@ -160,17 +159,15 @@ namespace SimulatorB
             List<MemberParameterCollection> legals)
             : base(chair, technicals, legals)
         { }
-        
 
-        //internal override Board MakeBoard(Registrar registrar)
-        //{
-        //    return Board.MakeLegalBoard(
-        //        ChairMember,
-        //        TechnicalMembers,
-        //        LegalMembers,
-        //        registrar,
-        //        ChairChooser);
-        //}
+
+        internal override Board MakeBoard()
+        {
+            return new LegalBoard(
+                ChairMember,
+                TechnicalMembers,
+                LegalMembers);
+        }
     }
 
 

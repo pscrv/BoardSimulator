@@ -55,6 +55,7 @@
     <Compile Include="Board\CaseWorkerTests.cs" />
     <Compile Include="Board\MemberTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicInterface\Simulation\SimulationTests.cs" />
     <Compile Include="Queues\TimeLoggingQueueTests.cs" />
     <Compile Include="Time\HourTests.cs" />
   </ItemGroup>

@@ -84,7 +84,7 @@ namespace SimulatorB.Tests
         {
             AppealCase appealCase = new AppealCase();
             boardT.ProcessNewCase(appealCase, new Hour(0));
-            Assert.AreEqual(1, boardT.CirculatingSummonsCount);
+            Assert.AreEqual(1, boardT.CirculatingSummonsCount); 
 
             boardT.DoWork(new Hour(0));
             Assert.AreEqual(1, boardT.CirculatingSummonsCount);
@@ -237,16 +237,16 @@ namespace SimulatorB.Tests
             Assert.AreEqual(hour, appealCase.Log.SummonsEnqueuedRapporteur);
             Assert.AreEqual(hour, appealCase.Log.SummonsStartedRapporteur);
             Assert.AreEqual(hour, appealCase.Log.SummonsFinishedRapporteur);
+            Assert.AreEqual(hour, appealCase.Log.SummonsEnqueuedSecondMember);
 
             hour = new Hour(1);
             boardT.DoWork(hour);
-            Assert.AreEqual(hour, appealCase.Log.SummonsEnqueuedSecondMember);
             Assert.AreEqual(hour, appealCase.Log.SummonsStartedSecondMember);
             Assert.AreEqual(hour, appealCase.Log.SummonsFinishedSecondMember);
+            Assert.AreEqual(hour, appealCase.Log.SummonsEnqueuedChair);
 
             hour = new Hour(2);
             boardT.DoWork(hour);
-            Assert.AreEqual(hour, appealCase.Log.SummonsEnqueuedChair);
             Assert.AreEqual(hour, appealCase.Log.SummonsStartedChair);
             Assert.AreEqual(hour, appealCase.Log.SummonsFinishedChair);
             Assert.AreEqual(hour, appealCase.Log.OPEnqueuedChair);
@@ -268,23 +268,23 @@ namespace SimulatorB.Tests
             Assert.AreEqual(hour, appealCase.Log.OPFinishedChair);
             Assert.AreEqual(hour, appealCase.Log.OPFinishedRapporteur);
             Assert.AreEqual(hour, appealCase.Log.OPFinishedSecondMember);
+            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedRapporteur);
 
 
             hour = new Hour(720);
             boardT.DoWork(hour);
-            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedRapporteur);
             Assert.AreEqual(hour, appealCase.Log.DecisionStartedRapporteur);
             Assert.AreEqual(hour, appealCase.Log.DecisionFinishedRapporteur);
+            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedSecondMember);
 
             hour = new Hour(721);
             boardT.DoWork(hour);
-            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedSecondMember);
             Assert.AreEqual(hour, appealCase.Log.DecisionStartedSecondMember);
             Assert.AreEqual(hour, appealCase.Log.DecisionFinishedSecondMember);
+            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedChair);
 
             hour = new Hour(722);
             boardT.DoWork(hour);
-            Assert.AreEqual(hour, appealCase.Log.DecisionEnqueuedChair);
             Assert.AreEqual(hour, appealCase.Log.DecisionStartedChair);
             Assert.AreEqual(hour, appealCase.Log.DecisionFinishedChair);
             Assert.AreEqual(hour, appealCase.Log.Finished);

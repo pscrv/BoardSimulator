@@ -11,12 +11,23 @@ namespace SimulatorB
         internal abstract CaseWorker SecondWorker { get; }
 
         internal abstract CaseLog Log { get; }
+
         internal abstract void LogEnqueued(Hour currentHour);
 
         internal abstract Member GetCurrentMember();
+        internal abstract bool MemberWorkIsFinished { get; }
+        internal abstract bool AllWorkersAreFinished { get; }
 
         internal abstract void Work(Hour currentHour, Member member);
-        internal abstract void PassToRegistrarIfFinished(Hour currentHour, Member member, Registrar registrar);
+        //internal abstract void PassToRegistrarIfFinished(Hour currentHour, Member member, Registrar registrar);
+
+
+
+
+        internal abstract void ProcessFinishedCase(Hour currentHour, Registrar registrar);
+        internal abstract void DequeueMember(Member member);
+
+
     }
 
 
@@ -24,9 +35,7 @@ namespace SimulatorB
     internal abstract class WorkCaseCommon : WorkCase
     {
         #region abstract
-        protected abstract int _getWorkHours(CaseWorker worker);
-        protected abstract void _processFinishedCase(Hour currentHour, Registrar registrar);
-        protected abstract void _circulate(Registrar registrar);        
+        protected abstract int _getWorkHours(CaseWorker worker);  
         #endregion
 
 
@@ -40,20 +49,14 @@ namespace SimulatorB
 
         #region private properties
         private CaseWorker _currentWorker => _workerQueue.FirstOrDefault();
-        private bool _allWorkersAreFinished => _workerQueue.Count < 1;
         #endregion
 
 
         #region construction
         internal WorkCaseCommon(AppealCase appealCase, CaseBoard workers)
         {
-            if (appealCase == null)
-                throw new ArgumentException("appealCase may not be null");
-            if (workers == null)
-                throw new ArgumentException("workers may not be null");
-
-            _case = appealCase;
-            _caseBoard = workers;
+            _case = appealCase ?? throw new ArgumentException("appealCase may not be null");
+            _caseBoard = workers ?? throw new ArgumentException("workers may not be null");
             _setupWorkerQueue(workers);
             _setupWork();
         }
@@ -82,9 +85,13 @@ namespace SimulatorB
         #region WorkCase overrides
         internal override CaseWorker Chair => _caseBoard.Chair;
         internal override CaseWorker Rapporteur => _caseBoard.Rapporteur;
-        internal override CaseWorker SecondWorker => _caseBoard.SecondWorker;
-                
+        internal override CaseWorker SecondWorker => _caseBoard.SecondWorker;                
         internal override CaseLog Log => _case.Log;
+
+        internal override bool MemberWorkIsFinished => _work[GetCurrentMember()].IsFinished;
+        internal override bool AllWorkersAreFinished => _workerQueue.Count < 1;
+        
+
         internal override void LogEnqueued(Hour currentHour) 
             => Log.LogEnqueued(currentHour, this as dynamic, _currentWorker as dynamic);        
 
@@ -104,25 +111,22 @@ namespace SimulatorB
 
             if (!_work[member].IsFinished)
                 _work[member].DoWork();
-        }
 
 
-        internal override void PassToRegistrarIfFinished(Hour currentHour, Member member, Registrar registrar)
-        {
+
+
             if (_work[member].IsFinished)
             {
-                Log.LogFinished(currentHour, this as dynamic, _currentWorker as dynamic);
-                _workerQueue.Dequeue();
-
-                if (_allWorkersAreFinished)
-                {
-                    _processFinishedCase(currentHour, registrar);
-                }
-                else
-                {
-                    _circulate(registrar);
-                }
+                Log.LogFinished(currentHour, this as dynamic, worker as dynamic);
             }
+        }
+
+        internal override void DequeueMember(Member member)  // can we lose this?
+        {
+            if (member != _currentWorker.Member)
+                throw new InvalidOperationException("Attempt to dequeue a member who is not the current worker.");
+
+            _workerQueue.Dequeue();
         }
         #endregion
 
@@ -148,16 +152,10 @@ namespace SimulatorB
             return worker.HoursForSummons;
         }
 
-        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
+        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
         {
             registrar.ScheduleOP(currentHour, _case, _caseBoard);
         }
-
-        protected override void _circulate(Registrar registrar)
-        {
-            registrar.AddToSummonsCirculation(this);
-        }
-
     }
 
 
@@ -173,17 +171,11 @@ namespace SimulatorB
             return worker.HoursForDecision;
         }
 
-        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
+        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
         {
             registrar.AddToFinishedCaseList(_case);
             Log.LogFinished(currentHour);
-        }
-
-        protected override void _circulate(Registrar registrar)
-        {
-            registrar.AddToDecisionCirculation(this);
-        }
-        
+        }        
     }
 
 
@@ -199,10 +191,7 @@ namespace SimulatorB
             return worker.HoursOPPreparation + TimeParameters.OPDurationInHours;
         }
 
-        protected override void _circulate(Registrar registrar)
-        { }
-
-        protected override void _processFinishedCase(Hour currentHour, Registrar registrar)
+        internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
         {
             WorkCase decisionCase = new DecisionCase(_case, _caseBoard);
             registrar.AddToDecisionCirculation(decisionCase);

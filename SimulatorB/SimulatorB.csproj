@@ -48,7 +48,6 @@
     <Compile Include="Board\Registrar.cs" />
     <Compile Include="Cases\AppealCase.cs" />
     <Compile Include="Cases\WorkCase.cs" />
-    <Compile Include="Enums\Enums.cs" />
     <Compile Include="Logging\CaseLog.cs" />
     <Compile Include="OP\OPSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,6 +60,7 @@
     <Compile Include="Work\Work.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Enums\" />
     <Folder Include="PublicInterface\Logging\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

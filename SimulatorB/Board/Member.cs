@@ -39,9 +39,6 @@ namespace SimulatorB
             return $"Member <{ID}>";
         }
         #endregion
-
-
-
         
     }
 

@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimulatorB
 {
@@ -12,20 +13,20 @@ namespace SimulatorB
         internal abstract int RunningOPCount { get; }
         internal abstract int FinishedCaseCount { get; }
 
-        internal abstract void AddToSummonsCirculation(WorkCase summonsCase);
+        internal abstract void ProcessNewSummons(WorkCase summonsCase);
         internal abstract void AddToDecisionCirculation(WorkCase decisionCase);
+        internal abstract void CirculateCases(Hour currentHour);
         internal abstract void AddToFinishedCaseList(AppealCase finishedCase);
         internal abstract WorkCase GetMemberWork(Hour currentHour, Member member);
-        internal abstract void CirculateCases(Hour currentHour);
-        internal abstract void UpdateOPSchedule(Hour currentHour);
         internal abstract void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers);
-        internal abstract bool MemberHasOP(Hour currentHour, Member member);
+        internal abstract void UpdateQueuesAndCirculate(Hour currentHour);
     }
 
 
     internal class BasicRegistrar : Registrar
     {
         #region fields
+        private List<Member> _members;
         private Queue<WorkCase> _circulatingSummonses;
         private Queue<WorkCase> _circulatingDecisions;
         private Dictionary<Member, Queue<WorkCase>> _summonsQueues;
@@ -45,9 +46,13 @@ namespace SimulatorB
 
 
 
+
+
+
         #region construction
         internal BasicRegistrar(IEnumerable<Member> members)
         {
+            _members = members.ToList();
             _circulatingSummonses = new Queue<WorkCase>();
             _circulatingDecisions = new Queue<WorkCase>();
             _summonsQueues = new Dictionary<Member, Queue<WorkCase>>();
@@ -65,11 +70,11 @@ namespace SimulatorB
 
 
         #region internal override methods
-        internal override void AddToSummonsCirculation(WorkCase summonsCase)
+        internal override void ProcessNewSummons(WorkCase summonsCase)
         {
-            _circulatingSummonses.Enqueue(summonsCase);
+            _addToSummonsCirculation(summonsCase);
         }
-
+        
         internal override void AddToDecisionCirculation(WorkCase decisionCase)
         {
             _circulatingDecisions.Enqueue(decisionCase);
@@ -83,14 +88,14 @@ namespace SimulatorB
 
         internal override WorkCase GetMemberWork(Hour currentHour, Member member)
         {
-            if (MemberHasOP(currentHour, member))
+            if (_memberHasOP(currentHour, member))
                 return _opSchedule.GetOPWork(currentHour, member);
 
             if (_decisionQueues[member].Count > 0)
-                return _decisionQueues[member].Dequeue();
+                return _decisionQueues[member].Peek();
 
             if (_summonsQueues[member].Count > 0)
-                return _summonsQueues[member].Dequeue();
+                return _summonsQueues[member].Peek();
 
             return null;
         }
@@ -100,14 +105,8 @@ namespace SimulatorB
         {
             _circulateFromQueue(_circulatingSummonses, _summonsQueues, currentHour);
             _circulateFromQueue(_circulatingDecisions, _decisionQueues, currentHour);
-            // new cases too
+            //// new cases too
         }
-
-        internal override void UpdateOPSchedule(Hour currentHour)
-        {
-            _opSchedule.UpdateSchedule(currentHour);    
-        }
-
 
         internal override void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers)
         {
@@ -118,13 +117,26 @@ namespace SimulatorB
         
 
 
-        internal override bool MemberHasOP(Hour currentHour, Member member)
+
+        internal override void UpdateQueuesAndCirculate(Hour currentHour)
+        {
+            _updateOPSchedule(currentHour);
+            _processFinishedWork(currentHour);
+            CirculateCases(currentHour);
+        }
+        #endregion
+
+
+
+        private void _addToSummonsCirculation(WorkCase summonsCase)
+        {
+            _circulatingSummonses.Enqueue(summonsCase);
+        }
+
+        private bool _memberHasOP(Hour currentHour, Member member)
         {
             return _opSchedule.HasOPWork(currentHour, member);
         }
-        #endregion        
-
-
 
         private void _circulateFromQueue(
             Queue<WorkCase> inqueue, 
@@ -133,12 +145,62 @@ namespace SimulatorB
         {
             while (inqueue.Count > 0)
             {
-                var workCase = inqueue.Dequeue();
-                var workingMember = workCase.GetCurrentMember();
+                WorkCase workCase = inqueue.Dequeue();
+                Member workingMember = workCase.GetCurrentMember();
                 outqueues[workingMember].Enqueue(workCase);
                 workCase.LogEnqueued(currentHour);
             }
+        }       
+
+
+        private void _updateOPSchedule(Hour currentHour)
+        {
+            _opSchedule.UpdateSchedule(currentHour);    
         }
         
+        private void _processFinishedOPs(Hour currentHour)
+        {
+            foreach (WorkCase opCase in _opSchedule.FinishedCases)
+            {
+                opCase.ProcessFinishedCase(currentHour, this);
+            }
+        }
+
+
+        private void _processFinishedWork(Hour currentHour)
+        {
+            _processFinishedOPs(currentHour);
+
+            foreach (Member member in _members)
+            {
+                _processFinished(currentHour, member, _summonsQueues[member]);
+                _processFinished(currentHour, member, _decisionQueues[member]);
+            }
+        }
+
+        private void _processFinished(Hour currentHour, Member member, Queue<WorkCase> queue)
+        {
+            WorkCase membercase;
+            if (queue.Count > 0)
+            {
+                membercase = queue.Peek();
+                if (membercase.MemberWorkIsFinished)
+                {
+                    membercase.DequeueMember(member);
+                    queue.Dequeue();
+
+                    if (membercase.AllWorkersAreFinished)
+                    {
+                        membercase.ProcessFinishedCase(currentHour, this);
+                    }
+                    else
+                    {
+                        _addToSummonsCirculation(membercase);
+                    }
+                }
+            }
+        }
+
+
     }
 }

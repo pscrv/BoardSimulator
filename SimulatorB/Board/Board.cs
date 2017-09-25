@@ -119,15 +119,17 @@ namespace SimulatorB
                     _getSecondMemberChoices());
             
             WorkCase summonsCase = new SummonsCase(appealCase, allocation);
-            _registrar.AddToSummonsCirculation(summonsCase);
+            _registrar.ProcessNewSummons(summonsCase);
+            _registrar.CirculateCases(currentHour);
         }
 
         internal override void DoWork(Hour currentHour)
         {
-            _registrar.CirculateCases(currentHour);
             _passWorkToMembers(currentHour);
-            _registrar.UpdateOPSchedule(currentHour);
+            _registrar.UpdateQueuesAndCirculate(currentHour);
         }
+        #endregion
+
 
         private void _passWorkToMembers(Hour currentHour)
         {
@@ -136,10 +138,8 @@ namespace SimulatorB
             {
                 workCase = _registrar.GetMemberWork(currentHour, member);
                 workCase?.Work(currentHour, member);
-                workCase?.PassToRegistrarIfFinished(currentHour, member, _registrar);
             }
         }
-        #endregion
 
 
     }

@@ -370,7 +370,7 @@ namespace SimulatorB
         private void _scheduleEndHours(Hour currentHour)
         {
             _endHours
-                [currentHour.AddHours(TimeParameters.OPDurationInHours)]
+                [currentHour.AddHours(TimeParameters.OPDurationInHours - 1)]
                 = _startHours[currentHour];
         }
 
