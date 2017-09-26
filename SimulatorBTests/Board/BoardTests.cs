@@ -76,7 +76,7 @@ namespace SimulatorB.Tests
             AppealCase appealCase = new AppealCase();
             boardT.ProcessNewCase(appealCase, new Hour(0));
 
-            Assert.AreEqual(1, boardT.CirculatingSummonsCount);
+            Assert.AreEqual(1, boardT.CirculatedSummonsCount);
         }
 
         [TestMethod()]
@@ -84,14 +84,14 @@ namespace SimulatorB.Tests
         {
             AppealCase appealCase = new AppealCase();
             boardT.ProcessNewCase(appealCase, new Hour(0));
-            Assert.AreEqual(1, boardT.CirculatingSummonsCount); 
+            Assert.AreEqual(1, boardT.CirculatedSummonsCount); 
 
             boardT.DoWork(new Hour(0));
-            Assert.AreEqual(1, boardT.CirculatingSummonsCount);
+            Assert.AreEqual(1, boardT.CirculatedSummonsCount);
             boardT.DoWork(new Hour(1));
-            Assert.AreEqual(1, boardT.CirculatingSummonsCount);
+            Assert.AreEqual(1, boardT.CirculatedSummonsCount);
             boardT.DoWork(new Hour(2));
-            Assert.AreEqual(0, boardT.CirculatingSummonsCount);
+            Assert.AreEqual(0, boardT.CirculatedSummonsCount);
         }
 
 
@@ -138,7 +138,7 @@ namespace SimulatorB.Tests
             boardT.DoWork(new Hour(718));
             Assert.AreEqual(1, boardT.RunningOPCount);
             boardT.DoWork(new Hour(719));
-            Assert.AreEqual(1, boardT.RunningOPCount);
+            Assert.AreEqual(0, boardT.RunningOPCount);
             boardT.DoWork(new Hour(720));
             Assert.AreEqual(0, boardT.RunningOPCount);
         }
@@ -150,43 +150,43 @@ namespace SimulatorB.Tests
             AppealCase appealCase = new AppealCase();
             boardT.ProcessNewCase(appealCase, hour);
             boardT.DoWork(hour);
-            Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(1);
             boardT.DoWork(hour);
-            Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(2);
             boardT.DoWork(hour);
-            Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
 
             
             for (int i = 711; i < 719; i++)
             {
                 hour = new Hour(i);
                 boardT.DoWork(hour);
-                Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+                Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
             }
 
             hour = new Hour(719);
             boardT.DoWork(hour);
-            Assert.AreEqual(1, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(1, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(720);
             boardT.DoWork(hour);
-            Assert.AreEqual(1, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(1, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(721);
             boardT.DoWork(new Hour(721));
-            Assert.AreEqual(1, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(1, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(722);
             boardT.DoWork(new Hour(722));
-            Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
 
             hour = new Hour(723);
             boardT.DoWork(new Hour(723));
-            Assert.AreEqual(0, boardT.CirculatingDecisionsCount);
+            Assert.AreEqual(0, boardT.CirculatedDecisionsCount);
         }
 
 

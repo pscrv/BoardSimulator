@@ -14,8 +14,8 @@ namespace SimulatorB
 
 
         #region abstract properties
-        internal abstract int CirculatingSummonsCount { get; }
-        internal abstract int CirculatingDecisionsCount { get; }
+        internal abstract int CirculatedSummonsCount { get; }
+        internal abstract int CirculatedDecisionsCount { get; }
         internal abstract int PendingOPCount { get; }
         internal abstract int RunningOPCount { get; }
         internal abstract int FinishedCaseCount { get; }
@@ -26,7 +26,7 @@ namespace SimulatorB
         protected abstract bool _configurationIsInvalid(List<Member> technicals, List<Member> legals);
 
         internal abstract void ProcessNewCase(AppealCase appealCase, Hour currentHour);
-        internal abstract void DoWork(Hour currentHour);
+        internal abstract BoardReport DoWork(Hour currentHour);
         #endregion
 
 
@@ -100,8 +100,8 @@ namespace SimulatorB
 
 
         #region property overrides
-        internal override int CirculatingSummonsCount => _registrar.CirculatingSummonsCount;
-        internal override int CirculatingDecisionsCount => _registrar.CirculatingDecisionsCount;
+        internal override int CirculatedSummonsCount => _registrar.CirculatedSummonsCount;
+        internal override int CirculatedDecisionsCount => _registrar.CirculatedDecisionsCount;
         internal override int PendingOPCount => _registrar.PendingOPCount;
         internal override int RunningOPCount => _registrar.RunningOPCount;
         internal override int FinishedCaseCount => _registrar.FinishedCaseCount;
@@ -123,22 +123,31 @@ namespace SimulatorB
             _registrar.CirculateCases(currentHour);
         }
 
-        internal override void DoWork(Hour currentHour)
+        internal override BoardReport DoWork(Hour currentHour)
         {
-            _passWorkToMembers(currentHour);
+            var report = _passWorkToMembers(currentHour);
             _registrar.UpdateQueuesAndCirculate(currentHour);
+            return report;
         }
         #endregion
 
 
-        private void _passWorkToMembers(Hour currentHour)
+        private BoardReport _passWorkToMembers(Hour currentHour)
         {
+            BoardReport report = new BoardReport(_members);
+
             WorkCase workCase;
+            WorkReport workReport;
             foreach (Member member in _members)
             {
                 workCase = _registrar.GetMemberWork(currentHour, member);
-                workCase?.Work(currentHour, member);
+                workReport = (workCase == null)
+                    ? new NullWorkReport()
+                    : workCase.Work(currentHour, member);
+                report.Add(member, workReport);
             }
+
+            return report;
         }
 
 

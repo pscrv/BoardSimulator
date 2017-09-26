@@ -48,7 +48,10 @@
     <Compile Include="Board\Registrar.cs" />
     <Compile Include="Cases\AppealCase.cs" />
     <Compile Include="Cases\WorkCase.cs" />
+    <Compile Include="Logging\BoardReport.cs" />
     <Compile Include="Logging\CaseLog.cs" />
+    <Compile Include="Logging\HourlyReports.cs" />
+    <Compile Include="Logging\WorkReport.cs" />
     <Compile Include="OP\OPSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterface\Parameters\BoardParameters.cs" />

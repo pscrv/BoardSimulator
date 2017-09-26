@@ -1,10 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SimulatorB;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SimulatorB.Tests
 {
@@ -36,7 +32,7 @@ namespace SimulatorB.Tests
         }
 
         [TestMethod()]
-        public void RunTest()
+        public void RunOneCaseTest()
         {
             BoardParameters parameters = new TechnicalBoardParameters(
                 MemberParameterCollection.DefaultCollection,
@@ -50,7 +46,7 @@ namespace SimulatorB.Tests
                 });
 
 
-            Simulation simulation = new Simulation(10, parameters, 10);
+            Simulation simulation = new Simulation(1000, parameters, 1);
             simulation.Run();
         }
     }

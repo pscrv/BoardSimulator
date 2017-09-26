@@ -7,8 +7,8 @@ namespace SimulatorB
 {
     internal abstract class Registrar
     {
-        internal abstract int CirculatingSummonsCount { get; }
-        internal abstract int CirculatingDecisionsCount { get; }
+        internal abstract int CirculatedSummonsCount { get; }
+        internal abstract int CirculatedDecisionsCount { get; }
         internal abstract int PendingOPCount { get; }
         internal abstract int RunningOPCount { get; }
         internal abstract int FinishedCaseCount { get; }
@@ -28,17 +28,19 @@ namespace SimulatorB
         #region fields
         private List<Member> _members;
         private Queue<WorkCase> _circulatingSummonses;
+        private int _circulatedSummonsCount;
         private Queue<WorkCase> _circulatingDecisions;
+        private int _circulatedDecisionsCount;
         private Dictionary<Member, Queue<WorkCase>> _summonsQueues;
         private Dictionary<Member, Queue<WorkCase>> _decisionQueues;
         private OPSchedule _opSchedule;
-        private List<AppealCase> _finishedCases;  
+        private List<AppealCase> _finishedCases;
         #endregion
 
 
         #region property overrides
-        internal override int CirculatingSummonsCount => _circulatingSummonses.Count;
-        internal override int CirculatingDecisionsCount => _circulatingDecisions.Count;
+        internal override int CirculatedSummonsCount => _circulatedSummonsCount;
+        internal override int CirculatedDecisionsCount => _circulatedDecisionsCount;
         internal override int PendingOPCount => _opSchedule.Count;
         internal override int RunningOPCount => _opSchedule.RunningCases.Count;
         internal override int FinishedCaseCount => _finishedCases.Count;
@@ -103,6 +105,9 @@ namespace SimulatorB
 
         internal override void CirculateCases(Hour currentHour)
         {
+            _circulatedSummonsCount = _circulatingSummonses.Count;
+            _circulatedDecisionsCount = _circulatingDecisions.Count;
+
             _circulateFromQueue(_circulatingSummonses, _summonsQueues, currentHour);
             _circulateFromQueue(_circulatingDecisions, _decisionQueues, currentHour);
             //// new cases too
@@ -173,21 +178,25 @@ namespace SimulatorB
 
             foreach (Member member in _members)
             {
-                _processFinished(currentHour, member, _summonsQueues[member]);
-                _processFinished(currentHour, member, _decisionQueues[member]);
+                _processFinished(currentHour, member, _summonsQueues[member], _circulatingSummonses);
+                _processFinished(currentHour, member, _decisionQueues[member], _circulatingDecisions);
             }
         }
 
-        private void _processFinished(Hour currentHour, Member member, Queue<WorkCase> queue)
+        private void _processFinished(
+            Hour currentHour, 
+            Member member, 
+            Queue<WorkCase> inqueue,
+            Queue<WorkCase> _outQueue)
         {
             WorkCase membercase;
-            if (queue.Count > 0)
+            if (inqueue.Count > 0)
             {
-                membercase = queue.Peek();
+                membercase = inqueue.Peek();
                 if (membercase.MemberWorkIsFinished)
                 {
                     membercase.DequeueMember(member);
-                    queue.Dequeue();
+                    inqueue.Dequeue();
 
                     if (membercase.AllWorkersAreFinished)
                     {
@@ -195,7 +204,7 @@ namespace SimulatorB
                     }
                     else
                     {
-                        _addToSummonsCirculation(membercase);
+                        _outQueue.Enqueue(membercase);
                     }
                 }
             }

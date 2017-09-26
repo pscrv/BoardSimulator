@@ -18,12 +18,8 @@ namespace SimulatorB
         internal abstract bool MemberWorkIsFinished { get; }
         internal abstract bool AllWorkersAreFinished { get; }
 
-        internal abstract void Work(Hour currentHour, Member member);
-        //internal abstract void PassToRegistrarIfFinished(Hour currentHour, Member member, Registrar registrar);
-
-
-
-
+        internal abstract WorkReport Work(Hour currentHour, Member member);
+        
         internal abstract void ProcessFinishedCase(Hour currentHour, Registrar registrar);
         internal abstract void DequeueMember(Member member);
 
@@ -97,7 +93,7 @@ namespace SimulatorB
 
         internal override Member GetCurrentMember() => _currentWorker?.Member;
 
-        internal override void Work(Hour currentHour, Member member)
+        internal override WorkReport Work(Hour currentHour, Member member)
         {
             CaseWorker worker = _caseBoard.FirstOrDefault(x => x.Member == member);
             if (worker == null)
@@ -109,16 +105,19 @@ namespace SimulatorB
             if (!_work[member].IsStarted)
                 Log.LogStarted(currentHour, this as dynamic, worker as dynamic);
 
-            if (!_work[member].IsFinished)
-                _work[member].DoWork();
-
-
-
-
             if (_work[member].IsFinished)
             {
-                Log.LogFinished(currentHour, this as dynamic, worker as dynamic);
+                return new NullWorkReport();
             }
+            else
+            {
+                _work[member].DoWork();
+                if (_work[member].IsFinished)
+                    Log.LogFinished(currentHour, this as dynamic, worker as dynamic);
+
+                return new WorkReport(this as dynamic);
+            }
+
         }
 
         internal override void DequeueMember(Member member)  // can we lose this?

@@ -4,8 +4,6 @@ namespace SimulatorB
 {
     internal class CaseLog
     {
-        public Hour Allocated { get; private set; }
-
         #region summons properties
         internal Hour SummonsEnqueuedChair { get; private set; }
         internal Hour SummonsStartedChair { get; private set; }

@@ -38,7 +38,7 @@ namespace SimulatorB
         private SimulationTimeSpan _timeSpan;
         private Board _board;
         private Dictionary<Hour, int> _arrivingCases;
-        //private HourlyReports _reports;
+        private HourlyReports _reports;
         #endregion
 
 
@@ -58,6 +58,8 @@ namespace SimulatorB
                 arrivalsPerMonth);
         }
 
+
+        public HourlyReports Reports => _reports;
 
         //public SimulationReport SimulationReport
         //{
@@ -82,7 +84,7 @@ namespace SimulatorB
             OPSchedule opSchedule = new SimpleOPScheduler(minimumDaysBetweenOP);
             _board = boardParameters.MakeBoard();
             _timeSpan = new SimulationTimeSpan(new Hour(0), new Hour(lengthInHours - 1));
-            //_reports = new HourlyReports();
+            _reports = new HourlyReports();
             _arrivingCases = arriving;
 
             _assembleInitialCases(initialCaseCount);
@@ -144,10 +146,9 @@ namespace SimulatorB
                         _board.ProcessNewCase(new AppealCase(), hour);
                     }
                 }
-
-                _board.DoWork(hour);
-                //BoardReport report = _board.DoWork(hour);
-                //_reports.Add(hour, report);
+                
+                BoardReport report = _board.DoWork(hour);
+                _reports.Add(hour, report);
             }
         }
 
