@@ -11,12 +11,13 @@ namespace SimulatorB
         internal abstract int CirculatedDecisionsCount { get; }
         internal abstract int PendingOPCount { get; }
         internal abstract int RunningOPCount { get; }
+        internal abstract List<CompletedCaseReport> FinishedCases { get; }
         internal abstract int FinishedCaseCount { get; }
 
         internal abstract void ProcessNewSummons(WorkCase summonsCase);
         internal abstract void AddToDecisionCirculation(WorkCase decisionCase);
         internal abstract void CirculateCases(Hour currentHour);
-        internal abstract void AddToFinishedCaseList(AppealCase finishedCase);
+        internal abstract void AddToFinishedCaseList(CompletedCaseReport completedCase);
         internal abstract WorkCase GetMemberWork(Hour currentHour, Member member);
         internal abstract void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers);
         internal abstract void UpdateQueuesAndCirculate(Hour currentHour);
@@ -34,7 +35,7 @@ namespace SimulatorB
         private Dictionary<Member, Queue<WorkCase>> _summonsQueues;
         private Dictionary<Member, Queue<WorkCase>> _decisionQueues;
         private OPSchedule _opSchedule;
-        private List<AppealCase> _finishedCases;
+        private List<CompletedCaseReport> _finishedCases;
         #endregion
 
 
@@ -43,6 +44,7 @@ namespace SimulatorB
         internal override int CirculatedDecisionsCount => _circulatedDecisionsCount;
         internal override int PendingOPCount => _opSchedule.Count;
         internal override int RunningOPCount => _opSchedule.RunningCases.Count;
+        internal override List<CompletedCaseReport> FinishedCases => _finishedCases;
         internal override int FinishedCaseCount => _finishedCases.Count;
         #endregion
 
@@ -65,7 +67,7 @@ namespace SimulatorB
                 _decisionQueues[member] = new Queue<WorkCase>();
             }
             _opSchedule = new SimpleOPScheduler();
-            _finishedCases = new List<AppealCase>();
+            _finishedCases = new List<CompletedCaseReport>();
         }
         #endregion
 
@@ -82,9 +84,9 @@ namespace SimulatorB
             _circulatingDecisions.Enqueue(decisionCase);
         }
 
-        internal override void AddToFinishedCaseList(AppealCase finishedCase)
+        internal override void AddToFinishedCaseList(CompletedCaseReport completedCase)
         {
-            _finishedCases.Add(finishedCase);
+            _finishedCases.Add(completedCase);
         }
 
 
@@ -110,7 +112,6 @@ namespace SimulatorB
 
             _circulateFromQueue(_circulatingSummonses, _summonsQueues, currentHour);
             _circulateFromQueue(_circulatingDecisions, _decisionQueues, currentHour);
-            //// new cases too
         }
 
         internal override void ScheduleOP(Hour currentHour, AppealCase appealCase, CaseBoard workers)

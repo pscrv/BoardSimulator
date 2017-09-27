@@ -172,7 +172,8 @@ namespace SimulatorB
 
         internal override void ProcessFinishedCase(Hour currentHour, Registrar registrar)
         {
-            registrar.AddToFinishedCaseList(_case);
+            CompletedCaseReport report = new CompletedCaseReport(_case, _caseBoard, Log);
+            registrar.AddToFinishedCaseList(report);
             Log.LogFinished(currentHour);
         }        
     }

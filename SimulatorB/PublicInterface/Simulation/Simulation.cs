@@ -58,18 +58,16 @@ namespace SimulatorB
                 arrivalsPerMonth);
         }
 
-
-        public HourlyReports Reports => _reports;
-
-        //public SimulationReport SimulationReport
-        //{
-        //    get
-        //    {
-        //        return new SimulationReport(
-        //            _compileCompletedCaseReports(),
-        //            _reports);
-        //    }
-        //}
+        
+        internal SimulationReport SimulationReport
+        {
+            get
+            {
+                return new SimulationReport(
+                    _compileCompletedCaseReports(),
+                    _reports);
+            }
+        }
         #endregion
 
 
@@ -139,30 +137,18 @@ namespace SimulatorB
         {
             foreach (Hour hour in _timeSpan)
             {
-                if (_arrivingCases.ContainsKey(hour))
-                {
-                    for (int i = 0; i < _arrivingCases[hour]; i++)
-                    {
-                        _board.ProcessNewCase(new AppealCase(), hour);
-                    }
-                }
-                
+                _processArrivingCases(hour);
+
                 BoardReport report = _board.DoWork(hour);
                 _reports.Add(hour, report);
             }
         }
 
 
-
-        //private ReadOnlyCollection<CompletedCaseReport> _compileCompletedCaseReports()
-        //{
-        //    List<CompletedCaseReport> result = new List<CompletedCaseReport>();
-        //    foreach (AllocatedCase ac in _board.FinishedCases)
-        //    {
-        //        result.Add(new CompletedCaseReport(ac));
-        //    }
-        //    return new ReadOnlyCollection<CompletedCaseReport>(result);
-        //}
+        private ReadOnlyCollection<CompletedCaseReport> _compileCompletedCaseReports()
+        {
+            return _board.FinishedCases.AsReadOnly();
+        }
 
         private void _assembleInitialCases(int initialCaseCount)
         {
@@ -173,5 +159,17 @@ namespace SimulatorB
                     _timeSpan.Start);
             }
         }
+
+        private void _processArrivingCases(Hour hour)
+        {
+            if (_arrivingCases.ContainsKey(hour))
+            {
+                for (int i = 0; i < _arrivingCases[hour]; i++)
+                {
+                    _board.ProcessNewCase(new AppealCase(), hour);
+                }
+            }
+        }
+
     }
 }

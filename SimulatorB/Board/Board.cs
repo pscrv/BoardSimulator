@@ -19,6 +19,7 @@ namespace SimulatorB
         internal abstract int PendingOPCount { get; }
         internal abstract int RunningOPCount { get; }
         internal abstract int FinishedCaseCount { get; }
+        internal abstract List<CompletedCaseReport> FinishedCases { get; }
         #endregion
 
 
@@ -105,6 +106,7 @@ namespace SimulatorB
         internal override int PendingOPCount => _registrar.PendingOPCount;
         internal override int RunningOPCount => _registrar.RunningOPCount;
         internal override int FinishedCaseCount => _registrar.FinishedCaseCount;
+        internal override List<CompletedCaseReport> FinishedCases => _registrar.FinishedCases;
         #endregion
 
 
