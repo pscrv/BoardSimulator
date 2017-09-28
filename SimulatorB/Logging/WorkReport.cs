@@ -2,13 +2,8 @@
 {
     internal class WorkReport
     {
-        internal enum WorkType { Summons, OP, Decision, None }
-
-
-        internal readonly Hour Hour;
         internal readonly WorkType Type;
         internal readonly bool Finished;
-
 
 
         #region construction

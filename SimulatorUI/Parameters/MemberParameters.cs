@@ -1,4 +1,4 @@
-﻿using Simulator;
+﻿using SimulatorB;
 
 namespace SimulatorUI
 {
@@ -9,11 +9,11 @@ namespace SimulatorUI
         public int HoursForDecision;
 
 
-        public Simulator.MemberParameters AsSimulatorParameters
+        public SimulatorB.MemberParameters AsSimulatorBParameters
         {
             get
             {
-                return new Simulator.MemberParameters(HoursForSummons, HoursOPPrepration, HoursForDecision);
+                return new SimulatorB.MemberParameters(HoursForSummons, HoursOPPrepration, HoursForDecision);
             }
         }
 

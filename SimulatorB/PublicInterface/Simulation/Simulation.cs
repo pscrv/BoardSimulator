@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SimulatorB
+namespace SimulatorB.PublicInterface
 {
     public class Simulation
     {
@@ -59,7 +59,7 @@ namespace SimulatorB
         }
 
         
-        internal SimulationReport SimulationReport
+        public SimulationReport SimulationReport
         {
             get
             {

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using SimulatorB.PublicInterface;
 
 namespace SimulatorB
 {
     internal class HourlyReports
     {
         #region fields and properties
-        private readonly Dictionary<Hour, BoardReport> _reports = new Dictionary<Hour, BoardReport>();
+        private Dictionary<Hour, BoardReport> _reports = new Dictionary<Hour, BoardReport>();
         #endregion
 
 
@@ -23,6 +24,18 @@ namespace SimulatorB
         internal BoardReport Read(Hour hour)
         {
             return _reports[hour];
+        }
+
+
+        internal PublicHourlyReports AsPublicHourlyReports()
+        {
+            Dictionary<int, PublicBoardReport> reports = new Dictionary<int, PublicBoardReport>();
+            foreach (Hour hour in _reports.Keys)
+            {
+                reports[hour.Value] = _reports[hour].AsPublicBoardReport();
+            }
+
+            return new PublicHourlyReports(reports);
         }
     }
 }

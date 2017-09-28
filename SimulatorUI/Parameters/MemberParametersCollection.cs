@@ -20,14 +20,14 @@
         public int ChairWorkPercentage { get; set; }
 
 
-        public Simulator.MemberParameterCollection AsSimulatorParameters
+        public SimulatorB.MemberParameterCollection AsSimulatorBParameters
         {
             get
             {
-                return new Simulator.MemberParameterCollection(
-                    ChairWorkParameters.AsSimulatorParameters,
-                    RapporteurWorkParameters.AsSimulatorParameters,
-                    OtherWorkParameters.AsSimulatorParameters,
+                return new SimulatorB.MemberParameterCollection(
+                    ChairWorkParameters.AsSimulatorBParameters,
+                    RapporteurWorkParameters.AsSimulatorBParameters,
+                    OtherWorkParameters.AsSimulatorBParameters,
                     ChairWorkPercentage);
             }
         }

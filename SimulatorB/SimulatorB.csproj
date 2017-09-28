@@ -52,21 +52,25 @@
     <Compile Include="Logging\CaseLog.cs" />
     <Compile Include="Logging\CompletedCaseReport.cs" />
     <Compile Include="Logging\HourlyReports.cs" />
-    <Compile Include="Logging\SimulationReport.cs" />
+    <Compile Include="PublicInterface\Reports\PublicHourlyReports.cs" />
+    <Compile Include="PublicInterface\Reports\PublicBoardReport.cs" />
+    <Compile Include="PublicInterface\Reports\PublicCaseLog.cs" />
+    <Compile Include="PublicInterface\Reports\PublicCaseReport.cs" />
+    <Compile Include="PublicInterface\Reports\PublicCaseReportList.cs" />
+    <Compile Include="PublicInterface\Reports\SimulationReport.cs" />
     <Compile Include="Logging\WorkReport.cs" />
     <Compile Include="OP\OPSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterface\Parameters\BoardParameters.cs" />
     <Compile Include="PublicInterface\Parameters\MemberParameters.cs" />
+    <Compile Include="PublicInterface\Reports\PublicWorkReport.cs" />
+    <Compile Include="PublicInterface\Enums\WorkType.cs" />
     <Compile Include="PublicInterface\Simulation\Simulation.cs" />
-    <Compile Include="Time\Hour.cs" />
+    <Compile Include="PublicInterface\Time\Hour.cs" />
     <Compile Include="Time\SimulationTime.cs" />
     <Compile Include="Time\TimeParameters.cs" />
     <Compile Include="Work\Work.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enums\" />
-    <Folder Include="PublicInterface\Logging\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

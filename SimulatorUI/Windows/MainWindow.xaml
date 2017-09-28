@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SimulatorUI"
         mc:Ignorable="d"
         
-        Title="Board Simulator" 
+        Title="Board SimulatorB" 
         Background="{StaticResource LightBackgroundBrush}"        
         WindowState="Maximized">
 

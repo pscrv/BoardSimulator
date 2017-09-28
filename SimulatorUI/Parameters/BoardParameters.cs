@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Simulator;
 
 namespace SimulatorUI
 {
@@ -84,22 +82,22 @@ namespace SimulatorUI
         public List<MemberParameterCollection> Legals;
 
 
-        public Simulator.BoardParameters AsSimulatorBoardParameters
+        public SimulatorB.BoardParameters AsSimulatorBoardParameters
         {
             get
             {
                 switch (ChairType)
                 {
                     case ChairType.Technical:
-                        return new Simulator.TechnicalBoardParameters(
-                            Chair.AsSimulatorParameters, 
-                            _asSimulatorParameters(Technicals), 
-                            _asSimulatorParameters(Legals));
+                        return new SimulatorB.TechnicalBoardParameters(
+                            Chair.AsSimulatorBParameters, 
+                            _asSimulatorBParameters(Technicals), 
+                            _asSimulatorBParameters(Legals));
                     case ChairType.Legal:
-                        return new Simulator.LegalBoardParameters(
-                            Chair.AsSimulatorParameters,
-                            _asSimulatorParameters(Technicals),
-                            _asSimulatorParameters(Legals));
+                        return new SimulatorB.LegalBoardParameters(
+                            Chair.AsSimulatorBParameters,
+                            _asSimulatorBParameters(Technicals),
+                            _asSimulatorBParameters(Legals));
                     default:
                         throw new ArgumentException("ChairType must be Technical or Legal.");
                 }
@@ -123,10 +121,10 @@ namespace SimulatorUI
 
 
 
-        private List<Simulator.MemberParameterCollection> _asSimulatorParameters(
+        private List<SimulatorB.MemberParameterCollection> _asSimulatorBParameters(
             List<MemberParameterCollection> collectionList)
         {
-            return collectionList.Select(x => x.AsSimulatorParameters).ToList();
+            return collectionList.Select(x => x.AsSimulatorBParameters).ToList();
         }        
     }
 

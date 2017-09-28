@@ -50,7 +50,7 @@ namespace SimulatorB
 
 
         #region Finished properties
-        public Hour Finished { get; private set; }
+        internal Hour Finished { get; private set; }
         #endregion
 
 

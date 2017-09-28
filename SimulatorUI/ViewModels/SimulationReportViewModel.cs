@@ -1,4 +1,5 @@
-﻿using Simulator;
+﻿
+using SimulatorB.PublicInterface;
 
 namespace SimulatorUI
 {

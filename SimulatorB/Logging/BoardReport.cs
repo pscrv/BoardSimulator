@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SimulatorB.PublicInterface;
 
 namespace SimulatorB
 {
@@ -7,7 +8,7 @@ namespace SimulatorB
     {
         #region fields and properties
         private List<Member> _members;
-        private Dictionary<int, WorkReport> _publicReports;
+        private Dictionary<int, WorkReport> _reports;
         #endregion
 
 
@@ -21,7 +22,7 @@ namespace SimulatorB
                 _members.Add(m);
             }
 
-            _publicReports = new Dictionary<int, WorkReport>();
+            _reports = new Dictionary<int, WorkReport>();
         }
         #endregion
 
@@ -31,19 +32,25 @@ namespace SimulatorB
             if (!_members.Contains(member))
                 throw new InvalidOperationException("BoardReport.Add: member is not registered.");
 
-            if (_publicReports.ContainsKey(member.ID))
+            if (_reports.ContainsKey(member.ID))
                 throw new InvalidOperationException("BoardReport.Add: a report has already been recorded for member.");
 
-            _publicReports[member.ID] = report;
+            _reports[member.ID] = report;
         }
 
 
         internal WorkReport Read(Member member)
         {
-            if (!_publicReports.ContainsKey(member.ID))
+            if (!_reports.ContainsKey(member.ID))
                 throw new InvalidOperationException("BoardReport.Read: member has no record.");
 
-            return _publicReports[member.ID];
+            return _reports[member.ID];
+        }        
+
+
+        internal PublicBoardReport AsPublicBoardReport()
+        {
+            return new PublicBoardReport(_members, _reports);
         }
     }
 }

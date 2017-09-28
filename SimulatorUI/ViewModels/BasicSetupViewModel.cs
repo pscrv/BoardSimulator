@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Simulator;
+﻿using System.Threading.Tasks;
+
+using SimulatorB.PublicInterface;
 
 namespace SimulatorUI
 {

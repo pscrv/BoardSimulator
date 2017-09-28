@@ -91,6 +91,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="enums\Enums.cs" />
     <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="MVVM\DebouncedHandler.cs" />
     <Compile Include="Parameters\MemberParametersCollection.cs" />
@@ -251,13 +252,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Simulator\Simulator.csproj">
-      <Project>{72d5ecbe-1c46-4ad8-89b7-3c55c5f1493d}</Project>
-      <Name>Simulator</Name>
-    </ProjectReference>
+    <Folder Include="AppResources\Validation\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AppResources\Validation\" />
+    <ProjectReference Include="..\SimulatorB\SimulatorB.csproj">
+      <Project>{c9b19f16-caf4-45e7-832e-fa1fe9ba0f8c}</Project>
+      <Name>SimulatorB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
